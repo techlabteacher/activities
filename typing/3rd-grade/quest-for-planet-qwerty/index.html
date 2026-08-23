@@ -31,8 +31,9 @@
       align-items: center;
       justify-content: space-between;
       overflow-x: hidden;
+      overflow-y: auto; /* Fixed: allows scrolling down to see all 15 missions */
       position: relative;
-      padding: 20px 20px 20px 100px;
+      padding: 20px 20px 40px 110px;
     }
 
     .hub-viewport-border {
@@ -67,7 +68,6 @@
       color: var(--class-theme-color);
       text-shadow: 0 0 15px var(--class-theme-color);
       letter-spacing: 1px;
-      transition: color 0.4s ease, text-shadow 0.4s ease;
     }
     p.subtitle {
       font-size: 1rem;
@@ -87,7 +87,7 @@
       display: inline-block;
     }
 
-    /* Side Rank Tracking Bar */
+    /* Side Rank Progress Tracker */
     .rank-tracker-sidebar {
       position: fixed;
       left: 25px;
@@ -121,7 +121,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      opacity: 0.4;
+      opacity: 0.35;
       transition: opacity 0.4s ease, transform 0.4s ease;
     }
     .rank-node.active {
@@ -135,10 +135,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       border: 2px solid #ffffff;
       background: #1e293b;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
     .rank-bronze .rank-badge { background: #cd7f32; border-color: #ffd700; }
     .rank-silver .rank-badge { background: #c0c0c0; border-color: #ffffff; }
@@ -147,7 +146,7 @@
     .rank-diamond .rank-badge { background: #b9f2ff; border-color: #00f0ff; color: #000; }
 
     .rank-label {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-family: var(--font-tech);
       font-weight: bold;
       margin-top: 2px;
@@ -156,7 +155,7 @@
       text-align: center;
     }
 
-    /* Floating Astronaut Tracker Icon */
+    /* Moving Astronaut Tracker Icon */
     .astronaut-tracker {
       position: absolute;
       left: 50%;
@@ -165,10 +164,10 @@
       z-index: 3;
       transition: bottom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
       filter: drop-shadow(0 0 8px #38bdf8);
-      bottom: 20px;
+      bottom: 12%;
     }
 
-    /* Scattered Mission Map */
+    /* Scattered Left-to-Right Mission Map Grid */
     .mission-map {
       position: relative;
       z-index: 10;
@@ -176,10 +175,11 @@
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      gap: 40px 30px;
+      gap: 50px 35px;
       width: 100%;
-      max-width: 1300px;
-      padding: 30px 10px;
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 20px;
     }
     
     .mission-node {
@@ -191,15 +191,27 @@
       transition: transform 0.3s ease;
       position: relative;
     }
-    .mission-node:hover {
-      transform: translateY(-8px) scale(1.05) !important;
-    }
 
-    /* Left-to-Right Organic Offset Staggering */
-    .mission-node:nth-child(odd) { transform: translateY(-25px); }
-    .mission-node:nth-child(even) { transform: translateY(25px); }
-    .mission-node:nth-child(3n) { transform: translateY(-40px); }
-    .mission-node:nth-child(4n) { transform: translateY(15px); }
+    /* Scattered positions left to right */
+    .mission-node:nth-child(1) { transform: translateY(-15px); }
+    .mission-node:nth-child(2) { transform: translateY(25px); }
+    .mission-node:nth-child(3) { transform: translateY(-30px); }
+    .mission-node:nth-child(4) { transform: translateY(10px); }
+    .mission-node:nth-child(5) { transform: translateY(-20px); }
+    .mission-node:nth-child(6) { transform: translateY(30px); }
+    .mission-node:nth-child(7) { transform: translateY(-25px); }
+    .mission-node:nth-child(8) { transform: translateY(15px); }
+    .mission-node:nth-child(9) { transform: translateY(-35px); }
+    .mission-node:nth-child(10) { transform: translateY(20px); }
+    .mission-node:nth-child(11) { transform: translateY(-15px); }
+    .mission-node:nth-child(12) { transform: translateY(30px); }
+    .mission-node:nth-child(13) { transform: translateY(-20px); }
+    .mission-node:nth-child(14) { transform: translateY(10px); }
+    .mission-node:nth-child(15) { transform: translateY(-30px); }
+
+    .mission-node:hover {
+      transform: scale(1.1) translateY(-5px) !important;
+    }
 
     .icon-container {
       width: 110px;
@@ -210,38 +222,49 @@
       position: relative;
     }
     
-    /* CSS Planet & Visual Styles */
     .pixel-emoji {
-      font-size: 4.5rem;
+      font-size: 4.8rem;
       filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5));
       animation: float 3.5s ease-in-out infinite;
     }
+
+    /* CSS Planets & Celestial Bodies */
     .planet-body {
-      width: 90px;
-      height: 90px;
+      width: 85px;
+      height: 85px;
       border-radius: 50%;
       position: relative;
-      box-shadow: inset -12px -8px 0 0 rgba(0,0,0,0.4), 0 0 18px rgba(255,255,255,0.2);
+      box-shadow: inset -12px -8px 0 0 rgba(0,0,0,0.5), 0 0 18px rgba(255,255,255,0.2);
     }
-    .planet-1 { background: radial-gradient(circle at 30% 30%, #f43f5e, #881337); }
-    .planet-2 { background: radial-gradient(circle at 30% 30%, #a855f7, #581c87); }
-    .planet-3 { background: radial-gradient(circle at 30% 30%, #06b6d4, #164e63); }
+    .planet-red { background: radial-gradient(circle at 30% 30%, #f43f5e, #881337); }
+    .planet-purple { background: radial-gradient(circle at 30% 30%, #a855f7, #581c87); }
+    .planet-cyan { background: radial-gradient(circle at 30% 30%, #06b6d4, #164e63); }
+    .planet-green { background: radial-gradient(circle at 30% 30%, #10b981, #064e3b); }
     
     .planet-ring {
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 130px;
-      height: 30px;
-      border: 6px solid rgba(253, 224, 71, 0.7);
+      width: 125px;
+      height: 28px;
+      border: 5px solid rgba(253, 224, 71, 0.75);
       border-radius: 50%;
       transform: translate(-50%, -50%) rotate(-25deg);
       pointer-events: none;
     }
 
-    .moon-icon {
+    .gas-star {
       width: 90px;
       height: 90px;
+      background: radial-gradient(circle, #ff7b00 0%, #ff0055 70%, #4a001e 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 30px #ff0055;
+      animation: pulse 2s ease-in-out infinite alternate;
+    }
+
+    .moon-icon {
+      width: 85px;
+      height: 85px;
       background: #e2e8f0;
       border-radius: 50%;
       box-shadow: inset -12px -8px 0 0 #94a3b8, 0 0 15px rgba(226, 232, 240, 0.5);
@@ -249,12 +272,12 @@
       overflow: hidden;
     }
     .moon-crater-1 { position: absolute; top: 15px; left: 20px; width: 18px; height: 18px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 2px 2px 0 #94a3b8; }
-    .moon-crater-2 { position: absolute; top: 45px; left: 50px; width: 26px; height: 26px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 2px 2px 0 #94a3b8; }
-    .moon-crater-3 { position: absolute; top: 55px; left: 18px; width: 14px; height: 14px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 2px 2px 0 #94a3b8; }
+    .moon-crater-2 { position: absolute; top: 45px; left: 45px; width: 24px; height: 24px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 2px 2px 0 #94a3b8; }
+    .moon-crater-3 { position: absolute; top: 52px; left: 16px; width: 12px; height: 12px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 2px 2px 0 #94a3b8; }
 
     .sun-icon {
-      width: 95px;
-      height: 95px;
+      width: 90px;
+      height: 90px;
       background: radial-gradient(circle, #fde047 0%, #f59e0b 100%);
       border-radius: 50%;
       box-shadow: 0 0 25px #f59e0b, 0 0 45px rgba(245, 158, 11, 0.4);
@@ -262,7 +285,7 @@
     }
 
     .mission-label {
-      margin-top: 12px;
+      margin-top: 10px;
       background: rgba(15, 23, 42, 0.85);
       border: 2px solid var(--class-theme-color);
       border-radius: 12px;
@@ -312,7 +335,7 @@
       border: 1px solid var(--accent-yellow);
     }
 
-    /* Modal Login Screen Styles */
+    /* Modal Login Overlay */
     .login-modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -363,11 +386,7 @@
       transform: translateY(-3px);
       border-color: #38bdf8;
     }
-    .helmet-svg {
-      width: 42px;
-      height: 42px;
-      flex-shrink: 0;
-    }
+    .helmet-svg { width: 42px; height: 42px; flex-shrink: 0; }
     .comp-grid {
       display: grid;
       grid-template-columns: repeat(8, 1fr);
@@ -388,10 +407,7 @@
       cursor: pointer;
       font-weight: bold;
     }
-    .btn-comp:hover {
-      background: var(--class-theme-color);
-      color: #020617;
-    }
+    .btn-comp:hover { background: var(--class-theme-color); color: #020617; }
     .btn-reset-login {
       background: transparent;
       border: 1px solid #475569;
@@ -401,12 +417,14 @@
       border-radius: 6px;
       cursor: pointer;
     }
-    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
     @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.06); } }
+
     footer {
       position: relative;
       z-index: 10;
-      margin-bottom: 10px;
+      margin-top: 20px;
       font-size: 0.85rem;
       color: #64748b;
       display: flex;
@@ -419,7 +437,7 @@
   <div class="hub-viewport-border" id="screenOutline"></div>
   <canvas id="spaceCanvas"></canvas>
 
-  <!-- Side Rank Progress Bar with Animated Astronaut -->
+  <!-- Side Rank Progress Bar -->
   <aside class="rank-tracker-sidebar">
     <div class="rank-track-line"></div>
     <div class="astronaut-tracker" id="astroTracker">👨‍🚀</div>
@@ -452,6 +470,7 @@
     <div id="studentBadge" class="student-badge-display" style="display: none;"></div>
   </header>
 
+  <!-- Full Scattered 15 Mission Grid -->
   <main class="mission-map">
     <!-- Mission 1 -->
     <a href="mission1/index.html" class="mission-node" id="mission1Node">
@@ -502,7 +521,7 @@
     <!-- Mission 5 -->
     <a href="mission5/index.html" class="mission-node" id="mission5Node">
       <div class="icon-container">
-        <div class="planet-body planet-1"></div>
+        <div class="planet-body planet-red"></div>
       </div>
       <div class="mission-label">
         <div class="mission-title" id="m5Title">Mission 5</div>
@@ -524,7 +543,7 @@
     <!-- Mission 7 -->
     <a href="mission7/index.html" class="mission-node" id="mission7Node">
       <div class="icon-container">
-        <div class="planet-body planet-2"><div class="planet-ring"></div></div>
+        <div class="planet-body planet-purple"><div class="planet-ring"></div></div>
       </div>
       <div class="mission-label">
         <div class="mission-title" id="m7Title">Mission 7</div>
@@ -555,7 +574,7 @@
 
     <!-- Mission 10 -->
     <a href="mission10/index.html" class="mission-node" id="mission10Node">
-      <div class="icon-container"><div class="pixel-emoji">🌟</div></div>
+      <div class="icon-container"><div class="gas-star"></div></div>
       <div class="mission-label">
         <div class="mission-title" id="m10Title">Mission 10</div>
         <div class="mission-subtitle">V and M</div>
@@ -576,7 +595,7 @@
     <!-- Mission 12 -->
     <a href="mission12/index.html" class="mission-node" id="mission12Node">
       <div class="icon-container">
-        <div class="planet-body planet-3"></div>
+        <div class="planet-body planet-cyan"></div>
       </div>
       <div class="mission-label">
         <div class="mission-title" id="m12Title">Mission 12</div>
@@ -598,7 +617,7 @@
     <!-- Mission 14 -->
     <a href="mission14/index.html" class="mission-node" id="mission14Node">
       <div class="icon-container">
-        <div class="planet-body planet-1"><div class="planet-ring"></div></div>
+        <div class="planet-body planet-green"><div class="planet-ring"></div></div>
       </div>
       <div class="mission-label">
         <div class="mission-title" id="m14Title">Mission 14</div>
@@ -623,7 +642,7 @@
     <button class="btn-reset-login" onclick="clearLogin()">Change Class / Computer</button>
   </footer>
 
-  <!-- Login Overlay -->
+  <!-- Login Modal -->
   <div class="login-modal-overlay" id="loginModal">
     <div class="login-card">
       <div id="stepTeacher">
@@ -770,7 +789,7 @@
       requestAnimationFrame(animateStars);
     }
 
-    // Load Mission Completion Progress & Rank Hierarchy
+    // Load Mission Progress & Update Side Rank Level
     function loadHubProgress() {
       let completedCount = 0;
 
@@ -792,7 +811,7 @@
     }
 
     function updateRankTracker(completedMissions) {
-      // Calculate rank index (0: Bronze, 1: Silver, 2: Gold, 3: Platinum, 4: Diamond)
+      // 0-2 missions: Bronze, 3-5: Silver, 6-8: Gold, 9-11: Platinum, 12+: Diamond
       let rankLevel = Math.floor(completedMissions / 3);
       if (rankLevel > 4) rankLevel = 4;
 
