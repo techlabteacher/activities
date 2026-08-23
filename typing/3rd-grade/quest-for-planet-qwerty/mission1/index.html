@@ -175,7 +175,7 @@
       background: #030712;
       border: 2px solid #1e293b;
       border-radius: 14px;
-      padding: 20px;
+      padding: 20px 15px;
       margin-bottom: 15px;
       font-family: var(--font-tech);
       font-size: 1.8rem;
@@ -184,12 +184,20 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      letter-spacing: 2px;
+      letter-spacing: 0px;
       overflow-x: auto;
+      white-space: pre;
     }
 
-    .char-node { display: inline-block; padding: 2px 6px; margin: 0 1px; border-radius: 4px; }
-    .char-node.space-node { color: #334155; }
+    .char-node { 
+      display: inline-block; 
+      padding: 1px 2px; 
+      margin: 0; 
+      border-radius: 3px; 
+      min-width: 0.6em;
+      text-align: center;
+    }
+    .char-node.space-node { min-width: 0.5em; }
     .char-done { color: #475569; }
     .char-current { background-color: var(--class-theme-color); color: #020617 !important; font-weight: bold; }
     .char-error { background-color: var(--neon-red) !important; color: white !important; }
@@ -313,7 +321,7 @@
   <!-- Lesson 5 Enlarged Video Player -->
   <div id="videoDisplay" class="video-display-area">
     <div class="video-container">
-      <iframe id="videoIframe" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+      <iframe id="videoIframe" src="https://www.youtube.com/embed/eKKutbjIZCQ?si=V7_odpK_k3A1x0Ds" allowfullscreen></iframe>
     </div>
     <button class="btn-primary" style="margin-top: 10px;" onclick="completeVideoLesson()">Finish Video & Continue ➔</button>
   </div>
@@ -499,8 +507,13 @@
     for (let i = 0; i < targetText.length; i++) {
       const span = document.createElement('span');
       span.className = 'char-node';
-      if (targetText[i] === ' ') span.classList.add('space-node');
-      span.innerText = targetText[i] === ' ' ? '␣' : targetText[i];
+      if (targetText[i] === ' ') {
+        span.classList.add('space-node');
+        span.innerHTML = '&nbsp;';
+      } else {
+        span.innerText = targetText[i];
+      }
+      
       if (i < currentIndex) span.classList.add(errorIndices.includes(i) ? 'char-error' : 'char-done');
       else if (i === currentIndex) span.classList.add('char-current');
       container.appendChild(span);
