@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,66 +30,64 @@
       align-items: center;
       justify-content: space-between;
       overflow-x: hidden;
-      overflow-y: auto; /* Fixed: allows scrolling down to see all 15 missions */
+      overflow-y: auto;
       position: relative;
-      padding: 20px 20px 40px 110px;
+      padding: 10px 10px 20px 100px;
     }
 
     .hub-viewport-border {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border: 12px solid var(--class-theme-color);
+      top: 0; left: 0; right: 0; bottom: 0;
+      border: 10px solid var(--class-theme-color);
       pointer-events: none;
       z-index: 100;
-      box-shadow: inset 0 0 25px var(--class-theme-color);
+      box-shadow: inset 0 0 20px var(--class-theme-color);
       transition: border-color 0.4s ease, box-shadow 0.4s ease;
     }
     #spaceCanvas {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       z-index: 1;
     }
+
+    /* Compact Header */
     header {
       position: relative;
       z-index: 10;
-      margin-top: 10px;
+      margin-top: 5px;
       text-align: center;
     }
     h1 {
       font-family: var(--font-playful);
-      font-size: 2.5rem;
+      font-size: 2rem;
       color: var(--class-theme-color);
-      text-shadow: 0 0 15px var(--class-theme-color);
+      text-shadow: 0 0 12px var(--class-theme-color);
       letter-spacing: 1px;
+      line-height: 1.1;
     }
     p.subtitle {
-      font-size: 1rem;
+      font-size: 0.85rem;
       color: #cbd5e1;
-      margin-top: 4px;
+      margin-top: 2px;
       font-weight: 600;
     }
     .student-badge-display {
-      margin-top: 6px;
+      margin-top: 4px;
       font-family: var(--font-tech);
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       background: rgba(15, 23, 42, 0.8);
       border: 1px solid var(--class-theme-color);
       color: var(--class-theme-color);
-      padding: 4px 14px;
-      border-radius: 20px;
+      padding: 2px 10px;
+      border-radius: 15px;
       display: inline-block;
     }
 
-    /* Side Rank Progress Tracker */
+    /* Rank Tracker Sidebar */
     .rank-tracker-sidebar {
       position: fixed;
-      left: 25px;
+      left: 20px;
       top: 50%;
       transform: translateY(-50%);
       z-index: 90;
@@ -99,19 +96,18 @@
       align-items: center;
       background: rgba(15, 23, 42, 0.85);
       border: 2px solid var(--class-theme-color);
-      border-radius: 20px;
-      padding: 15px 10px;
+      border-radius: 16px;
+      padding: 12px 8px;
       backdrop-filter: blur(5px);
       box-shadow: 0 0 20px rgba(0,0,0,0.5);
       height: 75vh;
-      width: 80px;
+      width: 75px;
       justify-content: space-between;
     }
     .rank-track-line {
       position: absolute;
-      top: 40px;
-      bottom: 40px;
-      width: 6px;
+      top: 35px; bottom: 35px;
+      width: 5px;
       background: #334155;
       z-index: 1;
     }
@@ -126,16 +122,16 @@
     }
     .rank-node.active {
       opacity: 1;
-      transform: scale(1.15);
+      transform: scale(1.1);
     }
     .rank-badge {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
+      font-size: 1rem;
       border: 2px solid #ffffff;
       background: #1e293b;
     }
@@ -146,7 +142,7 @@
     .rank-diamond .rank-badge { background: #b9f2ff; border-color: #00f0ff; color: #000; }
 
     .rank-label {
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       font-family: var(--font-tech);
       font-weight: bold;
       margin-top: 2px;
@@ -155,31 +151,31 @@
       text-align: center;
     }
 
-    /* Moving Astronaut Tracker Icon */
+    /* Friendly Smiling Astronaut */
     .astronaut-tracker {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 2rem;
+      font-size: 1.8rem;
       z-index: 3;
       transition: bottom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
       filter: drop-shadow(0 0 8px #38bdf8);
       bottom: 12%;
     }
 
-    /* Scattered Left-to-Right Mission Map Grid */
+    /* S-Curve Waving Path Layout */
     .mission-map {
       position: relative;
       z-index: 10;
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      gap: 50px 35px;
+      gap: 25px 15px;
       width: 100%;
-      max-width: 1200px;
-      margin: 30px auto;
-      padding: 20px;
+      max-width: 1150px;
+      margin: 15px auto;
+      padding: 10px;
     }
     
     .mission-node {
@@ -190,32 +186,36 @@
       cursor: pointer;
       transition: transform 0.3s ease;
       position: relative;
+      width: 18%; /* Fits 5 missions nicely across per row */
     }
 
-    /* Scattered positions left to right */
-    .mission-node:nth-child(1) { transform: translateY(-15px); }
-    .mission-node:nth-child(2) { transform: translateY(25px); }
-    .mission-node:nth-child(3) { transform: translateY(-30px); }
-    .mission-node:nth-child(4) { transform: translateY(10px); }
-    .mission-node:nth-child(5) { transform: translateY(-20px); }
-    .mission-node:nth-child(6) { transform: translateY(30px); }
-    .mission-node:nth-child(7) { transform: translateY(-25px); }
-    .mission-node:nth-child(8) { transform: translateY(15px); }
-    .mission-node:nth-child(9) { transform: translateY(-35px); }
-    .mission-node:nth-child(10) { transform: translateY(20px); }
-    .mission-node:nth-child(11) { transform: translateY(-15px); }
-    .mission-node:nth-child(12) { transform: translateY(30px); }
-    .mission-node:nth-child(13) { transform: translateY(-20px); }
-    .mission-node:nth-child(14) { transform: translateY(10px); }
-    .mission-node:nth-child(15) { transform: translateY(-30px); }
+    /* Wave Pattern Offsets: Bottom-Left to Top-Right trajectory */
+    .mission-node:nth-child(1)  { transform: translateY(50px); }  /* Bottom Left Start */
+    .mission-node:nth-child(2)  { transform: translateY(20px); }
+    .mission-node:nth-child(3)  { transform: translateY(-20px); }
+    .mission-node:nth-child(4)  { transform: translateY(-45px); }
+    .mission-node:nth-child(5)  { transform: translateY(-20px); }
+
+    .mission-node:nth-child(6)  { transform: translateY(20px); }
+    .mission-node:nth-child(7)  { transform: translateY(45px); }
+    .mission-node:nth-child(8)  { transform: translateY(20px); }
+    .mission-node:nth-child(9)  { transform: translateY(-20px); }
+    .mission-node:nth-child(10) { transform: translateY(-45px); }
+
+    .mission-node:nth-child(11) { transform: translateY(-20px); }
+    .mission-node:nth-child(12) { transform: translateY(15px); }
+    .mission-node:nth-child(13) { transform: translateY(35px); }
+    .mission-node:nth-child(14) { transform: translateY(0px); }
+    .mission-node:nth-child(15) { transform: translateY(-50px); } /* Top Right End */
 
     .mission-node:hover {
       transform: scale(1.1) translateY(-5px) !important;
     }
 
+    /* Smaller Graphic Icons (80px x 80px) */
     .icon-container {
-      width: 110px;
-      height: 110px;
+      width: 80px;
+      height: 80px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -223,18 +223,17 @@
     }
     
     .pixel-emoji {
-      font-size: 4.8rem;
-      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5));
+      font-size: 3.5rem;
+      filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
       animation: float 3.5s ease-in-out infinite;
     }
 
-    /* CSS Planets & Celestial Bodies */
     .planet-body {
-      width: 85px;
-      height: 85px;
+      width: 65px;
+      height: 65px;
       border-radius: 50%;
       position: relative;
-      box-shadow: inset -12px -8px 0 0 rgba(0,0,0,0.5), 0 0 18px rgba(255,255,255,0.2);
+      box-shadow: inset -9px -6px 0 0 rgba(0,0,0,0.5), 0 0 12px rgba(255,255,255,0.2);
     }
     .planet-red { background: radial-gradient(circle at 30% 30%, #f43f5e, #881337); }
     .planet-purple { background: radial-gradient(circle at 30% 30%, #a855f7, #581c87); }
@@ -243,85 +242,85 @@
     
     .planet-ring {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 125px;
-      height: 28px;
-      border: 5px solid rgba(253, 224, 71, 0.75);
+      top: 50%; left: 50%;
+      width: 95px; height: 22px;
+      border: 4px solid rgba(253, 224, 71, 0.75);
       border-radius: 50%;
       transform: translate(-50%, -50%) rotate(-25deg);
       pointer-events: none;
     }
 
     .gas-star {
-      width: 90px;
-      height: 90px;
+      width: 70px; height: 70px;
       background: radial-gradient(circle, #ff7b00 0%, #ff0055 70%, #4a001e 100%);
       border-radius: 50%;
-      box-shadow: 0 0 30px #ff0055;
+      box-shadow: 0 0 20px #ff0055;
       animation: pulse 2s ease-in-out infinite alternate;
     }
 
     .moon-icon {
-      width: 85px;
-      height: 85px;
+      width: 65px; height: 65px;
       background: #e2e8f0;
       border-radius: 50%;
-      box-shadow: inset -12px -8px 0 0 #94a3b8, 0 0 15px rgba(226, 232, 240, 0.5);
+      box-shadow: inset -9px -6px 0 0 #94a3b8, 0 0 12px rgba(226, 232, 240, 0.5);
       position: relative;
       overflow: hidden;
     }
-    .moon-crater-1 { position: absolute; top: 15px; left: 20px; width: 18px; height: 18px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 2px 2px 0 #94a3b8; }
-    .moon-crater-2 { position: absolute; top: 45px; left: 45px; width: 24px; height: 24px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 2px 2px 0 #94a3b8; }
-    .moon-crater-3 { position: absolute; top: 52px; left: 16px; width: 12px; height: 12px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 2px 2px 0 #94a3b8; }
+    .moon-crater-1 { position: absolute; top: 10px; left: 14px; width: 14px; height: 14px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 1px 1px 0 #94a3b8; }
+    .moon-crater-2 { position: absolute; top: 32px; left: 34px; width: 18px; height: 18px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 1px 1px 0 #94a3b8; }
+    .moon-crater-3 { position: absolute; top: 40px; left: 12px; width: 10px; height: 10px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 1px 1px 0 #94a3b8; }
 
     .sun-icon {
-      width: 90px;
-      height: 90px;
+      width: 70px; height: 70px;
       background: radial-gradient(circle, #fde047 0%, #f59e0b 100%);
       border-radius: 50%;
-      box-shadow: 0 0 25px #f59e0b, 0 0 45px rgba(245, 158, 11, 0.4);
+      box-shadow: 0 0 20px #f59e0b, 0 0 35px rgba(245, 158, 11, 0.4);
       animation: pulse 2.5s ease-in-out infinite alternate;
     }
 
+    /* Tech-Mono Font Styling for Mission Labels */
     .mission-label {
-      margin-top: 10px;
+      margin-top: 6px;
       background: rgba(15, 23, 42, 0.85);
-      border: 2px solid var(--class-theme-color);
-      border-radius: 12px;
-      padding: 6px 12px;
+      border: 1.5px solid var(--class-theme-color);
+      border-radius: 8px;
+      padding: 4px 8px;
       text-align: center;
       backdrop-filter: blur(4px);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       transition: all 0.3s ease;
-      min-width: 140px;
+      width: 100%;
+      max-width: 140px;
     }
     
     .mission-title {
-      font-family: var(--font-playful);
-      font-size: 0.95rem;
+      font-family: var(--font-tech); /* 'Share Tech Mono' font applied */
+      font-size: 0.9rem;
+      font-weight: bold;
+      letter-spacing: 0.5px;
       color: var(--class-theme-color);
     }
     .mission-subtitle {
-      font-size: 0.75rem;
+      font-family: var(--font-tech); /* 'Share Tech Mono' font applied */
+      font-size: 0.72rem;
       color: #cbd5e1;
-      font-weight: 700;
     }
     .star-score-badge {
       display: none;
-      margin-top: 4px;
+      margin-top: 2px;
       font-family: var(--font-tech);
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: #000000;
       background: var(--accent-yellow);
-      padding: 1px 8px;
-      border-radius: 10px;
+      padding: 1px 6px;
+      border-radius: 8px;
       font-weight: bold;
     }
+
     .mission-node.completed .mission-label {
       background: var(--accent-green) !important;
       border-color: #ffffff !important;
-      box-shadow: 0 0 15px rgba(34, 197, 94, 0.6) !important;
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.6) !important;
     }
     .mission-node.completed .mission-title,
     .mission-node.completed .mission-subtitle {
@@ -335,7 +334,7 @@
       border: 1px solid var(--accent-yellow);
     }
 
-    /* Modal Login Overlay */
+    /* Modal Login Screen Styles */
     .login-modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -349,61 +348,61 @@
     .login-card {
       background: #0f172a;
       border: 3px solid var(--secondary);
-      border-radius: 24px;
-      padding: 30px;
-      max-width: 650px;
+      border-radius: 20px;
+      padding: 25px;
+      max-width: 600px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 0 35px rgba(14, 165, 233, 0.3);
+      box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
     }
     .login-title {
       font-family: var(--font-playful);
-      font-size: 2rem;
+      font-size: 1.8rem;
       color: #38bdf8;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
     .login-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin-top: 15px;
+      gap: 12px;
+      margin-top: 10px;
     }
     .btn-class-select {
       background: #1e293b;
       border: 2px solid #334155;
-      border-radius: 16px;
-      padding: 12px;
+      border-radius: 12px;
+      padding: 10px;
       color: white;
       font-family: var(--font-playful);
-      font-size: 1.1rem;
+      font-size: 1rem;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       transition: transform 0.2s, border-color 0.2s;
     }
     .btn-class-select:hover {
-      transform: translateY(-3px);
+      transform: translateY(-2px);
       border-color: #38bdf8;
     }
-    .helmet-svg { width: 42px; height: 42px; flex-shrink: 0; }
+    .helmet-svg { width: 36px; height: 36px; flex-shrink: 0; }
     .comp-grid {
       display: grid;
       grid-template-columns: repeat(8, 1fr);
-      gap: 8px;
-      margin-top: 15px;
-      max-height: 280px;
+      gap: 6px;
+      margin-top: 12px;
+      max-height: 250px;
       overflow-y: auto;
-      padding: 5px;
+      padding: 4px;
     }
     .btn-comp {
       background: #1e293b;
       border: 1px solid #334155;
       color: #cbd5e1;
       font-family: var(--font-tech);
-      font-size: 1.1rem;
-      padding: 10px 0;
-      border-radius: 8px;
+      font-size: 1rem;
+      padding: 8px 0;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
     }
@@ -413,19 +412,19 @@
       border: 1px solid #475569;
       color: #94a3b8;
       font-family: var(--font-tech);
-      padding: 6px 12px;
+      padding: 4px 10px;
       border-radius: 6px;
       cursor: pointer;
     }
 
-    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
-    @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.06); } }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+    @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
 
     footer {
       position: relative;
       z-index: 10;
-      margin-top: 20px;
-      font-size: 0.85rem;
+      margin-top: 10px;
+      font-size: 0.8rem;
       color: #64748b;
       display: flex;
       align-items: center;
@@ -440,7 +439,8 @@
   <!-- Side Rank Progress Bar -->
   <aside class="rank-tracker-sidebar">
     <div class="rank-track-line"></div>
-    <div class="astronaut-tracker" id="astroTracker">👨‍🚀</div>
+    <!-- Smiling Astronaut Tracker Icon -->
+    <div class="astronaut-tracker" id="astroTracker">🧑‍🚀</div>
 
     <div class="rank-node rank-diamond" id="rank5Node">
       <div class="rank-badge">◆</div>
@@ -470,9 +470,9 @@
     <div id="studentBadge" class="student-badge-display" style="display: none;"></div>
   </header>
 
-  <!-- Full Scattered 15 Mission Grid -->
+  <!-- S-Curve Waving Mission Path -->
   <main class="mission-map">
-    <!-- Mission 1 -->
+    <!-- Mission 1 (Starts Bottom Left) -->
     <a href="mission1/index.html" class="mission-node" id="mission1Node">
       <div class="icon-container"><div class="pixel-emoji">🚀</div></div>
       <div class="mission-label">
@@ -493,7 +493,7 @@
       </div>
       <div class="mission-label">
         <div class="mission-title" id="m2Title">Mission 2</div>
-        <div class="mission-subtitle">SLA; Moon Landing</div>
+        <div class="mission-subtitle">SLA; Landing</div>
         <div class="star-score-badge" id="m2Stars">⭐ 0 / 18 Stars</div>
       </div>
     </a>
@@ -503,7 +503,7 @@
       <div class="icon-container"><div class="sun-icon"></div></div>
       <div class="mission-label">
         <div class="mission-title" id="m3Title">Mission 3</div>
-        <div class="mission-subtitle">Helio Home Row</div>
+        <div class="mission-subtitle">Helio Home</div>
         <div class="star-score-badge" id="m3Stars">⭐ 0 / 18 Stars</div>
       </div>
     </a>
@@ -626,7 +626,7 @@
       </div>
     </a>
 
-    <!-- Mission 15 -->
+    <!-- Mission 15 (Ends Top Right) -->
     <a href="mission15/index.html" class="mission-node" id="mission15Node">
       <div class="icon-container"><div class="pixel-emoji">💥</div></div>
       <div class="mission-label">
@@ -811,7 +811,6 @@
     }
 
     function updateRankTracker(completedMissions) {
-      // 0-2 missions: Bronze, 3-5: Silver, 6-8: Gold, 9-11: Platinum, 12+: Diamond
       let rankLevel = Math.floor(completedMissions / 3);
       if (rankLevel > 4) rankLevel = 4;
 
