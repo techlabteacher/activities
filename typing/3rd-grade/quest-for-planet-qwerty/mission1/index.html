@@ -185,8 +185,16 @@
       justify-content: center;
       text-align: center;
       letter-spacing: 0px;
-      overflow-x: auto;
-      white-space: pre;
+      overflow-x: hidden;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    #textNodesContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      row-gap: 8px;
     }
 
     .char-node { 
@@ -243,7 +251,7 @@
       background: #030712;
       border: 2px solid var(--class-theme-color);
       border-radius: 14px;
-      height: 440px;
+      height: 520px;
       margin-bottom: 15px;
       display: none;
       flex-direction: column;
@@ -254,7 +262,7 @@
     .video-container { width: 100%; height: 100%; border-radius: 10px; overflow: hidden; }
     .video-container iframe { width: 100%; height: 100%; border: none; }
 
-    .keyboard-wrapper { width: 100%; max-width: 820px; margin: 0 auto; padding: 12px; background: #030712; border-radius: 14px; border: 1px solid #1e293b; }
+    .keyboard-wrapper { width: 100%; max-width: 820px; margin: 0 auto; padding: 12px; background: #030712; border-radius: 14px; border: 1px solid #1e293b; display: none; }
     .homerow-keyboard { display: flex; flex-direction: column; gap: 8px; align-items: center; }
     .kb-row { display: flex; gap: 6px; justify-content: center; width: 100%; }
     .k { width: 54px; height: 54px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-tech); font-weight: bold; font-size: 1.2rem; color: #020617; transition: all 0.1s; }
@@ -300,7 +308,7 @@
       <div class="meter-track"><div id="accuracyMeterFill" class="meter-fill"></div></div>
       <span id="accuracyVal" class="accuracy-text" style="color: var(--neon-green);">100%</span>
     </div>
-    <button class="btn-control" onclick="toggleKeyboardVisibility()">KEYBOARD: <span id="kbToggleText">ON</span></button>
+    <button class="btn-control" onclick="toggleKeyboardVisibility()">KEYBOARD: <span id="kbToggleText">OFF</span></button>
     <button class="btn-control" onclick="resetLesson()">RESET</button>
   </div>
 
@@ -318,7 +326,7 @@
     </div>
   </div>
 
-  <!-- Lesson 5 Enlarged Video Player -->
+  <!-- Lesson 5 Video Player -->
   <div id="videoDisplay" class="video-display-area">
     <div class="video-container">
       <iframe id="videoIframe" src="https://www.youtube.com/embed/eKKutbjIZCQ?si=V7_odpK_k3A1x0Ds" allowfullscreen></iframe>
@@ -362,6 +370,7 @@
 
 <script>
   const ROCKET_GOAL_COUNT = 20;
+  const TEACHER_PASSCODE = "8760";
   const lessons = [
     { title: "Lesson 1: F & J", text: "jjj fff jj ff fjj jjf fjf ffj jff jfj ffjfjjfjjffj", type: "typing" },
     { title: "Lesson 2: D & K", text: "kkk ddd kk dd kkd ddk dkd kdd dkk kdk dddkdkddkdkk", type: "typing" },
@@ -379,7 +388,8 @@
   let totalTyped = 0, correctTyped = 0;
   let errorIndices = [];
   let lessonStars = new Array(lessons.length).fill(0);
-  let showKeyboard = true;
+  let showKeyboard = false;
+  let teacherUnlocked = false;
   let rocketAnim = null;
   let isAnimatingRocket = false;
 
@@ -402,9 +412,33 @@
   }
 
   function toggleKeyboardVisibility() {
-    showKeyboard = !showKeyboard;
-    document.getElementById('kbToggleText').innerText = showKeyboard ? 'ON' : 'OFF';
-    document.getElementById('keyboardWrapper').style.display = (showKeyboard && lessons[currentLessonIdx].type !== 'video') ? 'block' : 'none';
+    if (showKeyboard) {
+      showKeyboard = false;
+    } else {
+      if (teacherUnlocked) {
+        showKeyboard = true;
+      } else {
+        const inputCode = prompt("Enter Teacher Passcode to enable on-screen keyboard:");
+        if (inputCode === TEACHER_PASSCODE) {
+          teacherUnlocked = true;
+          showKeyboard = true;
+        } else if (inputCode !== null) {
+          alert("Incorrect Passcode.");
+          return;
+        } else {
+          return;
+        }
+      }
+    }
+    updateKeyboardDisplayState();
+  }
+
+  function updateKeyboardDisplayState() {
+    const isLesson6 = (currentLessonIdx === 5);
+    const shouldDisplay = (isLesson6 || showKeyboard) && (lessons[currentLessonIdx].type !== 'video');
+    
+    document.getElementById('kbToggleText').innerText = isLesson6 ? 'ON (FORCED)' : (showKeyboard ? 'ON' : 'OFF');
+    document.getElementById('keyboardWrapper').style.display = shouldDisplay ? 'block' : 'none';
   }
 
   function renderLessonButtons() {
@@ -427,8 +461,8 @@
     document.getElementById('standardTextDisplay').style.display = 'none';
     document.getElementById('skyGameDisplay').style.display = 'none';
     document.getElementById('videoDisplay').style.display = 'none';
-    
-    document.getElementById('keyboardWrapper').style.display = (showKeyboard && lesson.type !== 'video') ? 'block' : 'none';
+
+    updateKeyboardDisplayState();
 
     if (lesson.type === "game") {
       targetText = generateRandomSequence(ROCKET_GOAL_COUNT);
@@ -519,7 +553,8 @@
       container.appendChild(span);
     }
 
-    if (showKeyboard) {
+    const isKbVisible = (currentLessonIdx === 5 || showKeyboard);
+    if (isKbVisible) {
       let keyId = currentChar === ' ' ? 'key-space' : `key-${currentChar.toLowerCase()}`;
       const activeKey = document.getElementById(keyId);
       if (activeKey) activeKey.classList.add('active');
@@ -574,7 +609,6 @@
         rocket.classList.add('shake');
         setTimeout(() => rocket.classList.remove('shake'), 200);
       } else if (currentLessonIdx < 3) {
-        // Lessons 1-3: Move forward on mistake
         currentIndex++;
       }
     }
