@@ -30,7 +30,29 @@
 
     .container { width: 100%; max-width: 900px; }
     
-    /* Header & Stats */
+    /* Navigation Bar */
+    .nav-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+    }
+    .nav-btn {
+      background: #334155;
+      color: #94a3b8;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    .nav-btn.active { background: var(--accent-blue); color: #fff; }
+    .nav-btn.level-up-btn { background: #8b5cf6; color: #fff; }
+    .nav-btn.level-up-btn.active { background: #7c3aed; box-shadow: 0 0 10px #8b5cf6; }
+
+    /* Stats Bar */
     .telemetry-bar {
       display: flex;
       justify-content: space-between;
@@ -41,7 +63,7 @@
       border: 1px solid #334155;
     }
 
-    /* Terminal & Text Display */
+    /* Terminal & Displays */
     .terminal {
       background: #020617;
       border: 2px solid #334155;
@@ -52,6 +74,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+      align-items: center;
       overflow: hidden;
     }
 
@@ -66,12 +89,12 @@
       z-index: 2;
     }
 
-    /* Character Highlighting & Equal Space Width */
+    /* Equal Width Highlighting */
     .char-node {
       display: inline-block;
-      min-width: 2.2rem; /* Guarantees spaces match letter width */
+      min-width: 2.2rem;
       text-align: center;
-      white-space: pre;   /* Keeps spaces rendered cleanly */
+      white-space: pre;
       padding: 4px 6px;
       border-radius: 6px;
       transition: background-color 0.15s, color 0.15s;
@@ -105,7 +128,7 @@
       filter: drop-shadow(0 0 8px var(--accent-blue));
     }
 
-    /* On-Screen Keyboard */
+    /* Keyboard Display */
     .keyboard {
       display: flex;
       flex-direction: column;
@@ -129,6 +152,37 @@
     .key-shift { min-width: 80px; background: #475569; }
     .key-shift.active { background: var(--accent-gold); }
 
+    /* Level Up Specific Screen UI */
+    .level-up-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    .level-header {
+      color: var(--accent-gold);
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .lesson-checklist {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin: 10px 0;
+    }
+    .checklist-item {
+      background: #1e293b;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      border: 1px solid #334155;
+    }
+    .checklist-item.done { border-color: var(--accent-green); color: #4ade80; }
+
     /* Modal Overlay */
     .modal {
       display: none;
@@ -145,7 +199,7 @@
       padding: 30px;
       border-radius: 16px;
       text-align: center;
-      max-width: 400px;
+      max-width: 420px;
     }
     .btn {
       background: var(--accent-blue);
@@ -158,24 +212,30 @@
       margin-top: 15px;
     }
 
-    /* Star Visuals */
+    /* Dancing & Spinning Lesson Star Visuals */
     .star-rating { display: flex; justify-content: center; gap: 10px; margin: 15px 0; }
     .star-icon {
       width: 40px; height: 40px; fill: var(--accent-gold);
       filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.8));
-      animation: starPulse 1.5s infinite alternate ease-in-out;
+      animation: starDance 1.2s infinite ease-in-out alternate;
     }
-    @keyframes starPulse {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.15); }
+    .star-icon:nth-child(2) { animation-delay: 0.2s; }
+    .star-icon:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes starDance {
+      0% { transform: translateY(0) rotate(0deg) scale(1); }
+      100% { transform: translateY(-10px) rotate(15deg) scale(1.15); }
     }
   </style>
 </head>
 <body>
 
 <div class="container">
+  <!-- Navigation Header Buttons -->
+  <div class="nav-bar" id="navBar"></div>
+
   <div class="telemetry-bar">
-    <div>LESSON: <span id="lessonTitle">1</span></div>
+    <div>MODE: <span id="lessonTitle">Lesson 1</span></div>
     <div>ACCURACY: <span id="accuracyVal">100%</span></div>
   </div>
 
@@ -183,10 +243,22 @@
     <div class="rocket-container">
       <div id="activeRocket" style="display: none;">🚀</div>
     </div>
-    <div id="textNodesContainer" class="text-display"></div>
+    
+    <!-- Standard & Scrambled Text Output -->
+    <div id="levelUpHeader" class="level-up-container" style="display: none;">
+      <div class="level-header">LEVEL UP TO BRONZE</div>
+      <div class="checklist-item" style="border-color: var(--accent-gold);">
+        ⭐ Total Stars Earned: <span id="totalStarsCount">0</span>
+      </div>
+      <div class="lesson-checklist" id="checklistContainer"></div>
+      <p style="font-size: 0.9rem; color: #94a3b8;">Requirement: Maximum 2 mistakes allowed!</p>
+    </div>
+
+    <div id="textNodesContainer" class="text-display" style="margin-top: 15px;"></div>
   </div>
 
-  <div class="keyboard">
+  <!-- On-Screen Keyboard -->
+  <div class="keyboard" id="keyboardContainer">
     <div class="key-row">
       <div class="key" id="key-a">A</div>
       <div class="key" id="key-s">S</div>
@@ -210,19 +282,24 @@
 
 <script>
   const lessons = [
-    { id: 1, text: "f f j j f j f j" },
-    { id: 2, text: "d d k k d k d k" },
-    { id: 3, text: "a a l l a l a l" },
-    { id: 4, text: "f j d k a l space", isRocket: true },
-    { id: 5, text: "fj dk al fjd kal" },
-    { id: 6, text: "F J D K A L", requiresShift: true }
+    { id: 1, title: "Lesson 1", text: "f f j j f j f j" },
+    { id: 2, title: "Lesson 2", text: "d d k k d k d k" },
+    { id: 3, title: "Lesson 3", text: "a a l l a l a l" },
+    { id: 4, title: "Lesson 4", text: "f j d k a l space", isRocket: true },
+    { id: 5, title: "Lesson 5", text: "fj dk al fjd kal" },
+    { id: 6, title: "Lesson 6", text: "F J D K A L", requiresShift: true }
   ];
 
+  const levelUpBaseText = "jsgl;ahdkf";
+  let isLevelUpMode = false;
   let currentLessonIdx = 0;
   let currentIndex = 0;
   let correctTyped = 0;
+  let errorCount = 0;
   let errorIndices = [];
   let lessonMistakes = {};
+  let completedLessons = new Set();
+  let activeChallengeText = "";
   let rocketTimer = null;
   let rocketTop = 80;
 
@@ -230,45 +307,111 @@
 
   function init() {
     loadMistakeHistory();
-    setupLesson();
+    buildNavButtons();
+    setupLesson(0);
     window.addEventListener('keydown', handleKeyPress);
     window.addEventListener('keyup', handleKeyUp);
   }
 
-  function setupLesson() {
+  function buildNavButtons() {
+    const nav = document.getElementById('navBar');
+    nav.innerHTML = '';
+    
+    lessons.forEach((l, idx) => {
+      const btn = document.createElement('button');
+      btn.className = `nav-btn ${idx === currentLessonIdx && !isLevelUpMode ? 'active' : ''}`;
+      btn.innerText = l.title;
+      btn.onclick = () => { isLevelUpMode = false; setupLesson(idx); };
+      nav.appendChild(btn);
+    });
+
+    // Final Level Up Button
+    const lvlBtn = document.createElement('button');
+    lvlBtn.className = `nav-btn level-up-btn ${isLevelUpMode ? 'active' : ''}`;
+    lvlBtn.innerText = '⚡ Level Up';
+    lvlBtn.onclick = () => startLevelUpChallenge();
+    nav.appendChild(lvlBtn);
+  }
+
+  function scrambleText(text) {
+    return text.split('').sort(() => Math.random() - 0.5).join('');
+  }
+
+  function startLevelUpChallenge() {
+    isLevelUpMode = true;
+    activeChallengeText = scrambleText(levelUpBaseText);
+    buildNavButtons();
+    setupLessonUI();
+  }
+
+  function setupLesson(idx) {
+    isLevelUpMode = false;
+    currentLessonIdx = idx;
+    activeChallengeText = lessons[currentLessonIdx].text;
+    buildNavButtons();
+    setupLessonUI();
+  }
+
+  function setupLessonUI() {
     currentIndex = 0;
     correctTyped = 0;
+    errorCount = 0;
     errorIndices = [];
     clearInterval(rocketTimer);
-    
-    const lesson = lessons[currentLessonIdx];
-    document.getElementById('lessonTitle').innerText = lesson.id;
-    
+
     const rocket = document.getElementById('activeRocket');
-    if (lesson.isRocket) {
-      rocket.style.display = 'block';
-      startRocketAscent();
-    } else {
+    const keyboard = document.getElementById('keyboardContainer');
+    const levelHeader = document.getElementById('levelUpHeader');
+
+    if (isLevelUpMode) {
+      document.getElementById('lessonTitle').innerText = "LEVEL UP: BRONZE";
+      keyboard.style.display = 'none'; // Hide keyboard during Level Up
       rocket.style.display = 'none';
+      levelHeader.style.display = 'flex';
+      renderChecklist();
+    } else {
+      const lesson = lessons[currentLessonIdx];
+      document.getElementById('lessonTitle').innerText = lesson.title;
+      keyboard.style.display = 'flex';
+      levelHeader.style.display = 'none';
+
+      if (lesson.isRocket) {
+        rocket.style.display = 'block';
+        startRocketAscent();
+      } else {
+        rocket.style.display = 'none';
+      }
     }
 
     renderText();
     updateStats();
   }
 
+  function renderChecklist() {
+    const container = document.getElementById('checklistContainer');
+    container.innerHTML = '';
+    
+    lessons.forEach(l => {
+      const isDone = completedLessons.has(l.id);
+      const item = document.createElement('div');
+      item.className = `checklist-item ${isDone ? 'done' : ''}`;
+      item.innerText = `${isDone ? '✓' : '◯'} ${l.title}`;
+      container.appendChild(item);
+    });
+
+    document.getElementById('totalStarsCount').innerText = completedLessons.size * 3;
+  }
+
   function renderText() {
     targetContainer.innerHTML = '';
-    const text = lessons[currentLessonIdx].text;
-    const history = lessonMistakes[currentLessonIdx] || [];
-    const historicalMistakeIndices = history.map(m => m.index);
+    const text = activeChallengeText;
 
     for (let i = 0; i < text.length; i++) {
       const span = document.createElement('span');
       span.className = 'char-node';
       span.innerText = text[i];
 
-      // Highlight spaces or letters cleanly with red boxes for active or historical mistakes
-      if (historicalMistakeIndices.includes(i) || errorIndices.includes(i)) {
+      if (errorIndices.includes(i)) {
         span.classList.add('char-error');
       } else if (i === currentIndex) {
         span.classList.add('char-current');
@@ -281,15 +424,11 @@
   }
 
   function handleKeyPress(e) {
-    const lesson = lessons[currentLessonIdx];
-    const targetText = lesson.text;
-    const expectedChar = targetText[currentIndex];
+    const expectedChar = activeChallengeText[currentIndex];
 
-    // Key visualization
     highlightKey(e.code, true);
 
-    // Lesson 6 Shift key validation logic
-    if (lesson.requiresShift) {
+    if (!isLevelUpMode && lessons[currentLessonIdx].requiresShift) {
       const isCapital = expectedChar === expectedChar.toUpperCase() && expectedChar !== expectedChar.toLowerCase();
       if (isCapital && !e.shiftKey) {
         recordMistake(currentIndex, expectedChar, e.key);
@@ -298,25 +437,24 @@
       }
     }
 
-    const typedChar = e.key === ' ' ? 'space' : e.key;
     const expectedMatch = expectedChar === ' ' ? ' ' : expectedChar;
 
     if (e.key === expectedMatch || (expectedChar === 'space' && e.code === 'Space')) {
       correctTyped++;
       currentIndex++;
-      
-      if (lesson.isRocket) {
+      if (!isLevelUpMode && lessons[currentLessonIdx].isRocket) {
         resetRocketPosition();
       }
     } else if (e.key !== 'Shift') {
-      recordMistake(currentIndex, expectedChar, typedChar);
+      errorCount++;
       errorIndices.push(currentIndex);
+      recordMistake(currentIndex, expectedChar, e.key);
     }
 
     updateStats();
     renderText();
 
-    if (currentIndex >= targetText.length) {
+    if (currentIndex >= activeChallengeText.length) {
       clearInterval(rocketTimer);
       checkCompletion();
     }
@@ -348,20 +486,19 @@
       rocketTop -= 1.2;
       rocket.style.top = `${rocketTop}%`;
 
-      // Color transition as rocket nears top
       if (rocketTop < 35) {
         rocket.style.filter = "drop-shadow(0 0 12px #ef4444) hue-rotate(140deg)";
       }
 
       if (rocketTop <= 5) {
-        // Rocket hit top -> mistake
-        recordMistake(currentIndex, lessons[currentLessonIdx].text[currentIndex], 'TIMEOUT');
+        errorCount++;
         errorIndices.push(currentIndex);
+        recordMistake(currentIndex, activeChallengeText[currentIndex], 'TIMEOUT');
         currentIndex++;
         resetRocketPosition();
         renderText();
 
-        if (currentIndex >= lessons[currentLessonIdx].text.length) {
+        if (currentIndex >= activeChallengeText.length) {
           clearInterval(rocketTimer);
           checkCompletion();
         }
@@ -379,15 +516,9 @@
   }
 
   function recordMistake(idx, expected, typed) {
-    if (!lessonMistakes[currentLessonIdx]) {
-      lessonMistakes[currentLessonIdx] = [];
-    }
-    lessonMistakes[currentLessonIdx].push({
-      index: idx,
-      expected: expected,
-      typed: typed,
-      time: new Date().toLocaleTimeString()
-    });
+    const key = isLevelUpMode ? 'levelup' : currentLessonIdx;
+    if (!lessonMistakes[key]) lessonMistakes[key] = [];
+    lessonMistakes[key].push({ index: idx, expected: expected, typed: typed, time: new Date().toLocaleTimeString() });
     saveMistakeHistory();
   }
 
@@ -407,29 +538,52 @@
   }
 
   function checkCompletion() {
-    const total = correctTyped + errorIndices.length;
-    const accuracy = total > 0 ? Math.round((correctTyped / total) * 100) : 0;
     const modal = document.getElementById('lessonModal');
     const content = document.getElementById('modalContent');
 
-    if (accuracy < 80) {
-      content.innerHTML = `
-        <h2 style="color: var(--accent-red)">⚠️ Try Again</h2>
-        <p style="margin: 15px 0;">You achieved <strong>${accuracy}%</strong> accuracy. You need at least 80% to complete this lesson.</p>
-        <button class="btn" onclick="closeModal(false)">🔄 Retry Lesson</button>
-      `;
+    if (isLevelUpMode) {
+      // Level Up Validation Rule: Max 2 mistakes
+      if (errorCount <= 2) {
+        triggerFireworks(); // Fireworks go off ONLY on Level Up completion
+        content.innerHTML = `
+          <h2 style="color: var(--accent-gold); font-size: 1.8rem;">🏆 LEVEL UP PASSED!</h2>
+          <p style="margin: 15px 0; font-size: 1.1rem;">Congratulations! You’ve reached the <strong>BRONZE</strong> level.</p>
+          <div style="background: #334155; padding: 10px; border-radius: 8px; font-weight: bold; color: #38bdf8;">
+            You are now a CADET!
+          </div>
+          <button class="btn" onclick="closeModal(false)">Awesome!</button>
+        `;
+      } else {
+        content.innerHTML = `
+          <h2 style="color: var(--accent-red)">⚠️ Level Up Failed</h2>
+          <p style="margin: 15px 0;">You made <strong>${errorCount} mistakes</strong>. Maximum allowed is 2.</p>
+          <button class="btn" onclick="startLevelUpChallenge(); closeModal(false);">🔄 Try Again</button>
+        `;
+      }
     } else {
-      triggerFireworks();
-      content.innerHTML = `
-        <h2 style="color: var(--accent-green)">🎉 Lesson Complete!</h2>
-        <div class="star-rating">
-          <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        </div>
-        <p>Accuracy: <strong>${accuracy}%</strong></p>
-        <button class="btn" onclick="closeModal(true)">Next Lesson ➔</button>
-      `;
+      // Standard Lesson Completion Validation (80% Accuracy)
+      const total = correctTyped + errorIndices.length;
+      const accuracy = total > 0 ? Math.round((correctTyped / total) * 100) : 0;
+
+      if (accuracy < 80) {
+        content.innerHTML = `
+          <h2 style="color: var(--accent-red)">⚠️ Try Again</h2>
+          <p style="margin: 15px 0;">You achieved <strong>${accuracy}%</strong> accuracy. You need at least 80% to complete this lesson.</p>
+          <button class="btn" onclick="closeModal(false)">🔄 Retry Lesson</button>
+        `;
+      } else {
+        completedLessons.add(lessons[currentLessonIdx].id);
+        content.innerHTML = `
+          <h2 style="color: var(--accent-green)">🎉 Lesson Complete!</h2>
+          <div class="star-rating">
+            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <p>Accuracy: <strong>${accuracy}%</strong></p>
+          <button class="btn" onclick="closeModal(true)">Next Lesson ➔</button>
+        `;
+      }
     }
     modal.style.display = 'flex';
   }
@@ -437,9 +591,10 @@
   function closeModal(advance) {
     document.getElementById('lessonModal').style.display = 'none';
     if (advance && currentLessonIdx < lessons.length - 1) {
-      currentLessonIdx++;
+      setupLesson(currentLessonIdx + 1);
+    } else {
+      setupLessonUI();
     }
-    setupLesson();
   }
 
   function triggerFireworks() {
@@ -451,19 +606,19 @@
     canvas.height = window.innerHeight;
 
     let particles = [];
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 80; i++) {
       particles.push({
         x: canvas.width / 2, y: canvas.height / 2,
-        vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10,
-        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-        radius: Math.random() * 3 + 2, alpha: 1
+        vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12,
+        color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+        radius: Math.random() * 4 + 2, alpha: 1
       });
     }
 
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach((p, i) => {
-        p.x += p.vx; p.y += p.vy; p.alpha -= 0.02;
+        p.x += p.vx; p.y += p.vy; p.alpha -= 0.015;
         ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(p.alpha, 0); ctx.fill();
         if (p.alpha <= 0) particles.splice(i, 1);
