@@ -4,24 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mission 1: FJDK Lift-off - Flight Console</title>
-  
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=Fredoka+One&family=Open+Sans:wght@600;700&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --bg-dark: #0a0e17;
-      --console-card: #131b2e;
-      --console-border: #1e293b;
       --neon-cyan: #38bdf8;
       --neon-green: #22c55e;
       --neon-amber: #f59e0b;
       --neon-red: #ef4444;
-      --text-main: #f8fafc;
       --font-tech: 'Share Tech Mono', monospace;
       --font-header: 'Orbitron', sans-serif;
       --font-playful: 'Fredoka One', cursive;
 
-      /* Finger Colors */
       --col-pinky: #f48ebe;
       --col-ring: #ffa336;
       --col-middle: #fdf200;
@@ -34,7 +28,7 @@
     
     body { 
       background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #030712 100%);
-      color: var(--text-main); 
+      color: #f8fafc; 
       font-family: 'Open Sans', sans-serif; 
       min-height: 100vh;
       padding: 15px 10px; 
@@ -44,20 +38,17 @@
       justify-content: center;
     }
 
-    /* Main Rocket Console Dashboard */
     .rocket-console { 
       max-width: 980px; 
       width: 100%;
       background: rgba(19, 27, 46, 0.95); 
       border-radius: 24px; 
       padding: 25px; 
-      box-shadow: 0 0 35px rgba(56, 189, 248, 0.25), inset 0 0 15px rgba(255, 255, 255, 0.05); 
+      box-shadow: 0 0 35px rgba(56, 189, 248, 0.25); 
       border: 3px solid var(--neon-cyan); 
       position: relative;
-      backdrop-filter: blur(8px);
     }
 
-    /* Header Bar & Floating Rocket Graphic */
     .console-header {
       display: flex;
       justify-content: space-between;
@@ -69,30 +60,9 @@
       border: 1px solid rgba(56, 189, 248, 0.3);
     }
 
-    .title-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .header-rocket-icon {
-      font-size: 2.2rem;
-      filter: drop-shadow(0 0 8px var(--neon-cyan));
-      animation: rocketFloat 3s ease-in-out infinite;
-    }
-
-    @keyframes rocketFloat {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-6px) rotate(4deg); }
-    }
-
-    .app-title {
-      font-family: var(--font-header);
-      color: var(--neon-cyan);
-      font-size: 1.4rem;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
+    .title-group { display: flex; align-items: center; gap: 12px; }
+    .header-rocket-icon { font-size: 2.2rem; filter: drop-shadow(0 0 8px var(--neon-cyan)); }
+    .app-title { font-family: var(--font-header); color: var(--neon-cyan); font-size: 1.4rem; }
 
     .star-badge {
       background: rgba(245, 158, 11, 0.15);
@@ -105,63 +75,46 @@
       font-weight: bold;
     }
 
-    /* Single-Row Lesson Navigation Bar */
     .lesson-nav-bar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      gap: 6px;
+      gap: 8px;
       margin-bottom: 18px;
       width: 100%;
-      overflow-x: auto;
-      padding-bottom: 4px;
     }
 
     .btn-lesson {
       flex: 1;
-      white-space: nowrap;
       font-family: var(--font-tech);
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 700;
-      height: 42px;
-      padding: 0 8px;
+      height: 44px;
+      padding: 0 6px;
       border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.15);
       background: #0f172a;
       color: #94a3b8;
       cursor: pointer;
-      transition: all 0.2s ease;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 4px;
     }
 
-    .btn-lesson:hover {
+    .btn-lesson.active {
       border-color: var(--neon-cyan);
       color: var(--neon-cyan);
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
     }
 
-    .btn-lesson.active {
-      background: var(--neon-cyan);
-      color: #020617;
-      border-color: var(--neon-cyan);
-      font-weight: bold;
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
-    }
-
+    /* Completed Buttons turn solid green with black text */
     .btn-lesson.completed {
-      border-color: var(--neon-green);
-      color: var(--neon-green);
+      background: var(--neon-green) !important;
+      color: #000000 !important;
+      border-color: var(--neon-green) !important;
+      font-weight: 900;
     }
 
-    .btn-lesson.completed.active {
-      background: var(--neon-green);
-      color: #020617;
-    }
-
-    /* Dashboard Telemetry & Accuracy Meter Bar */
     .telemetry-bar {
       display: flex;
       justify-content: space-between;
@@ -171,69 +124,28 @@
       border-radius: 12px;
       margin-bottom: 18px;
       border: 1px solid rgba(255, 255, 255, 0.08);
-      gap: 15px;
-    }
-
-    .accuracy-meter-container {
-      display: flex;
-      align-items: center;
       gap: 12px;
-      flex: 1;
-      max-width: 400px;
     }
 
-    .meter-label {
+    .accuracy-meter-container { display: flex; align-items: center; gap: 12px; flex: 1; }
+    .meter-label { font-family: var(--font-tech); font-size: 0.85rem; color: #cbd5e1; }
+    .meter-track { flex: 1; height: 14px; background: #090d16; border-radius: 10px; overflow: hidden; border: 1px solid #334155; }
+    .meter-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--neon-red), var(--neon-amber), var(--neon-green)); transition: width 0.3s; }
+    .accuracy-text { font-family: var(--font-tech); font-weight: bold; font-size: 1rem; }
+
+    .btn-control {
       font-family: var(--font-tech);
-      font-size: 0.85rem;
-      color: #cbd5e1;
-    }
-
-    .meter-track {
-      flex: 1;
-      height: 14px;
-      background: #090d16;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid #334155;
-      position: relative;
-    }
-
-    .meter-fill {
-      height: 100%;
-      width: 100%;
-      background: linear-gradient(90deg, var(--neon-red) 0%, var(--neon-amber) 75%, var(--neon-green) 100%);
-      transition: width 0.3s ease;
-      border-radius: 10px;
-    }
-
-    .accuracy-text {
-      font-family: var(--font-tech);
-      font-weight: bold;
-      font-size: 1rem;
-      min-width: 50px;
-      text-align: right;
-    }
-
-    .btn-restart { 
-      font-family: var(--font-tech);
-      background: transparent; 
-      color: #94a3b8; 
-      border: 1px solid #475569; 
-      height: 36px; 
-      padding: 0 14px; 
+      background: #1e293b;
+      color: #38bdf8;
+      border: 1px solid #38bdf8;
+      height: 36px;
+      padding: 0 12px;
       border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: bold;
       cursor: pointer;
-      transition: all 0.2s;
     }
 
-    .btn-restart:hover {
-      border-color: var(--neon-cyan);
-      color: var(--neon-cyan);
-    }
-
-    /* Terminal Typing Display Area */
     .terminal-display {
       background: #030712;
       border: 2px solid #1e293b;
@@ -246,295 +158,171 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      line-height: 1.5;
       text-align: center;
-      width: 100%;
-      position: relative;
-      box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
-      white-space: pre-wrap;
     }
 
     .char-node { display: inline-block; padding: 0 2px; }
     .char-done { color: #475569; }
-    .char-current { background-color: var(--neon-cyan); color: #020617; border-radius: 4px; box-shadow: 0 0 10px var(--neon-cyan); }
-    .char-error { background-color: var(--neon-red) !important; color: white !important; border-radius: 4px; }
-    .char-upcoming { color: #f8fafc; }
+    .char-current { background-color: var(--neon-cyan); color: #020617; border-radius: 4px; }
+    .char-error { background-color: var(--neon-red) !important; color: white !important; }
 
-    /* Lesson 1 Interactive Hand Guide Overlay */
+    /* Lesson 1 Hands Overlay */
     .hands-guide-panel {
       background: #090d16;
       border: 1px solid #1e293b;
       border-radius: 12px;
-      padding: 12px;
+      padding: 10px;
       margin-bottom: 15px;
       display: none;
       flex-direction: column;
       align-items: center;
     }
 
-    .hands-guide-title {
-      font-family: var(--font-tech);
-      font-size: 0.85rem;
-      color: var(--neon-cyan);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
+    .finger-indicator { transition: all 0.2s; opacity: 0.35; }
+    .finger-indicator.active-finger { opacity: 1; filter: drop-shadow(0 0 8px currentColor); }
 
-    .hands-svg-container {
-      width: 100%;
-      max-width: 480px;
-      height: 110px;
-    }
-
-    .finger-indicator {
-      transition: all 0.2s ease;
-      opacity: 0.35;
-    }
-
-    .finger-indicator.active-finger {
-      opacity: 1;
-      filter: drop-shadow(0 0 8px currentColor);
-      animation: pulseFinger 0.8s infinite alternate;
-    }
-
-    @keyframes pulseFinger {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.15); }
-    }
-
-    /* Lesson 4 Rocket Game Canvas Display */
+    /* Lesson 4 Game Display */
     .sky-game-area {
       background: radial-gradient(circle at 50% 100%, #1e293b 0%, #030712 100%);
       border: 2px solid var(--neon-cyan);
       border-radius: 14px;
-      height: 340px;
+      height: 360px;
       margin-bottom: 15px;
       position: relative;
       overflow: hidden;
     }
-    .star-bg { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; }
-    .rocket-counter-center {
-      position: absolute;
-      top: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.85);
-      padding: 6px 20px;
-      border-radius: 20px;
-      color: #ffffff;
-      font-family: var(--font-tech);
-      font-size: 0.95rem;
-      border: 1px solid var(--neon-cyan);
-      z-index: 10;
-    }
-    .target-rocket {
-      width: 60px; height: 95px;
-      position: absolute; bottom: 0px; left: 50%;
-      transform: translateX(-50%);
-      display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-      z-index: 5;
-    }
-    .rocket-structure { position: relative; width: 42px; height: 75px; display: flex; align-items: center; justify-content: center; }
-    .rocket-nose { position: absolute; top: 0; width: 22px; height: 22px; background: #cbd5e1; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); z-index: 3; }
-    .rocket-body-main { position: absolute; top: 18px; width: 26px; height: 48px; background: var(--neon-green); border-radius: 12px 12px 4px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; }
-    .rocket-porthole { width: 12px; height: 12px; background: #0ea5e9; border: 2px solid #ffffff; border-radius: 50%; margin-bottom: 2px; }
-    .rocket-fin-left, .rocket-fin-right { position: absolute; bottom: 8px; width: 12px; height: 24px; background: var(--neon-green); z-index: 1; }
-    .rocket-fin-left { left: 1px; border-radius: 10px 0 0 2px; transform: skewY(-20deg); }
-    .rocket-fin-right { right: 1px; border-radius: 0 10px 2px 0; transform: skewY(20deg); }
-    .rocket-letter { font-family: var(--font-playful); font-size: 1.15rem; color: #1e293b; text-transform: uppercase; z-index: 4; }
-    .rocket-thruster-flame { width: 14px; height: 18px; background: linear-gradient(180deg, var(--neon-amber) 0%, var(--neon-red) 100%); border-radius: 0 0 8px 8px; margin-top: -2px; animation: flamePulse 0.08s infinite alternate; }
-    @keyframes flamePulse { 0% { transform: scaleY(1); } 100% { transform: scaleY(1.4); } }
 
-    /* Lesson 5 Video Area */
+    .rocket-counter-center {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.85); padding: 6px 20px; border-radius: 20px;
+      font-family: var(--font-tech); border: 1px solid var(--neon-cyan); z-index: 10;
+    }
+
+    .target-rocket {
+      width: 50px; height: 80px;
+      position: absolute; bottom: 20px;
+      display: flex; flex-direction: column; align-items: center;
+      transition: bottom 0.05s linear;
+    }
+
+    .rocket-structure { position: relative; width: 36px; height: 60px; display: flex; align-items: center; justify-content: center; }
+    .rocket-nose { position: absolute; top: 0; width: 18px; height: 18px; background: #cbd5e1; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+    .rocket-body-main { position: absolute; top: 14px; width: 22px; height: 40px; background: var(--neon-green); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .rocket-letter { font-family: var(--font-playful); font-size: 1.1rem; color: #1e293b; }
+    .rocket-thruster-flame { width: 10px; height: 14px; background: linear-gradient(180deg, var(--neon-amber), var(--neon-red)); border-radius: 0 0 6px 6px; }
+
+    /* Enlarged Video Player Area */
     .video-display-area {
       background: #030712;
       border: 2px solid var(--neon-cyan);
       border-radius: 14px;
-      height: 340px;
+      height: 440px;
       margin-bottom: 15px;
-      position: relative;
-      display: flex;
+      display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 10px;
+      padding: 15px;
     }
-    .video-container { width: 100%; height: 100%; max-width: 580px; max-height: 270px; border-radius: 10px; overflow: hidden; }
+    .video-container { width: 100%; height: 100%; border-radius: 10px; overflow: hidden; }
     .video-container iframe { width: 100%; height: 100%; border: none; }
 
-    /* Sci-Fi On-Screen Keyboard */
-    .keyboard-wrapper { 
-      width: 100%; 
-      max-width: 820px; 
-      margin: 0 auto; 
-      padding: 16px; 
-      background: #030712; 
-      border-radius: 14px; 
-      border: 1px solid #1e293b;
-    }
-    .homerow-keyboard { display: flex; flex-direction: column; gap: 10px; align-items: center; }
-    .kb-row { display: flex; gap: 8px; justify-content: center; }
-    .k { 
-      width: 58px; height: 58px; 
-      border-radius: 8px; 
-      display: flex; align-items: center; justify-content: center; 
-      font-family: var(--font-tech);
-      font-weight: bold; font-size: 1.3rem; 
-      color: #020617; 
-      position: relative; 
-      box-shadow: 0 4px 0 rgba(0,0,0,0.5);
-    }
-    .k-home-bump::after { content: ''; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 14px; height: 3px; background-color: rgba(2, 6, 23, 0.6); border-radius: 2px; }
-    
-    .col-a { background-color: var(--col-pinky); }
-    .col-s { background-color: var(--col-ring); }
-    .col-d { background-color: var(--col-middle); }
-    .col-f { background-color: var(--col-index-l); }
-    .col-g { background-color: #88ebc2; }
-    .col-h { background-color: #a2d7ff; }
-    .col-j { background-color: var(--col-index-r); }
-    .col-k { background-color: var(--col-middle); }
-    .col-l { background-color: var(--col-ring); }
-    .col-semi { background-color: var(--col-pinky); }
-    .k-space { width: 320px; background-color: var(--col-thumb); }
-
-    .k.active { 
-      transform: translateY(2px); 
-      box-shadow: 0 0 0 4px var(--neon-cyan), 0 0 15px var(--neon-cyan); 
-      filter: brightness(1.25); 
-    }
+    /* Keyboard Layout */
+    .keyboard-wrapper { width: 100%; max-width: 820px; margin: 0 auto; padding: 12px; background: #030712; border-radius: 14px; border: 1px solid #1e293b; }
+    .homerow-keyboard { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+    .kb-row { display: flex; gap: 6px; justify-content: center; width: 100%; }
+    .k { width: 54px; height: 54px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-tech); font-weight: bold; font-size: 1.2rem; color: #020617; }
+    .k-shift { width: 90px; background: #64748b; color: white; }
+    .col-a { background: var(--col-pinky); } .col-s { background: var(--col-ring); } .col-d { background: var(--col-middle); } .col-f { background: var(--col-index-l); }
+    .col-j { background: var(--col-index-r); } .col-k { background: var(--col-middle); } .col-l { background: var(--col-ring); } .col-semi { background: var(--col-pinky); }
+    .k-space { width: 280px; background: var(--col-thumb); }
+    .k.active { transform: translateY(2px); box-shadow: 0 0 12px var(--neon-cyan); filter: brightness(1.3); }
 
     /* Modal Overlay */
-    .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(3, 7, 18, 0.9); border-radius: 24px; display: flex; justify-content: center; align-items: center; z-index: 30; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(3, 7, 18, 0.92); border-radius: 24px; display: flex; justify-content: center; align-items: center; z-index: 30; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     .modal-card { background: #0f172a; border: 2px solid var(--neon-cyan); border-radius: 20px; padding: 30px; max-width: 440px; width: 90%; text-align: center; }
-    .modal-title { font-family: var(--font-header); color: var(--neon-cyan); font-size: 1.6rem; margin-bottom: 10px; }
-    .stars-container { font-size: 2.5rem; margin: 15px 0; display: flex; justify-content: center; gap: 10px; }
-    .star { color: #334155; }
+    .modal-title { font-family: var(--font-header); color: var(--neon-cyan); font-size: 1.5rem; margin-bottom: 10px; }
+    .stars-container { font-size: 2.2rem; margin: 10px 0; color: #334155; }
     .star.filled { color: var(--neon-amber); }
-    .btn-primary { font-family: var(--font-tech); background: var(--neon-cyan); color: #020617; padding: 10px 24px; border-radius: 8px; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; }
+    .btn-primary { font-family: var(--font-tech); background: var(--neon-cyan); color: #020617; padding: 10px 24px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
   </style>
 </head>
 <body onload="init()">
 
 <div class="rocket-console">
-  <!-- Top Header Bar -->
   <div class="console-header">
     <div class="title-group">
       <span class="header-rocket-icon">🚀</span>
       <span class="app-title">Mission 1: FJDK Lift-off</span>
     </div>
-    <div class="star-badge">
-      ⭐ STARS: <span id="totalStarsCount">0</span>
-    </div>
+    <div class="star-badge">⭐ STARS: <span id="totalStarsCount">0</span></div>
   </div>
 
-  <!-- Single-Row Lesson Navigation Bar -->
   <div class="lesson-nav-bar" id="lessonNavBar"></div>
 
-  <!-- Telemetry Bar & Accuracy Meter -->
   <div class="telemetry-bar">
     <div class="accuracy-meter-container">
       <span class="meter-label">ACCURACY:</span>
-      <div class="meter-track">
-        <div id="accuracyMeterFill" class="meter-fill"></div>
-      </div>
+      <div class="meter-track"><div id="accuracyMeterFill" class="meter-fill"></div></div>
       <span id="accuracyVal" class="accuracy-text" style="color: var(--neon-green);">100%</span>
     </div>
-    <button class="btn-restart" onclick="resetLesson()">RESET LESSON</button>
+    <button class="btn-control" onclick="toggleKeyboardVisibility()">KEYBOARD: <span id="kbToggleText">ON</span></button>
+    <button class="btn-control" onclick="resetLesson()">RESET</button>
   </div>
 
-  <!-- Terminal Typing Display Area -->
-  <div id="standardTextDisplay" class="terminal-display">
-    <div id="textNodesContainer"></div>
-  </div>
+  <div id="standardTextDisplay" class="terminal-display"><div id="textNodesContainer"></div></div>
 
-  <!-- Lesson 1 Interactive Hand Guide Overlay -->
+  <!-- Lesson 1 Finger Guide -->
   <div id="handsGuidePanel" class="hands-guide-panel">
-    <div class="hands-guide-title">Home Row Finger Positioning Guide</div>
     <div class="hands-svg-container">
-      <svg viewBox="0 0 500 110" width="100%" height="100%">
-        <!-- Left Hand Fingers -->
-        <g id="finger-a" class="finger-indicator" style="color: var(--col-pinky);">
-          <circle cx="60" cy="55" r="18" fill="currentColor" />
-          <text x="60" y="60" text-anchor="middle" fill="#020617" font-weight="bold" font-family="Share Tech Mono">A</text>
-        </g>
-        <g id="finger-s" class="finger-indicator" style="color: var(--col-ring);">
-          <circle cx="105" cy="40" r="18" fill="currentColor" />
-          <text x="105" y="45" text-anchor="middle" fill="#020617" font-weight="bold" font-family="Share Tech Mono">S</text>
-        </g>
-        <g id="finger-d" class="finger-indicator" style="color: var(--col-middle);">
-          <circle cx="150" cy="35" r="18" fill="currentColor" />
-          <text x="150" y="40" text-anchor="middle" fill="#020617" font-weight="bold" font-family="Share Tech Mono">D</text>
-        </g>
-        <g id="finger-f" class="finger-indicator" style="color: var(--col-index-l);">
-          <circle cx="195" cy="45" r="18" fill="currentColor" />
-          <text x="195" y="50" text-anchor="middle" fill="#020617" font-weight="bold" font-family="Share Tech Mono">F</text>
-        </g>
-
-        <!-- Right Hand Fingers -->
-        <g id="finger-j" class="finger-indicator" style="color: var(--col-index-r);">
-          <circle cx="305" cy="45" r="18" fill="currentColor" />
-          <text x="305" y="50" text-anchor="middle" fill="#020617" font-weight="bold" font-family="Share Tech Mono">J</text>
-        </g>
-        <g id="finger-k" class="finger-indicator" style="color: var(--col-middle);">
-          <circle cx="350" cy="35" r="18" fill="currentColor" />
-          <text x="350" y="40" text-anchor="middle" fill="#020617" font-weight="bold" font-family="Share Tech Mono">K</text>
-        </g>
-        <g id="finger-l" class="finger-indicator" style="color: var(--col-ring);">
-          <circle cx="395" cy="40" r="18" fill="currentColor" />
-          <text x="395" y="45" text-anchor="middle" fill="#020617" font-weight="bold" font-family="Share Tech Mono">L</text>
-        </g>
-        <g id="finger-semi" class="finger-indicator" style="color: var(--col-pinky);">
-          <circle cx="440" cy="55" r="18" fill="currentColor" />
-          <text x="440" y="60" text-anchor="middle" fill="#020617" font-weight="bold" font-family="Share Tech Mono">;</text>
-        </g>
+      <svg viewBox="0 0 500 80" width="100%" height="80">
+        <g id="finger-a" class="finger-indicator" style="color: var(--col-pinky);"><circle cx="60" cy="40" r="16" fill="currentColor"/><text x="60" y="45" text-anchor="middle" fill="#020617" font-weight="bold">A</text></g>
+        <g id="finger-s" class="finger-indicator" style="color: var(--col-ring);"><circle cx="105" cy="30" r="16" fill="currentColor"/><text x="105" y="35" text-anchor="middle" fill="#020617" font-weight="bold">S</text></g>
+        <g id="finger-d" class="finger-indicator" style="color: var(--col-middle);"><circle cx="150" cy="25" r="16" fill="currentColor"/><text x="150" y="30" text-anchor="middle" fill="#020617" font-weight="bold">D</text></g>
+        <g id="finger-f" class="finger-indicator" style="color: var(--col-index-l);"><circle cx="195" cy="30" r="16" fill="currentColor"/><text x="195" y="35" text-anchor="middle" fill="#020617" font-weight="bold">F</text></g>
+        <g id="finger-j" class="finger-indicator" style="color: var(--col-index-r);"><circle cx="305" cy="30" r="16" fill="currentColor"/><text x="305" y="35" text-anchor="middle" fill="#020617" font-weight="bold">J</text></g>
+        <g id="finger-k" class="finger-indicator" style="color: var(--col-middle);"><circle cx="350" cy="25" r="16" fill="currentColor"/><text x="350" y="30" text-anchor="middle" fill="#020617" font-weight="bold">K</text></g>
+        <g id="finger-l" class="finger-indicator" style="color: var(--col-ring);"><circle cx="395" cy="30" r="16" fill="currentColor"/><text x="395" y="35" text-anchor="middle" fill="#020617" font-weight="bold">L</text></g>
+        <g id="finger-semi" class="finger-indicator" style="color: var(--col-pinky);"><circle cx="440" cy="40" r="16" fill="currentColor"/><text x="440" y="45" text-anchor="middle" fill="#020617" font-weight="bold">;</text></g>
       </svg>
     </div>
   </div>
 
-  <!-- Lesson 4 Game Canvas -->
+  <!-- Lesson 4 Rocket Game -->
   <div id="skyGameDisplay" class="sky-game-area" style="display: none;">
-    <canvas id="starCanvas" class="star-bg"></canvas>
     <div class="rocket-counter-center">Rockets Destroyed: <span id="launchedCount">0</span> / <span id="targetGoal">20</span></div>
-    
     <div id="targetRocket" class="target-rocket">
       <div class="rocket-structure">
         <div class="rocket-nose"></div>
-        <div id="rocketFinLeft" class="rocket-fin-left"></div>
-        <div id="rocketFinRight" class="rocket-fin-right"></div>
-        <div id="rocketBody" class="rocket-body-main">
-          <div class="rocket-porthole"></div>
-          <span id="rocketLetter" class="rocket-letter">F</span>
-        </div>
+        <div class="rocket-body-main"><span id="rocketLetter" class="rocket-letter">F</span></div>
       </div>
       <div class="rocket-thruster-flame"></div>
     </div>
   </div>
 
-  <!-- Lesson 5 Video Area -->
-  <div id="videoDisplay" class="video-display-area" style="display: none;">
+  <!-- Lesson 5 Enlarged Video Player -->
+  <div id="videoDisplay" class="video-display-area">
     <div class="video-container">
       <iframe id="videoIframe" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
     </div>
     <button class="btn-primary" style="margin-top: 10px;" onclick="completeVideoLesson()">Finish Video & Continue ➔</button>
   </div>
 
-  <!-- On-Screen Keyboard -->
+  <!-- Keyboard -->
   <div class="keyboard-wrapper" id="keyboardWrapper">
     <div class="homerow-keyboard">
       <div class="kb-row">
+        <div class="k k-shift" id="key-shiftleft">SHIFT</div>
         <div class="k col-a" id="key-a">A</div>
         <div class="k col-s" id="key-s">S</div>
         <div class="k col-d" id="key-d">D</div>
-        <div class="k col-f k-home-bump" id="key-f">F</div>
-        <div class="k col-g" id="key-g">G</div>
-        <div class="k col-h" id="key-h">H</div>
-        <div class="k col-j k-home-bump" id="key-j">J</div>
+        <div class="k col-f" id="key-f">F</div>
+        <div class="k col-j" id="key-j">J</div>
         <div class="k col-k" id="key-k">K</div>
         <div class="k col-l" id="key-l">L</div>
         <div class="k col-semi" id="key-;">;</div>
+        <div class="k k-shift" id="key-shiftright">SHIFT</div>
       </div>
       <div id="spacebarRow" class="kb-row">
         <div class="k k-space" id="key-space"></div>
@@ -542,14 +330,12 @@
     </div>
   </div>
 
-  <!-- Modal Overlay -->
+  <!-- Modal -->
   <div id="completionModal" class="modal-overlay">
     <div class="modal-card">
       <h2 id="modalTitle" class="modal-title">MISSION ACCOMPLISHED</h2>
       <div class="stars-container">
-        <span class="star" id="star1">★</span>
-        <span class="star" id="star2">★</span>
-        <span class="star" id="star3">★</span>
+        <span class="star" id="star1">★</span><span class="star" id="star2">★</span><span class="star" id="star3">★</span>
       </div>
       <p style="margin-bottom: 15px; color: #cbd5e1;">Accuracy: <strong id="finalAccuracy">100%</strong></p>
       <button id="nextLessonBtn" class="btn-primary" onclick="handleModalAction()">Next Lesson ➔</button>
@@ -558,10 +344,7 @@
 </div>
 
 <script>
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/1bMNraHhxcQiiwaHicIMRH6aHh69TEb-ucmwQWuVT8CNOeTISkuBOqnl6/exec";
   const ROCKET_GOAL_COUNT = 20;
-
-  // Updated Lesson Configuration
   const lessons = [
     { title: "Lesson 1: F & J", text: "jjj fff jj ff fjj jjf fjf ffj jff jfj ffjfjjfjjffj", type: "typing" },
     { title: "Lesson 2: D & K", text: "kkk ddd kk dd kkd ddk dkd kdd dkk kdk dddkdkddkdkk", type: "typing" },
@@ -571,30 +354,29 @@
     { title: "Lesson 6: Shift", text: "jJ kK J K fF dD D F jfdk J F D K", type: "typing" }
   ];
 
+  // Horizontal screen percentage alignments for keys [A, S, D, F, J, K, L, ;]
+  const keyXPositions = { 'a': 22, 's': 30, 'd': 38, 'f': 46, 'j': 54, 'k': 62, 'l': 70, ';': 78 };
+
   let currentLessonIdx = 0;
   let targetText = "";
   let currentIndex = 0;
-  let totalTyped = 0;
-  let correctTyped = 0;
+  let totalTyped = 0, correctTyped = 0;
   let errorIndices = [];
   let lessonStars = new Array(lessons.length).fill(0);
-  let lastPassedAccuracy = false;
-  let rocketAnimFrame = null;
-  let starAnimFrame = null;
+  let showKeyboard = true;
+  let rocketAnim = null;
+  let rocketBottom = 20;
 
   function init() {
     renderLessonButtons();
-    window.addEventListener('keydown', function(e) {
-      if (e.key === ' ') e.preventDefault();
-      if (e.key === 'Enter') {
-        const modal = document.getElementById('completionModal');
-        if (modal.classList.contains('active')) { handleModalAction(); return; }
-      }
-      if (lessons[currentLessonIdx].type === 'video') return;
-      if (e.key.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
-      handleTyping(e.key);
-    });
+    window.addEventListener('keydown', handleKeyPress);
     loadLesson(0);
+  }
+
+  function toggleKeyboardVisibility() {
+    showKeyboard = !showKeyboard;
+    document.getElementById('kbToggleText').innerText = showKeyboard ? 'ON' : 'OFF';
+    document.getElementById('keyboardWrapper').style.display = (showKeyboard && lessons[currentLessonIdx].type !== 'video' && lessons[currentLessonIdx].type !== 'game') ? 'block' : 'none';
   }
 
   function renderLessonButtons() {
@@ -603,7 +385,7 @@
     lessons.forEach((l, idx) => {
       const btn = document.createElement('button');
       btn.className = `btn-lesson ${idx === currentLessonIdx ? 'active' : ''} ${lessonStars[idx] > 0 ? 'completed' : ''}`;
-      btn.innerHTML = `${lessonStars[idx] > 0 ? '✓ ' : ''}${l.title}`;
+      btn.innerHTML = `${lessonStars[idx] > 0 ? '✔ ' : ''}${l.title}`;
       btn.onclick = () => loadLesson(idx);
       navBar.appendChild(btn);
     });
@@ -618,51 +400,70 @@
     document.getElementById('skyGameDisplay').style.display = 'none';
     document.getElementById('videoDisplay').style.display = 'none';
     document.getElementById('handsGuidePanel').style.display = 'none';
-    document.getElementById('keyboardWrapper').style.display = 'block';
+    
+    document.getElementById('keyboardWrapper').style.display = (showKeyboard && lesson.type !== 'video' && lesson.type !== 'game') ? 'block' : 'none';
 
     if (lesson.type === "game") {
       targetText = generateRandomSequence(ROCKET_GOAL_COUNT);
       document.getElementById('skyGameDisplay').style.display = 'block';
-      document.getElementById('spacebarRow').style.display = 'none';
     } else if (lesson.type === "video") {
       document.getElementById('videoDisplay').style.display = 'flex';
-      document.getElementById('keyboardWrapper').style.display = 'none';
     } else {
       targetText = lesson.text;
       document.getElementById('standardTextDisplay').style.display = 'flex';
-      document.getElementById('spacebarRow').style.display = 'flex';
-      
-      // Display Hand Guide Overlay exclusively on Lesson 1
-      if (currentLessonIdx === 0) {
-        document.getElementById('handsGuidePanel').style.display = 'flex';
-      }
+      if (currentLessonIdx === 0) document.getElementById('handsGuidePanel').style.display = 'flex';
     }
     resetLesson();
   }
 
   function resetLesson() {
-    cancelAnimationFrame(rocketAnimFrame);
-    currentIndex = 0;
-    totalTyped = 0;
-    correctTyped = 0;
-    errorIndices = [];
+    clearInterval(rocketAnim);
+    currentIndex = 0; totalTyped = 0; correctTyped = 0; errorIndices = [];
     updateAccuracyMeter(100);
     document.getElementById('completionModal').classList.remove('active');
     
-    if (lessons[currentLessonIdx].type !== "video") {
+    if (lessons[currentLessonIdx].type === 'game') {
+      document.getElementById('launchedCount').innerText = 0;
+      positionGameRocket();
+    } else if (lessons[currentLessonIdx].type !== 'video') {
       updateTargetAndKeyboard();
     }
   }
 
+  function positionGameRocket() {
+    const rocket = document.getElementById('targetRocket');
+    const char = targetText[currentIndex].toLowerCase();
+    const xPos = keyXPositions[char] || 50;
+    rocket.style.left = `${xPos}%`;
+    rocket.style.bottom = '20px';
+    document.getElementById('rocketLetter').innerText = targetText[currentIndex].toUpperCase();
+  }
+
+  function launchRocketAnimation() {
+    const rocket = document.getElementById('targetRocket');
+    let pos = 20;
+    clearInterval(rocketAnim);
+    rocketAnim = setInterval(() => {
+      pos += 18;
+      rocket.style.bottom = `${pos}px`;
+      if (pos > 360) {
+        clearInterval(rocketAnim);
+        currentIndex++;
+        document.getElementById('launchedCount').innerText = currentIndex;
+        if (currentIndex >= targetText.length) {
+          showCompletionModal(Math.round((correctTyped / totalTyped) * 100));
+        } else {
+          positionGameRocket();
+        }
+      }
+    }, 20);
+  }
+
   function updateAccuracyMeter(acc) {
-    const fill = document.getElementById('accuracyMeterFill');
+    document.getElementById('accuracyMeterFill').style.width = `${acc}%`;
     const txt = document.getElementById('accuracyVal');
-    fill.style.width = `${acc}%`;
     txt.innerText = `${acc}%`;
-    
-    if (acc >= 90) txt.style.color = 'var(--neon-green)';
-    else if (acc >= 80) txt.style.color = 'var(--neon-amber)';
-    else txt.style.color = 'var(--neon-red)';
+    txt.style.color = acc >= 90 ? 'var(--neon-green)' : (acc >= 80 ? 'var(--neon-amber)' : 'var(--neon-red)');
   }
 
   function updateTargetAndKeyboard() {
@@ -672,26 +473,29 @@
     if (currentIndex >= targetText.length) return;
     const currentChar = targetText[currentIndex];
 
-    if (lessons[currentLessonIdx].type !== "game") {
-      const container = document.getElementById('textNodesContainer');
-      container.innerHTML = '';
-      for (let i = 0; i < targetText.length; i++) {
-        const span = document.createElement('span');
-        span.className = 'char-node';
-        span.innerText = targetText[i];
-        if (i < currentIndex) span.classList.add(errorIndices.includes(i) ? 'char-error' : 'char-done');
-        else if (i === currentIndex) span.classList.add('char-current');
-        else span.classList.add('char-upcoming');
-        container.appendChild(span);
+    const container = document.getElementById('textNodesContainer');
+    container.innerHTML = '';
+    for (let i = 0; i < targetText.length; i++) {
+      const span = document.createElement('span');
+      span.className = 'char-node';
+      span.innerText = targetText[i];
+      if (i < currentIndex) span.classList.add(errorIndices.includes(i) ? 'char-error' : 'char-done');
+      else if (i === currentIndex) span.classList.add('char-current');
+      container.appendChild(span);
+    }
+
+    if (showKeyboard) {
+      let keyId = currentChar === ' ' ? 'key-space' : `key-${currentChar.toLowerCase()}`;
+      const activeKey = document.getElementById(keyId);
+      if (activeKey) activeKey.classList.add('active');
+
+      if (currentChar === currentChar.toUpperCase() && currentChar !== ' ' && currentChar !== ';') {
+        const isRightHand = ['j', 'k', 'l', ';'].includes(currentChar.toLowerCase());
+        const shiftKey = isRightHand ? document.getElementById('key-shiftleft') : document.getElementById('key-shiftright');
+        if (shiftKey) shiftKey.classList.add('active');
       }
     }
 
-    // Highlight key on keyboard
-    let keyId = currentChar === ' ' ? 'key-space' : `key-${currentChar.toLowerCase()}`;
-    const activeKey = document.getElementById(keyId);
-    if (activeKey) activeKey.classList.add('active');
-
-    // Highlight finger guide ring on Lesson 1
     if (currentLessonIdx === 0) {
       let fingerId = `finger-${currentChar.toLowerCase()}`;
       if (currentChar === ';') fingerId = 'finger-semi';
@@ -700,31 +504,45 @@
     }
   }
 
-  function handleTyping(key) {
-    if (currentIndex >= targetText.length) return;
-    const expectedChar = targetText[currentIndex];
-    totalTyped++;
+  function handleKeyPress(e) {
+    if (e.key === ' ') e.preventDefault();
+    if (e.key === 'Enter' && document.getElementById('completionModal').classList.contains('active')) {
+      handleModalAction(); return;
+    }
+    if (lessons[currentLessonIdx].type === 'video' || e.key.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
 
-    if (key === expectedChar) {
+    const expectedChar = targetText[currentIndex];
+    let isValidShift = true;
+
+    // Strict Opposite Shift Enforcement for Lesson 6
+    if (expectedChar === expectedChar.toUpperCase() && expectedChar !== ' ' && expectedChar !== ';') {
+      const isRightHand = ['j', 'k', 'l', ';'].includes(expectedChar.toLowerCase());
+      if (isRightHand && !e.getModifierState('ShiftLeft')) isValidShift = false;
+      if (!isRightHand && !e.getModifierState('ShiftRight')) isValidShift = false;
+    }
+
+    totalTyped++;
+    if (e.key === expectedChar && isValidShift) {
       correctTyped++;
+      if (lessons[currentLessonIdx].type === 'game') {
+        launchRocketAnimation();
+      } else {
+        currentIndex++;
+      }
     } else {
       errorIndices.push(currentIndex);
     }
 
-    const currentAcc = Math.round((correctTyped / totalTyped) * 100);
-    updateAccuracyMeter(currentAcc);
+    const acc = Math.round((correctTyped / totalTyped) * 100);
+    updateAccuracyMeter(acc);
 
-    currentIndex++;
-    updateTargetAndKeyboard();
-
-    if (currentIndex >= targetText.length) {
-      showCompletionModal(currentAcc);
+    if (lessons[currentLessonIdx].type !== 'game') {
+      updateTargetAndKeyboard();
+      if (currentIndex >= targetText.length) showCompletionModal(acc);
     }
   }
 
-  function completeVideoLesson() {
-    showCompletionModal(100);
-  }
+  function completeVideoLesson() { showCompletionModal(100); }
 
   function generateRandomSequence(length) {
     const chars = ["f", "j", "d", "k"];
@@ -734,33 +552,42 @@
   }
 
   function showCompletionModal(accuracy) {
-    const modal = document.getElementById('completionModal');
-    document.getElementById('finalAccuracy').innerText = `${accuracy}%`;
-
     let starsEarned = 0;
     if (accuracy >= 80 && accuracy <= 84) starsEarned = 1;
     else if (accuracy >= 85 && accuracy <= 89) starsEarned = 2;
     else if (accuracy >= 90) starsEarned = 3;
 
-    lastPassedAccuracy = accuracy >= 80;
-
-    if (lastPassedAccuracy) {
+    if (accuracy >= 80) {
       lessonStars[currentLessonIdx] = Math.max(lessonStars[currentLessonIdx], starsEarned);
-      document.getElementById('totalStarsCount').innerText = lessonStars.reduce((a, b) => a + b, 0);
+      const totalStars = lessonStars.reduce((a, b) => a + b, 0);
+      document.getElementById('totalStarsCount').innerText = totalStars;
+      localStorage.setItem('mission1_stars', totalStars); // Store total stars for Space Hub
       renderLessonButtons();
     }
 
     document.getElementById('star1').classList.toggle('filled', starsEarned >= 1);
     document.getElementById('star2').classList.toggle('filled', starsEarned >= 2);
     document.getElementById('star3').classList.toggle('filled', starsEarned >= 3);
+    document.getElementById('finalAccuracy').innerText = `${accuracy}%`;
 
-    modal.classList.add('active');
+    const nextBtn = document.getElementById('nextLessonBtn');
+    if (currentLessonIdx === lessons.length - 1) {
+      nextBtn.innerText = "Return to Space Hub 🚀";
+    } else {
+      nextBtn.innerText = "Next Lesson ➔";
+    }
+
+    document.getElementById('completionModal').classList.add('active');
   }
 
   function handleModalAction() {
     document.getElementById('completionModal').classList.remove('active');
-    if (lastPassedAccuracy && currentLessonIdx < lessons.length - 1) currentLessonIdx++;
-    loadLesson(currentLessonIdx);
+    if (currentLessonIdx === lessons.length - 1) {
+      window.location.href = "../index.html"; // Return to Mission Hub
+    } else {
+      currentLessonIdx++;
+      loadLesson(currentLessonIdx);
+    }
   }
 </script>
 </body>

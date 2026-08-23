@@ -5,15 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quest for Planet Qwerty - Mission Hub</title>
   
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   
   <style>
     :root {
       --primary: #4f46e5;
       --secondary: #0ea5e9;
       --accent-yellow: #f59e0b;
+      --accent-green: #22c55e;
       --font-playful: 'Fredoka One', cursive;
       --font-body: 'Open Sans', system-ui, -apple-system, sans-serif;
+      --font-tech: 'Share Tech Mono', monospace;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -127,6 +129,7 @@
       animation: pulse 2.5s ease-in-out infinite alternate;
     }
 
+    /* Mission Label Cards */
     .mission-label {
       margin-top: 18px;
       background: rgba(15, 23, 42, 0.85);
@@ -136,7 +139,10 @@
       text-align: center;
       backdrop-filter: blur(4px);
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      min-width: 200px;
     }
+    
     .mission-title {
       font-family: var(--font-playful);
       font-size: 1.15rem;
@@ -146,6 +152,38 @@
       font-size: 0.85rem;
       color: #cbd5e1;
       font-weight: 700;
+    }
+
+    .star-score-badge {
+      display: none;
+      margin-top: 6px;
+      font-family: var(--font-tech);
+      font-size: 0.9rem;
+      color: #000000;
+      background: var(--accent-yellow);
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+
+    /* Completed State Styling (Green Card) */
+    .mission-node.completed .mission-label {
+      background: var(--accent-green) !important;
+      border-color: #ffffff !important;
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.6) !important;
+    }
+
+    .mission-node.completed .mission-title,
+    .mission-node.completed .mission-subtitle {
+      color: #020617 !important;
+      font-weight: 900;
+    }
+
+    .mission-node.completed .star-score-badge {
+      display: inline-block;
+      background: #020617;
+      color: var(--accent-yellow);
+      border: 1px solid var(--accent-yellow);
     }
 
     @keyframes float {
@@ -177,18 +215,19 @@
 
   <main class="mission-map">
     <!-- Mission 1: Rocket -->
-    <a href="./mission1/index.html" class="mission-node">
+    <a href="mission1/index.html" class="mission-node" id="mission1Node">
       <div class="icon-container">
         <div class="rocket-icon">🚀</div>
       </div>
       <div class="mission-label">
-        <div class="mission-title">Mission 1</div>
+        <div class="mission-title" id="m1Title">Mission 1</div>
         <div class="mission-subtitle">FJDK Lift-off</div>
+        <div class="star-score-badge" id="m1Stars">⭐ 0 / 18 Stars</div>
       </div>
     </a>
 
     <!-- Mission 2: Moon -->
-    <a href="mission2.html" class="mission-node">
+    <a href="mission2/index.html" class="mission-node" id="mission2Node">
       <div class="icon-container">
         <div class="moon-icon">
           <div class="moon-crater-1"></div>
@@ -199,17 +238,19 @@
       <div class="mission-label">
         <div class="mission-title">Mission 2</div>
         <div class="mission-subtitle">SLA; Moon Landing</div>
+        <div class="star-score-badge" id="m2Stars">⭐ 0 / 18 Stars</div>
       </div>
     </a>
 
     <!-- Mission 3: Sun -->
-    <a href="mission3.html" class="mission-node">
+    <a href="mission3/index.html" class="mission-node" id="mission3Node">
       <div class="icon-container">
         <div class="sun-icon"></div>
       </div>
       <div class="mission-label">
         <div class="mission-title">Mission 3</div>
         <div class="mission-subtitle">Helio Home Row</div>
+        <div class="star-score-badge" id="m3Stars">⭐ 0 / 18 Stars</div>
       </div>
     </a>
   </main>
@@ -253,9 +294,24 @@
       requestAnimationFrame(animateStars);
     }
 
+    // Read stored progress from localStorage
+    function loadHubProgress() {
+      const m1Stars = localStorage.getItem('mission1_stars');
+      if (m1Stars !== null && parseInt(m1Stars) > 0) {
+        const m1Node = document.getElementById('mission1Node');
+        const m1Badge = document.getElementById('m1Stars');
+        const m1Title = document.getElementById('m1Title');
+        
+        m1Node.classList.add('completed');
+        m1Title.innerText = "✔ Mission 1";
+        m1Badge.innerText = `⭐ ${m1Stars} / 18 Stars`;
+      }
+    }
+
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
     animateStars();
+    loadHubProgress();
   </script>
 </body>
 </html>
