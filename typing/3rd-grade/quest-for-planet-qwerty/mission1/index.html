@@ -266,6 +266,275 @@
       50% { transform: translateY(-8px) rotate(15deg) scale(1.1); }
       100% { transform: translateY(0) rotate(-15deg) scale(1); }
     }
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mission 1: Home Row Mastery</title>
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --accent-blue: #3b82f6;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --accent-gold: #f59e0b;
+      --font-tech: 'Courier New', Courier, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { width: 100%; max-width: 900px; }
+    
+    /* Navigation Bar */
+    .nav-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 15px;
+      justify-content: center;
+    }
+    .nav-btn {
+      background: #334155;
+      color: #94a3b8;
+      border: 1px solid #475569;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s ease;
+    }
+    .nav-btn.active {
+      background: var(--accent-blue);
+      color: #fff;
+      border-color: var(--accent-blue);
+    }
+    .nav-btn.level-up-btn {
+      background: linear-gradient(135deg, #7c3aed, var(--accent-blue));
+      color: #fff;
+      border-color: #a855f7;
+    }
+    .nav-btn.level-up-btn.active {
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+    }
+
+    /* Telemetry Bar */
+    .telemetry-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      padding: 15px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #334155;
+    }
+    .star-counter {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent-gold);
+      font-weight: bold;
+    }
+    .star-counter svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--accent-gold);
+    }
+
+    /* Terminal & Text Display */
+    .terminal {
+      background: #020617;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 30px;
+      position: relative;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .text-display {
+      font-family: var(--font-tech);
+      font-size: 2rem;
+      letter-spacing: 2px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      justify-content: center;
+      z-index: 2;
+    }
+    
+    /* Character Nodes */
+    .char-node {
+      display: inline-block;
+      min-width: 2.2rem;
+      text-align: center;
+      white-space: pre;
+      padding: 4px 6px;
+      border-radius: 6px;
+      transition: background-color 0.15s, color 0.15s;
+    }
+    .char-current {
+      background-color: var(--accent-blue) !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
+    }
+    .char-error {
+      background-color: var(--accent-red) !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+    }
+    .char-done { color: #64748b; }
+
+    /* Level Up Dashboard Screen */
+    .level-up-dashboard {
+      background: var(--card-bg);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+    .level-up-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .level-up-header h2 {
+      font-size: 1.8rem;
+      color: var(--accent-gold);
+      margin-bottom: 5px;
+    }
+    .lesson-checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .checklist-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f172a;
+      padding: 12px 18px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+    .checklist-item.completed {
+      border-color: var(--accent-green);
+    }
+    .check-icon {
+      font-weight: bold;
+      color: var(--accent-green);
+      font-size: 1.2rem;
+    }
+    .lock-icon {
+      color: #64748b;
+    }
+    .challenge-req-box {
+      background: #020617;
+      border: 1px dashed var(--accent-gold);
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      margin-top: 15px;
+    }
+
+    /* Lesson 4 Rocket */
+    .rocket-container {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    #activeRocket {
+      position: absolute;
+      font-size: 2.5rem;
+      transition: left 0.2s ease;
+      filter: drop-shadow(0 0 8px var(--accent-blue));
+    }
+
+    /* On-Screen Keyboard */
+    .keyboard {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 20px;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+    }
+    .key-row { display: flex; justify-content: center; gap: 6px; }
+    .key {
+      background: #334155;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      min-width: 40px;
+      text-align: center;
+    }
+    .key.active { background: var(--accent-blue); }
+    .key-shift { min-width: 80px; background: #475569; }
+    .key-shift.active { background: var(--accent-gold); }
+
+    /* Modal Overlay */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.85);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-card {
+      background: var(--card-bg);
+      border: 2px solid #475569;
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 420px;
+    }
+    .btn {
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    /* Star Visuals (Dancing & Spinning for standard lessons) */
+    .star-rating { display: flex; justify-content: center; gap: 10px; margin: 15px 0; }
+    .star-icon {
+      width: 40px; height: 40px; fill: var(--accent-gold);
+      filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.8));
+      animation: starSpinDance 1.2s infinite ease-in-out alternate;
+    }
+    .star-icon:nth-child(2) { animation-delay: 0.2s; }
+    .star-icon:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes starSpinDance {
+      0% { transform: translateY(0) rotate(0deg) scale(1); }
+      50% { transform: translateY(-8px) rotate(15deg) scale(1.1); }
+      100% { transform: translateY(0) rotate(-15deg) scale(1); }
+    }
   </style>
 </head>
 <body>
@@ -280,11 +549,10 @@
       <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
       <span id="totalStarsCount">0</span> STARS
     </div>
-    <div>MISTAKES: <span id="mistakeVal">0</span></div>
     <div>ACCURACY: <span id="accuracyVal">100%</span></div>
   </div>
 
-  <!-- Level Up Dashboard View (Shown only on Level Up Screen) -->
+  <!-- Level Up Dashboard Screen -->
   <div id="levelUpDashboard" class="level-up-dashboard" style="display: none;">
     <div class="level-up-header">
       <h2>Level up to BRONZE</h2>
@@ -304,7 +572,7 @@
     <div id="textNodesContainer" class="text-display"></div>
   </div>
 
-  <!-- On-Screen Keyboard (Hidden during Level Up Challenge) -->
+  <!-- On-Screen Keyboard -->
   <div class="keyboard" id="keyboardContainer">
     <div class="key-row">
       <div class="key" id="key-a">A</div>
@@ -411,7 +679,7 @@
 
     if (isLevelUpMode) {
       document.getElementById('lessonTitle').innerText = "LEVEL UP";
-      keyboardContainer.style.display = 'none'; // No keyboard on level up screen
+      keyboardContainer.style.display = 'none';
       levelUpDashboard.style.display = 'block';
       rocket.style.display = 'none';
       
@@ -590,7 +858,6 @@
     const total = correctTyped + errorIndices.length;
     const acc = total > 0 ? Math.round((correctTyped / total) * 100) : 100;
     document.getElementById('accuracyVal').innerText = `${acc}%`;
-    document.getElementById('mistakeVal').innerText = currentMistakes;
   }
 
   function updateTotalStars() {
@@ -606,9 +873,9 @@
     const content = document.getElementById('modalContent');
 
     if (isLevelUpMode) {
-      // Level Up Challenge Logic: <= 2 mistakes allowed
       if (currentMistakes <= 2) {
-        triggerFireworks(); // Fireworks ONLY on Level Up completion
+        // Fireworks execute specifically for Level Up completion!
+        triggerFireworks();
         content.innerHTML = `
           <h2 style="color: var(--accent-gold); font-size: 1.8rem; margin-bottom: 10px;">🏆 LEVEL UP!</h2>
           <p style="font-size: 1.1rem; margin: 15px 0; line-height: 1.5;">
@@ -625,7 +892,6 @@
         `;
       }
     } else {
-      // Standard Lesson Completion Logic
       if (accuracy < 80) {
         content.innerHTML = `
           <h2 style="color: var(--accent-red)">⚠️ Try Again</h2>
@@ -633,7 +899,6 @@
           <button class="btn" onclick="closeModal(false)">🔄 Retry Lesson</button>
         `;
       } else {
-        // Calculate stars: 3 stars (100%), 2 stars (>=90%), 1 star (>=80%)
         let starsAwarded = 1;
         if (accuracy === 100) starsAwarded = 3;
         else if (accuracy >= 90) starsAwarded = 2;
@@ -648,6 +913,7 @@
           starsHtml += `<svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
         }
 
+        // Standard lessons feature animated spinning/dancing stars instead of fireworks
         content.innerHTML = `
           <h2 style="color: var(--accent-green)">🎉 Lesson Complete!</h2>
           <div class="star-rating">${starsHtml}</div>
@@ -681,7 +947,6 @@
     canvas.height = window.innerHeight;
     let particles = [];
     
-    // Multi-burst fireworks launcher
     for (let burst = 0; burst < 3; burst++) {
       const originX = canvas.width * (0.25 + Math.random() * 0.5);
       const originY = canvas.height * (0.2 + Math.random() * 0.4);
