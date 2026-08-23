@@ -184,21 +184,21 @@
     }
 
     /* Precise Positioning Matching Your Slide Blueprint */
-    #mission1Node  { top: 5%;   left: 2%; }
-    #mission2Node  { top: 20%;  left: 10%; }
-    #mission3Node  { top: 38%;  left: 18%; }
-    #mission4Node  { top: 55%;  left: 12%; }
-    #mission5Node  { top: 70%;  left: 5%; }
-    #mission6Node  { top: 85%;  left: 20%; }
-    #mission7Node  { top: 72%;  left: 32%; }
-    #mission8Node  { top: 52%;  left: 42%; }
-    #mission9Node  { top: 30%;  left: 50%; }
-    #mission10Node { top: 8%;   left: 60%; }
-    #mission11Node { top: 30%;  left: 70%; }
-    #mission12Node { top: 55%;  left: 80%; }
-    #mission13Node { top: 82%;  left: 75%; }
-    #mission14Node { top: 62%;  left: 90%; }
-    #mission15Node { top: 22%;  left: 92%; }
+    #mission1Node  { top: 85%;  left: 2%; }
+    #mission2Node  { top: 60%;  left: 20%; }
+    #mission3Node  { top: 35%;  left: 10%; }
+    #mission4Node  { top: 10%;  left: 20%; }
+    #mission5Node  { top: 30%;  left: 30%; }
+    #mission6Node  { top: 50%;  left: 40%; }
+    #mission7Node  { top: 75%;  left: 35%; }
+    #mission8Node  { top: 90%;  left: 55%; }
+    #mission9Node  { top: 70%;  left: 70%; }
+    #mission10Node { top: 45%;   left: 65%; }
+    #mission11Node { top: 15%;  left: 80%; }
+    #mission12Node { top: 35%;  left: 95%; }
+    #mission13Node { top: 50%;  left: 85%; }
+    #mission14Node { top: 80%;  left: 80%; }
+    #mission15Node { top: 65%;  left: 100%; }
 
     /* Graphic Icon Container */
     .icon-container {
