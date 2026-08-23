@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quest for Planet Qwerty - Mission Hub</title>
   
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
   
   <style>
     :root {
@@ -52,7 +52,7 @@
     h1 {
       font-family: var(--font-tech);
       font-weight: 900;
-      font-size: 2.2rem;
+      font-size: 2.3rem;
       color: var(--class-theme-color);
       text-shadow: 0 0 12px var(--class-theme-color), 0 0 25px rgba(56, 189, 248, 0.5);
       letter-spacing: 4px;
@@ -61,7 +61,7 @@
     }
     p.subtitle {
       font-family: var(--font-tech);
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: #94a3b8;
       margin-top: 6px;
       letter-spacing: 2px;
@@ -69,11 +69,11 @@
     .student-badge-display {
       margin-top: 8px;
       font-family: var(--font-tech);
-      font-size: 0.75rem;
+      font-size: 0.85rem;
       background: rgba(15, 23, 42, 0.85);
       border: 1px solid var(--class-theme-color);
       color: var(--class-theme-color);
-      padding: 4px 14px;
+      padding: 4px 16px;
       border-radius: 12px;
       display: inline-block;
       letter-spacing: 1.5px;
@@ -159,7 +159,7 @@
       bottom: 12%;
     }
 
-    /* Wave Track Layout Grid for Missions 1 to 15 */
+    /* Scattered Wave Canvas Trajectory Map */
     .mission-map {
       position: relative;
       z-index: 10;
@@ -167,10 +167,10 @@
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      max-width: 1200px;
-      height: 480px;
-      margin: 20px auto;
-      padding: 0 10px;
+      max-width: 1300px;
+      height: 520px;
+      margin: 10px auto;
+      padding: 0 20px;
     }
 
     .mission-node {
@@ -184,30 +184,30 @@
     }
 
     .mission-node:hover {
-      transform: scale(1.15) !important;
+      transform: scale(1.18) !important;
     }
 
-    /* Custom Wave Heights matching requested path */
-    #mission1Node  { transform: translateY(160px); } /* Bottom Left */
-    #mission2Node  { transform: translateY(40px); }  /* Above M1 */
-    #mission3Node  { transform: translateY(-120px); }/* Above M2 (Peak 1) */
-    #mission4Node  { transform: translateY(-20px); } /* Down & Right */
-    #mission5Node  { transform: translateY(70px); }  /* Down & Right */
-    #mission6Node  { transform: translateY(140px); } /* Down & Right */
-    #mission7Node  { transform: translateY(170px); } /* Bottom Valley 2 */
-    #mission8Node  { transform: translateY(60px); }  /* Up & Right */
-    #mission9Node  { transform: translateY(-40px); } /* Up & Right */
-    #mission10Node { transform: translateY(-120px); }/* Peak 2 */
-    #mission11Node { transform: translateY(-30px); } /* Down & Right */
-    #mission12Node { transform: translateY(60px); }  /* Down & Right */
-    #mission13Node { transform: translateY(150px); } /* Bottom Valley 3 */
-    #mission14Node { transform: translateY(30px); }  /* Up & Right */
-    #mission15Node { transform: translateY(-100px); }/* Top Right End */
+    /* Scattered vertical positions filling full canvas height */
+    #mission1Node  { transform: translateY(180px); }  /* Bottom-Left Start */
+    #mission2Node  { transform: translateY(40px); }   /* Rising Up */
+    #mission3Node  { transform: translateY(-160px); } /* Peak 1 (High Top) */
+    #mission4Node  { transform: translateY(-30px); }  /* Dipping Down */
+    #mission5Node  { transform: translateY(100px); }  /* Dropping */
+    #mission6Node  { transform: translateY(200px); }  /* Deep Valley 1 (Bottom) */
+    #mission7Node  { transform: translateY(110px); }  /* Starting Rise */
+    #mission8Node  { transform: translateY(-20px); }  /* Crossing Middle */
+    #mission9Node  { transform: translateY(-140px); } /* High Peak 2 */
+    #mission10Node { transform: translateY(-170px); } /* Peak Ridge */
+    #mission11Node { transform: translateY(-20px); }  /* Dropping Mid */
+    #mission12Node { transform: translateY(110px); }  /* Dipping Low */
+    #mission13Node { transform: translateY(190px); }  /* Bottom Valley 2 */
+    #mission14Node { transform: translateY(30px); }   /* Climbing Up */
+    #mission15Node { transform: translateY(-150px); } /* Top-Right Ending */
 
     /* Graphic Icon Container */
     .icon-container {
-      width: 65px;
-      height: 65px;
+      width: 70px;
+      height: 70px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -215,13 +215,13 @@
     }
     
     .pixel-emoji {
-      font-size: 2.8rem;
+      font-size: 3rem;
       filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
       animation: float 3.5s ease-in-out infinite;
     }
 
     .planet-body {
-      width: 55px; height: 55px;
+      width: 60px; height: 60px;
       border-radius: 50%;
       position: relative;
       box-shadow: inset -8px -5px 0 0 rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.2);
@@ -234,7 +234,7 @@
     .planet-ring {
       position: absolute;
       top: 50%; left: 50%;
-      width: 75px; height: 18px;
+      width: 80px; height: 20px;
       border: 3px solid rgba(253, 224, 71, 0.75);
       border-radius: 50%;
       transform: translate(-50%, -50%) rotate(-25deg);
@@ -242,7 +242,7 @@
     }
 
     .gas-star {
-      width: 58px; height: 58px;
+      width: 62px; height: 62px;
       background: radial-gradient(circle, #ff7b00 0%, #ff0055 70%, #4a001e 100%);
       border-radius: 50%;
       box-shadow: 0 0 16px #ff0055;
@@ -250,7 +250,7 @@
     }
 
     .moon-icon {
-      width: 52px; height: 52px;
+      width: 58px; height: 58px;
       background: #e2e8f0;
       border-radius: 50%;
       box-shadow: inset -8px -5px 0 0 #94a3b8, 0 0 10px rgba(226, 232, 240, 0.5);
@@ -261,53 +261,56 @@
     .moon-crater-2 { position: absolute; top: 26px; left: 24px; width: 14px; height: 14px; background: #cbd5e1; border-radius: 50%; }
 
     .sun-icon {
-      width: 58px; height: 58px;
+      width: 62px; height: 62px;
       background: radial-gradient(circle, #fde047 0%, #f59e0b 100%);
       border-radius: 50%;
       box-shadow: 0 0 16px #f59e0b, 0 0 25px rgba(245, 158, 11, 0.4);
       animation: pulse 2.5s ease-in-out infinite alternate;
     }
 
-    /* Narrow Mission Labels */
+    /* Mission Labels */
     .mission-label {
-      margin-top: 5px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid var(--class-theme-color);
-      border-radius: 6px;
-      padding: 3px 4px;
+      margin-top: 6px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1.5px solid var(--class-theme-color);
+      border-radius: 8px;
+      padding: 5px 8px;
       text-align: center;
       backdrop-filter: blur(4px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
       transition: all 0.3s ease;
-      width: 72px;
+      min-width: 90px;
     }
     
     .mission-title {
       font-family: var(--font-tech);
-      font-size: 0.6rem;
-      font-weight: 700;
+      font-size: 0.85rem;
+      font-weight: 800;
       color: var(--class-theme-color);
       white-space: nowrap;
+      letter-spacing: 0.5px;
     }
     .mission-subtitle {
       font-family: var(--font-tech);
-      font-size: 0.5rem;
-      color: #cbd5e1;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #e2e8f0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-top: 2px;
     }
 
-    /* Completion Glow Style */
+    /* Green Completion Glow Style */
     .mission-node.completed .mission-label {
       background: var(--accent-green) !important;
       border-color: #ffffff !important;
-      box-shadow: 0 0 12px rgba(34, 197, 94, 0.8) !important;
+      box-shadow: 0 0 14px rgba(34, 197, 94, 0.85) !important;
     }
     .mission-node.completed .mission-title,
     .mission-node.completed .mission-subtitle {
       color: #020617 !important;
-      font-weight: bold;
+      font-weight: 800;
     }
 
     /* Modal Login Screen Styles */
@@ -325,17 +328,29 @@
       background: #0f172a;
       border: 2px solid var(--secondary);
       border-radius: 16px;
-      padding: 25px;
-      max-width: 550px;
+      padding: 30px;
+      max-width: 580px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 0 25px rgba(14, 165, 233, 0.25);
+      box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
     }
+    
+    .game-main-title {
+      font-family: var(--font-tech);
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+      margin-bottom: 4px;
+    }
+
     .login-title {
       font-family: var(--font-tech);
-      font-size: 1.3rem;
-      color: #38bdf8;
-      margin-bottom: 15px;
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      margin-bottom: 20px;
       letter-spacing: 1px;
     }
     .login-grid {
@@ -348,10 +363,11 @@
       background: #1e293b;
       border: 2px solid #334155;
       border-radius: 10px;
-      padding: 10px;
+      padding: 12px;
       color: white;
       font-family: var(--font-tech);
-      font-size: 0.85rem;
+      font-size: 0.95rem;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -362,7 +378,7 @@
       transform: translateY(-2px);
       border-color: #38bdf8;
     }
-    .helmet-svg { width: 32px; height: 32px; flex-shrink: 0; }
+    .helmet-svg { width: 34px; height: 34px; flex-shrink: 0; }
     .comp-grid {
       display: grid;
       grid-template-columns: repeat(8, 1fr);
@@ -377,21 +393,21 @@
       border: 1px solid #334155;
       color: #cbd5e1;
       font-family: var(--font-tech);
-      font-size: 0.8rem;
-      padding: 6px 0;
+      font-size: 0.85rem;
+      padding: 8px 0;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
     }
     .btn-comp:hover { background: var(--class-theme-color); color: #020617; }
     .btn-back {
-      margin-top: 15px;
+      margin-top: 18px;
       background: transparent;
       border: 1px solid #475569;
       color: #cbd5e1;
       font-family: var(--font-tech);
-      font-size: 0.75rem;
-      padding: 6px 14px;
+      font-size: 0.8rem;
+      padding: 8px 16px;
       border-radius: 6px;
       cursor: pointer;
       display: inline-block;
@@ -402,8 +418,8 @@
       border: 1px solid #475569;
       color: #94a3b8;
       font-family: var(--font-tech);
-      font-size: 0.75rem;
-      padding: 4px 10px;
+      font-size: 0.8rem;
+      padding: 5px 12px;
       border-radius: 6px;
       cursor: pointer;
     }
@@ -416,7 +432,7 @@
       z-index: 10;
       margin-top: 10px;
       font-family: var(--font-tech);
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: #64748b;
       display: flex;
       align-items: center;
@@ -460,12 +476,12 @@
     <div id="studentBadge" class="student-badge-display" style="display: none;"></div>
   </header>
 
-  <!-- Continuous Wave Trajectory Map (M1 Bottom-Left to M15 Top-Right) -->
+  <!-- Scattered Waving Mission Path -->
   <main class="mission-map">
     <a href="mission1/index.html" class="mission-node" id="mission1Node">
       <div class="icon-container"><div class="pixel-emoji">🚀</div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m1Title">M1</div>
+        <div class="mission-title" id="m1Title">Mission 1</div>
         <div class="mission-subtitle">FJDK</div>
       </div>
     </a>
@@ -478,7 +494,7 @@
         </div>
       </div>
       <div class="mission-label">
-        <div class="mission-title" id="m2Title">M2</div>
+        <div class="mission-title" id="m2Title">Mission 2</div>
         <div class="mission-subtitle">SLA;</div>
       </div>
     </a>
@@ -486,15 +502,15 @@
     <a href="mission3/index.html" class="mission-node" id="mission3Node">
       <div class="icon-container"><div class="sun-icon"></div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m3Title">M3</div>
-        <div class="mission-subtitle">Helio</div>
+        <div class="mission-title" id="m3Title">Mission 3</div>
+        <div class="mission-subtitle">Home Row</div>
       </div>
     </a>
 
     <a href="mission4/index.html" class="mission-node" id="mission4Node">
       <div class="icon-container"><div class="pixel-emoji">🛰️</div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m4Title">M4</div>
+        <div class="mission-title" id="m4Title">Mission 4</div>
         <div class="mission-subtitle">E and I</div>
       </div>
     </a>
@@ -502,7 +518,7 @@
     <a href="mission5/index.html" class="mission-node" id="mission5Node">
       <div class="icon-container"><div class="planet-body planet-red"></div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m5Title">M5</div>
+        <div class="mission-title" id="m5Title">Mission 5</div>
         <div class="mission-subtitle">R and U</div>
       </div>
     </a>
@@ -510,7 +526,7 @@
     <a href="mission6/index.html" class="mission-node" id="mission6Node">
       <div class="icon-container"><div class="pixel-emoji">☄️</div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m6Title">M6</div>
+        <div class="mission-title" id="m6Title">Mission 6</div>
         <div class="mission-subtitle">T and Y</div>
       </div>
     </a>
@@ -518,7 +534,7 @@
     <a href="mission7/index.html" class="mission-node" id="mission7Node">
       <div class="icon-container"><div class="planet-body planet-purple"><div class="planet-ring"></div></div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m7Title">M7</div>
+        <div class="mission-title" id="m7Title">Mission 7</div>
         <div class="mission-subtitle">W and O</div>
       </div>
     </a>
@@ -526,7 +542,7 @@
     <a href="mission8/index.html" class="mission-node" id="mission8Node">
       <div class="icon-container"><div class="pixel-emoji">🪨</div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m8Title">M8</div>
+        <div class="mission-title" id="m8Title">Mission 8</div>
         <div class="mission-subtitle">Q and P</div>
       </div>
     </a>
@@ -534,7 +550,7 @@
     <a href="mission9/index.html" class="mission-node" id="mission9Node">
       <div class="icon-container"><div class="pixel-emoji">🌀</div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m9Title">M9</div>
+        <div class="mission-title" id="m9Title">Mission 9</div>
         <div class="mission-subtitle">Top Row</div>
       </div>
     </a>
@@ -542,7 +558,7 @@
     <a href="mission10/index.html" class="mission-node" id="mission10Node">
       <div class="icon-container"><div class="gas-star"></div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m10Title">M10</div>
+        <div class="mission-title" id="m10Title">Mission 10</div>
         <div class="mission-subtitle">V and M</div>
       </div>
     </a>
@@ -550,7 +566,7 @@
     <a href="mission11/index.html" class="mission-node" id="mission11Node">
       <div class="icon-container"><div class="pixel-emoji">🛸</div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m11Title">M11</div>
+        <div class="mission-title" id="m11Title">Mission 11</div>
         <div class="mission-subtitle">B and N</div>
       </div>
     </a>
@@ -558,7 +574,7 @@
     <a href="mission12/index.html" class="mission-node" id="mission12Node">
       <div class="icon-container"><div class="planet-body planet-cyan"></div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m12Title">M12</div>
+        <div class="mission-title" id="m12Title">Mission 12</div>
         <div class="mission-subtitle">C and ,</div>
       </div>
     </a>
@@ -566,7 +582,7 @@
     <a href="mission13/index.html" class="mission-node" id="mission13Node">
       <div class="icon-container"><div class="pixel-emoji">🌠</div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m13Title">M13</div>
+        <div class="mission-title" id="m13Title">Mission 13</div>
         <div class="mission-subtitle">X and .</div>
       </div>
     </a>
@@ -574,7 +590,7 @@
     <a href="mission14/index.html" class="mission-node" id="mission14Node">
       <div class="icon-container"><div class="planet-body planet-green"><div class="planet-ring"></div></div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m14Title">M14</div>
+        <div class="mission-title" id="m14Title">Mission 14</div>
         <div class="mission-subtitle">Z / ?</div>
       </div>
     </a>
@@ -582,7 +598,7 @@
     <a href="mission15/index.html" class="mission-node" id="mission15Node">
       <div class="icon-container"><div class="pixel-emoji">💥</div></div>
       <div class="mission-label">
-        <div class="mission-title" id="m15Title">M15</div>
+        <div class="mission-title" id="m15Title">Mission 15</div>
         <div class="mission-subtitle">Final</div>
       </div>
     </a>
@@ -593,9 +609,11 @@
     <button class="btn-reset-login" onclick="clearLogin()">Change Class / Computer</button>
   </footer>
 
-  <!-- Login Modal -->
+  <!-- Start Screen Login Modal -->
   <div class="login-modal-overlay" id="loginModal">
     <div class="login-card">
+      <h1 class="game-main-title">The Quest for Planet Qwerty</h1>
+
       <div id="stepTeacher">
         <h2 class="login-title">Select Your Class</h2>
         <div class="login-grid">
@@ -647,9 +665,11 @@
     let selectedClassColor = "";
 
     function initLogin() {
-      const savedClass = localStorage.getItem('qwerty_class_name');
-      const savedColor = localStorage.getItem('qwerty_class_color');
-      const savedComp = localStorage.getItem('qwerty_computer_num');
+      // Changed from localStorage to sessionStorage so session clears when browser/tab closes
+      const savedClass = sessionStorage.getItem('qwerty_class_name');
+      const savedColor = sessionStorage.getItem('qwerty_class_color');
+      const savedComp = sessionStorage.getItem('qwerty_computer_num');
+      
       if (savedClass && savedColor && savedComp) {
         applyTheme(savedColor);
         showStudentBadge(savedClass, savedComp);
@@ -684,9 +704,9 @@
     }
 
     function selectComputer(compNum) {
-      localStorage.setItem('qwerty_class_name', selectedClassName);
-      localStorage.setItem('qwerty_class_color', selectedClassColor);
-      localStorage.setItem('qwerty_computer_num', compNum);
+      sessionStorage.setItem('qwerty_class_name', selectedClassName);
+      sessionStorage.setItem('qwerty_class_color', selectedClassColor);
+      sessionStorage.setItem('qwerty_computer_num', compNum);
       showStudentBadge(selectedClassName, compNum);
       document.getElementById('loginModal').style.display = 'none';
     }
@@ -702,9 +722,9 @@
     }
 
     function clearLogin() {
-      localStorage.removeItem('qwerty_class_name');
-      localStorage.removeItem('qwerty_class_color');
-      localStorage.removeItem('qwerty_computer_num');
+      sessionStorage.removeItem('qwerty_class_name');
+      sessionStorage.removeItem('qwerty_class_color');
+      sessionStorage.removeItem('qwerty_computer_num');
       location.reload();
     }
 
@@ -754,7 +774,7 @@
           const mTitle = document.getElementById(`m${i}Title`);
           
           if (mNode) mNode.classList.add('completed');
-          if (mTitle) mTitle.innerText = `✔ M${i}`;
+          if (mTitle) mTitle.innerText = `✔ Mission ${i}`;
         }
       }
 
