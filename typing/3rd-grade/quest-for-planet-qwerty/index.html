@@ -9,6 +9,7 @@
   
   <style>
     :root {
+      --class-theme-color: #38bdf8; /* Default Theme Color */
       --primary: #4f46e5;
       --secondary: #0ea5e9;
       --accent-yellow: #f59e0b;
@@ -30,6 +31,21 @@
       justify-content: space-between;
       overflow: hidden;
       position: relative;
+      padding: 20px;
+    }
+
+    /* Screen Visual Outline matching selected class color */
+    .hub-viewport-border {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: 12px solid var(--class-theme-color);
+      pointer-events: none;
+      z-index: 100;
+      box-shadow: inset 0 0 25px var(--class-theme-color);
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
     }
 
     #spaceCanvas {
@@ -44,21 +60,34 @@
     header {
       position: relative;
       z-index: 10;
-      margin-top: 30px;
+      margin-top: 20px;
       text-align: center;
     }
     h1 {
       font-family: var(--font-playful);
       font-size: 2.8rem;
-      color: #38bdf8;
-      text-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+      color: var(--class-theme-color);
+      text-shadow: 0 0 15px var(--class-theme-color);
       letter-spacing: 1px;
+      transition: color 0.4s ease, text-shadow 0.4s ease;
     }
     p.subtitle {
       font-size: 1.1rem;
       color: #cbd5e1;
       margin-top: 5px;
       font-weight: 600;
+    }
+
+    .student-badge-display {
+      margin-top: 8px;
+      font-family: var(--font-tech);
+      font-size: 1rem;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--class-theme-color);
+      color: var(--class-theme-color);
+      padding: 4px 14px;
+      border-radius: 20px;
+      display: inline-block;
     }
 
     .mission-map {
@@ -95,17 +124,14 @@
       justify-content: center;
       position: relative;
       border-radius: 50%;
-      transition: box-shadow 0.3s ease;
     }
 
-    /* Target 1: Rocket */
     .rocket-icon {
       font-size: 5rem;
       filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.6));
       animation: float 3s ease-in-out infinite;
     }
 
-    /* Target 2: Moon */
     .moon-icon {
       width: 120px;
       height: 120px;
@@ -119,7 +145,6 @@
     .moon-crater-2 { position: absolute; top: 65px; left: 70px; width: 35px; height: 35px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 2px 2px 0 #94a3b8; }
     .moon-crater-3 { position: absolute; top: 75px; left: 25px; width: 18px; height: 18px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 2px 2px 0 #94a3b8; }
 
-    /* Target 3: Sun */
     .sun-icon {
       width: 130px;
       height: 130px;
@@ -129,11 +154,10 @@
       animation: pulse 2.5s ease-in-out infinite alternate;
     }
 
-    /* Mission Label Cards */
     .mission-label {
       margin-top: 18px;
       background: rgba(15, 23, 42, 0.85);
-      border: 2px solid #38bdf8;
+      border: 2px solid var(--class-theme-color);
       border-radius: 12px;
       padding: 10px 18px;
       text-align: center;
@@ -146,7 +170,7 @@
     .mission-title {
       font-family: var(--font-playful);
       font-size: 1.15rem;
-      color: #38bdf8;
+      color: var(--class-theme-color);
     }
     .mission-subtitle {
       font-size: 0.85rem;
@@ -166,7 +190,6 @@
       font-weight: bold;
     }
 
-    /* Completed State Styling (Green Card) */
     .mission-node.completed .mission-label {
       background: var(--accent-green) !important;
       border-color: #ffffff !important;
@@ -186,14 +209,110 @@
       border: 1px solid var(--accent-yellow);
     }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-12px) rotate(3deg); }
+    /* Modal Login Screen Styles */
+    .login-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(3, 7, 18, 0.96);
+      z-index: 200;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
-    @keyframes pulse {
-      0% { transform: scale(1); box-shadow: 0 0 35px #f59e0b; }
-      100% { transform: scale(1.06); box-shadow: 0 0 50px #f59e0b, 0 0 80px rgba(245, 158, 11, 0.6); }
+
+    .login-card {
+      background: #0f172a;
+      border: 3px solid var(--secondary);
+      border-radius: 24px;
+      padding: 30px;
+      max-width: 650px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 35px rgba(14, 165, 233, 0.3);
     }
+
+    .login-title {
+      font-family: var(--font-playful);
+      font-size: 2rem;
+      color: #38bdf8;
+      margin-bottom: 20px;
+    }
+
+    .login-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .btn-class-select {
+      background: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 16px;
+      padding: 12px;
+      color: white;
+      font-family: var(--font-playful);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .btn-class-select:hover {
+      transform: translateY(-3px);
+      border-color: #38bdf8;
+    }
+
+    .helmet-svg {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+    }
+
+    /* Computer Number Grid */
+    .comp-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 8px;
+      margin-top: 15px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 5px;
+    }
+
+    .btn-comp {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      font-family: var(--font-tech);
+      font-size: 1.1rem;
+      padding: 10px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-comp:hover {
+      background: var(--class-theme-color);
+      color: #020617;
+    }
+
+    .btn-reset-login {
+      background: transparent;
+      border: 1px solid #475569;
+      color: #94a3b8;
+      font-family: var(--font-tech);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+    @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.06); } }
 
     footer {
       position: relative;
@@ -201,20 +320,27 @@
       margin-bottom: 20px;
       font-size: 0.85rem;
       color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 15px;
     }
   </style>
 </head>
 <body>
+
+  <!-- Colored Screen Outer Border -->
+  <div class="hub-viewport-border" id="screenOutline"></div>
 
   <canvas id="spaceCanvas"></canvas>
 
   <header>
     <h1>Quest for Planet Qwerty</h1>
     <p class="subtitle">Select your mission to begin typing training!</p>
+    <div id="studentBadge" class="student-badge-display" style="display: none;"></div>
   </header>
 
   <main class="mission-map">
-    <!-- Mission 1: Rocket -->
+    <!-- Mission 1 -->
     <a href="mission1/index.html" class="mission-node" id="mission1Node">
       <div class="icon-container">
         <div class="rocket-icon">🚀</div>
@@ -226,7 +352,7 @@
       </div>
     </a>
 
-    <!-- Mission 2: Moon -->
+    <!-- Mission 2 -->
     <a href="mission2/index.html" class="mission-node" id="mission2Node">
       <div class="icon-container">
         <div class="moon-icon">
@@ -242,7 +368,7 @@
       </div>
     </a>
 
-    <!-- Mission 3: Sun -->
+    <!-- Mission 3 -->
     <a href="mission3/index.html" class="mission-node" id="mission3Node">
       <div class="icon-container">
         <div class="sun-icon"></div>
@@ -256,10 +382,139 @@
   </main>
 
   <footer>
-    Click any celestial object to launch into the lesson setup.
+    <span>Click any celestial object to launch into lessons.</span>
+    <button class="btn-reset-login" onclick="clearLogin()">Change Class / Computer</button>
   </footer>
 
+  <!-- Login Overlay -->
+  <div class="login-modal-overlay" id="loginModal">
+    <div class="login-card">
+      
+      <!-- Step 1: Select Teacher / Group -->
+      <div id="stepTeacher">
+        <h2 class="login-title">Select Your Class</h2>
+        <div class="login-grid">
+          <!-- Bottita (Pink) -->
+          <button class="btn-class-select" onclick="selectClass('Bottita', '#ec4899')">
+            <svg class="helmet-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="#ec4899"/>
+              <path d="M 25 45 Q 50 25 75 45 Q 75 70 50 70 Q 25 70 25 45 Z" fill="#020617"/>
+              <path d="M 30 43 Q 50 28 65 43" stroke="#38bdf8" stroke-width="4" fill="none"/>
+            </svg>
+            Bottita
+          </button>
+
+          <!-- Blue Group (Green) -->
+          <button class="btn-class-select" onclick="selectClass('Blue Group', '#22c55e')">
+            <svg class="helmet-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="#22c55e"/>
+              <path d="M 25 45 Q 50 25 75 45 Q 75 70 50 70 Q 25 70 25 45 Z" fill="#020617"/>
+              <path d="M 30 43 Q 50 28 65 43" stroke="#38bdf8" stroke-width="4" fill="none"/>
+            </svg>
+            Blue Group
+          </button>
+
+          <!-- Raddatz (Yellow) -->
+          <button class="btn-class-select" onclick="selectClass('Raddatz', '#eab308')">
+            <svg class="helmet-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="#eab308"/>
+              <path d="M 25 45 Q 50 25 75 45 Q 75 70 50 70 Q 25 70 25 45 Z" fill="#020617"/>
+              <path d="M 30 43 Q 50 28 65 43" stroke="#38bdf8" stroke-width="4" fill="none"/>
+            </svg>
+            Raddatz
+          </button>
+
+          <!-- Red Group (Orange) -->
+          <button class="btn-class-select" onclick="selectClass('Red Group', '#f97316')">
+            <svg class="helmet-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="#f97316"/>
+              <path d="M 25 45 Q 50 25 75 45 Q 75 70 50 70 Q 25 70 25 45 Z" fill="#020617"/>
+              <path d="M 30 43 Q 50 28 65 43" stroke="#38bdf8" stroke-width="4" fill="none"/>
+            </svg>
+            Red Group
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Select Computer #1-32 -->
+      <div id="stepComputer" style="display: none;">
+        <h2 class="login-title" id="compStepTitle">Select Your Computer</h2>
+        <div class="comp-grid" id="compGrid"></div>
+      </div>
+
+    </div>
+  </div>
+
   <script>
+    let selectedClassName = "";
+    let selectedClassColor = "";
+
+    function initLogin() {
+      const savedClass = localStorage.getItem('qwerty_class_name');
+      const savedColor = localStorage.getItem('qwerty_class_color');
+      const savedComp = localStorage.getItem('qwerty_computer_num');
+
+      if (savedClass && savedColor && savedComp) {
+        applyTheme(savedColor);
+        showStudentBadge(savedClass, savedComp);
+        document.getElementById('loginModal').style.display = 'none';
+      } else {
+        document.getElementById('loginModal').style.display = 'flex';
+        showTeacherStep();
+      }
+    }
+
+    function showTeacherStep() {
+      document.getElementById('stepTeacher').style.display = 'block';
+      document.getElementById('stepComputer').style.display = 'none';
+    }
+
+    function selectClass(className, classColor) {
+      selectedClassName = className;
+      selectedClassColor = classColor;
+      applyTheme(classColor);
+
+      document.getElementById('stepTeacher').style.display = 'none';
+      document.getElementById('stepComputer').style.display = 'block';
+      document.getElementById('compStepTitle').innerText = `${className}: Select Computer`;
+
+      const grid = document.getElementById('compGrid');
+      grid.innerHTML = '';
+      for (let i = 1; i <= 32; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'btn-comp';
+        btn.innerText = `#${i}`;
+        btn.onclick = () => selectComputer(i);
+        grid.appendChild(btn);
+      }
+    }
+
+    function selectComputer(compNum) {
+      localStorage.setItem('qwerty_class_name', selectedClassName);
+      localStorage.setItem('qwerty_class_color', selectedClassColor);
+      localStorage.setItem('qwerty_computer_num', compNum);
+
+      showStudentBadge(selectedClassName, compNum);
+      document.getElementById('loginModal').style.display = 'none';
+    }
+
+    function applyTheme(color) {
+      document.documentElement.style.setProperty('--class-theme-color', color);
+    }
+
+    function showStudentBadge(className, compNum) {
+      const badge = document.getElementById('studentBadge');
+      badge.style.display = 'inline-block';
+      badge.innerText = `CLASS: ${className.toUpperCase()} | COMPUTER #${compNum}`;
+    }
+
+    function clearLogin() {
+      localStorage.removeItem('qwerty_class_name');
+      localStorage.removeItem('qwerty_class_color');
+      localStorage.removeItem('qwerty_computer_num');
+      location.reload();
+    }
+
     // Dynamic Starfield Canvas
     const canvas = document.getElementById('spaceCanvas');
     const ctx = canvas.getContext('2d');
@@ -294,7 +549,6 @@
       requestAnimationFrame(animateStars);
     }
 
-    // Read stored progress from localStorage
     function loadHubProgress() {
       const m1Stars = localStorage.getItem('mission1_stars');
       if (m1Stars !== null && parseInt(m1Stars) > 0) {
@@ -311,6 +565,7 @@
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
     animateStars();
+    initLogin();
     loadHubProgress();
   </script>
 </body>
