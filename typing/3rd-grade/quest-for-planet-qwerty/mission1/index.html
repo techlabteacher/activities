@@ -281,6 +281,45 @@
     .star.filled { color: var(--neon-amber); }
     .btn-primary { font-family: var(--font-tech); background: var(--class-theme-color); color: #020617; padding: 10px 24px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: transform 0.1s; }
     .btn-primary:hover { transform: scale(1.05); }
+
+    /* Passcode Input Modal Styling */
+    .passcode-input {
+      font-family: var(--font-tech);
+      font-size: 1.8rem;
+      letter-spacing: 12px;
+      text-align: center;
+      width: 180px;
+      padding: 8px;
+      margin: 15px auto;
+      border-radius: 8px;
+      border: 2px solid var(--class-theme-color);
+      background: #030712;
+      color: #ffffff;
+      outline: none;
+      display: block;
+    }
+    .passcode-input:focus {
+      box-shadow: 0 0 10px var(--class-theme-color);
+    }
+    .modal-btn-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+    .btn-secondary {
+      font-family: var(--font-tech);
+      background: #334155;
+      color: #f8fafc;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      background: #475569;
+    }
   </style>
 </head>
 <body onload="init()">
@@ -355,6 +394,20 @@
     </div>
   </div>
 
+  <!-- Teacher Passcode Modal -->
+  <div id="passcodeModal" class="modal-overlay" onclick="handleBackdropClick(event)">
+    <div class="modal-card">
+      <h2 class="modal-title">TEACHER VERIFICATION</h2>
+      <p style="color: #cbd5e1; font-size: 0.9rem; margin-top: 5px;">Enter passcode to enable on-screen keyboard:</p>
+      <input type="password" id="passcodeInput" class="passcode-input" maxlength="4" autocomplete="off">
+      <div id="passcodeError" style="color: var(--neon-red); font-size: 0.85rem; height: 18px; margin-bottom: 5px;"></div>
+      <div class="modal-btn-group">
+        <button class="btn-secondary" onclick="closePasscodeModal()">Cancel</button>
+        <button class="btn-primary" onclick="verifyPasscode()">Unlock</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Completion Overlay -->
   <div id="completionModal" class="modal-overlay">
     <div class="modal-card">
@@ -398,6 +451,11 @@
     renderLessonButtons();
     window.addEventListener('keydown', handleKeyPress);
     window.addEventListener('keyup', handleKeyUp);
+    
+    document.getElementById('passcodeInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') verifyPasscode();
+    });
+
     loadLesson(0);
   }
 
@@ -414,23 +472,50 @@
   function toggleKeyboardVisibility() {
     if (showKeyboard) {
       showKeyboard = false;
+      teacherUnlocked = false;
+      updateKeyboardDisplayState();
     } else {
       if (teacherUnlocked) {
         showKeyboard = true;
+        updateKeyboardDisplayState();
       } else {
-        const inputCode = prompt("Enter Teacher Passcode to enable on-screen keyboard:");
-        if (inputCode === TEACHER_PASSCODE) {
-          teacherUnlocked = true;
-          showKeyboard = true;
-        } else if (inputCode !== null) {
-          alert("Incorrect Passcode.");
-          return;
-        } else {
-          return;
-        }
+        openPasscodeModal();
       }
     }
-    updateKeyboardDisplayState();
+  }
+
+  function openPasscodeModal() {
+    const input = document.getElementById('passcodeInput');
+    input.value = '';
+    document.getElementById('passcodeError').innerText = '';
+    document.getElementById('passcodeModal').classList.add('active');
+    setTimeout(() => input.focus(), 100);
+  }
+
+  function closePasscodeModal() {
+    document.getElementById('passcodeModal').classList.remove('active');
+    document.getElementById('passcodeInput').value = '';
+    document.getElementById('passcodeError').innerText = '';
+  }
+
+  function handleBackdropClick(event) {
+    if (event.target.id === 'passcodeModal') {
+      closePasscodeModal();
+    }
+  }
+
+  function verifyPasscode() {
+    const val = document.getElementById('passcodeInput').value;
+    if (val === TEACHER_PASSCODE) {
+      teacherUnlocked = true;
+      showKeyboard = true;
+      closePasscodeModal();
+      updateKeyboardDisplayState();
+    } else {
+      document.getElementById('passcodeError').innerText = 'Incorrect Passcode';
+      document.getElementById('passcodeInput').value = '';
+      document.getElementById('passcodeInput').focus();
+    }
   }
 
   function updateKeyboardDisplayState() {
@@ -568,6 +653,14 @@
   }
 
   function handleKeyPress(e) {
+    // Handle Escape key to exit passcode modal cleanly
+    if (e.key === 'Escape' && document.getElementById('passcodeModal').classList.contains('active')) {
+      closePasscodeModal();
+      return;
+    }
+
+    if (document.getElementById('passcodeModal').classList.contains('active')) return;
+    
     if (e.key === ' ') e.preventDefault();
     
     let keyId = e.key === ' ' ? 'key-space' : `key-${e.key.toLowerCase()}`;
