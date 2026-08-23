@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +14,6 @@
       --accent-gold: #f59e0b;
       --font-tech: 'Courier New', Courier, monospace;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background-color: var(--bg-dark);
@@ -27,18 +25,63 @@
       min-height: 100vh;
       padding: 20px;
     }
-
     .container { width: 100%; max-width: 900px; }
     
-    /* Header & Stats */
+    /* Navigation Bar */
+    .nav-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 15px;
+      justify-content: center;
+    }
+    .nav-btn {
+      background: #334155;
+      color: #94a3b8;
+      border: 1px solid #475569;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s ease;
+    }
+    .nav-btn.active {
+      background: var(--accent-blue);
+      color: #fff;
+      border-color: var(--accent-blue);
+    }
+    .nav-btn.level-up-btn {
+      background: linear-gradient(135deg, #7c3aed, var(--accent-blue));
+      color: #fff;
+      border-color: #a855f7;
+    }
+    .nav-btn.level-up-btn.active {
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+    }
+
+    /* Telemetry Bar */
     .telemetry-bar {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       background: var(--card-bg);
       padding: 15px 20px;
       border-radius: 12px;
       margin-bottom: 20px;
       border: 1px solid #334155;
+    }
+    .star-counter {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent-gold);
+      font-weight: bold;
+    }
+    .star-counter svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--accent-gold);
     }
 
     /* Terminal & Text Display */
@@ -54,7 +97,6 @@
       justify-content: center;
       overflow: hidden;
     }
-
     .text-display {
       font-family: var(--font-tech);
       font-size: 2rem;
@@ -65,31 +107,82 @@
       justify-content: center;
       z-index: 2;
     }
-
-    /* Character Highlighting & Equal Space Width */
+    
+    /* Character Nodes */
     .char-node {
       display: inline-block;
-      min-width: 2.2rem; /* Guarantees spaces match letter width */
+      min-width: 2.2rem;
       text-align: center;
-      white-space: pre;   /* Keeps spaces rendered cleanly */
+      white-space: pre;
       padding: 4px 6px;
       border-radius: 6px;
       transition: background-color 0.15s, color 0.15s;
     }
-
     .char-current {
       background-color: var(--accent-blue) !important;
       color: #ffffff !important;
       box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
     }
-
     .char-error {
       background-color: var(--accent-red) !important;
       color: #ffffff !important;
       box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
     }
-
     .char-done { color: #64748b; }
+
+    /* Level Up Dashboard Screen */
+    .level-up-dashboard {
+      background: var(--card-bg);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+    .level-up-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .level-up-header h2 {
+      font-size: 1.8rem;
+      color: var(--accent-gold);
+      margin-bottom: 5px;
+    }
+    .lesson-checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .checklist-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f172a;
+      padding: 12px 18px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+    .checklist-item.completed {
+      border-color: var(--accent-green);
+    }
+    .check-icon {
+      font-weight: bold;
+      color: var(--accent-green);
+      font-size: 1.2rem;
+    }
+    .lock-icon {
+      color: #64748b;
+    }
+    .challenge-req-box {
+      background: #020617;
+      border: 1px dashed var(--accent-gold);
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      margin-top: 15px;
+    }
 
     /* Lesson 4 Rocket */
     .rocket-container {
@@ -145,7 +238,7 @@
       padding: 30px;
       border-radius: 16px;
       text-align: center;
-      max-width: 400px;
+      max-width: 420px;
     }
     .btn {
       background: var(--accent-blue);
@@ -158,27 +251,52 @@
       margin-top: 15px;
     }
 
-    /* Star Visuals */
+    /* Star Visuals (Dancing / Spinning for Regular Lessons) */
     .star-rating { display: flex; justify-content: center; gap: 10px; margin: 15px 0; }
     .star-icon {
       width: 40px; height: 40px; fill: var(--accent-gold);
       filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.8));
-      animation: starPulse 1.5s infinite alternate ease-in-out;
+      animation: starSpinDance 1.2s infinite ease-in-out alternate;
     }
-    @keyframes starPulse {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.15); }
+    .star-icon:nth-child(2) { animation-delay: 0.2s; }
+    .star-icon:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes starSpinDance {
+      0% { transform: translateY(0) rotate(0deg) scale(1); }
+      50% { transform: translateY(-8px) rotate(15deg) scale(1.1); }
+      100% { transform: translateY(0) rotate(-15deg) scale(1); }
     }
   </style>
 </head>
 <body>
-
 <div class="container">
+  <!-- Mission Navigation -->
+  <div class="nav-bar" id="navBar"></div>
+
+  <!-- Telemetry Bar -->
   <div class="telemetry-bar">
     <div>LESSON: <span id="lessonTitle">1</span></div>
+    <div class="star-counter">
+      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <span id="totalStarsCount">0</span> STARS
+    </div>
+    <div>MISTAKES: <span id="mistakeVal">0</span></div>
     <div>ACCURACY: <span id="accuracyVal">100%</span></div>
   </div>
 
+  <!-- Level Up Dashboard View (Shown only on Level Up Screen) -->
+  <div id="levelUpDashboard" class="level-up-dashboard" style="display: none;">
+    <div class="level-up-header">
+      <h2>Level up to BRONZE</h2>
+      <p style="color: #94a3b8;">Complete all lessons and pass the final evaluation!</p>
+    </div>
+    <div class="lesson-checklist" id="lessonChecklist"></div>
+    <div class="challenge-req-box">
+      <strong>🎯 Level Up Challenge Requirement:</strong> Complete the scrambled sequence with no more than <strong>2 mistakes</strong>!
+    </div>
+  </div>
+
+  <!-- Terminal Display -->
   <div class="terminal">
     <div class="rocket-container">
       <div id="activeRocket" style="display: none;">🚀</div>
@@ -186,7 +304,8 @@
     <div id="textNodesContainer" class="text-display"></div>
   </div>
 
-  <div class="keyboard">
+  <!-- On-Screen Keyboard (Hidden during Level Up Challenge) -->
+  <div class="keyboard" id="keyboardContainer">
     <div class="key-row">
       <div class="key" id="key-a">A</div>
       <div class="key" id="key-s">S</div>
@@ -204,12 +323,13 @@
   </div>
 </div>
 
+<!-- Modal Dialog -->
 <div id="lessonModal" class="modal">
   <div class="modal-card" id="modalContent"></div>
 </div>
 
 <script>
-  const lessons = [
+  const baseLessons = [
     { id: 1, text: "f f j j f j f j" },
     { id: 2, text: "d d k k d k d k" },
     { id: 3, text: "a a l l a l a l" },
@@ -218,56 +338,134 @@
     { id: 6, text: "F J D K A L", requiresShift: true }
   ];
 
+  const levelUpBaseString = "jsgl;ahdkf";
+  
   let currentLessonIdx = 0;
+  let isLevelUpMode = false;
   let currentIndex = 0;
   let correctTyped = 0;
+  let currentMistakes = 0;
   let errorIndices = [];
   let lessonMistakes = {};
+  let completedLessons = {};
+  let earnedStars = {};
   let rocketTimer = null;
   let rocketTop = 80;
+  let activeLevelUpText = "";
 
   const targetContainer = document.getElementById('textNodesContainer');
 
   function init() {
-    loadMistakeHistory();
+    loadProgress();
+    renderNav();
     setupLesson();
     window.addEventListener('keydown', handleKeyPress);
     window.addEventListener('keyup', handleKeyUp);
   }
 
+  function renderNav() {
+    const navBar = document.getElementById('navBar');
+    navBar.innerHTML = '';
+    
+    baseLessons.forEach((l, idx) => {
+      const btn = document.createElement('button');
+      btn.className = `nav-btn ${(!isLevelUpMode && currentLessonIdx === idx) ? 'active' : ''}`;
+      btn.innerText = `Lesson ${l.id}`;
+      btn.onclick = () => switchLesson(idx, false);
+      navBar.appendChild(btn);
+    });
+
+    const levelUpBtn = document.createElement('button');
+    levelUpBtn.className = `nav-btn level-up-btn ${isLevelUpMode ? 'active' : ''}`;
+    levelUpBtn.innerText = `Level Up 🏆`;
+    levelUpBtn.onclick = () => switchLesson(0, true);
+    navBar.appendChild(levelUpBtn);
+  }
+
+  function switchLesson(idx, isLevelUp) {
+    currentLessonIdx = idx;
+    isLevelUpMode = isLevelUp;
+    renderNav();
+    setupLesson();
+  }
+
+  function scrambleString(str) {
+    const arr = str.split('');
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.join('');
+  }
+
   function setupLesson() {
     currentIndex = 0;
     correctTyped = 0;
+    currentMistakes = 0;
     errorIndices = [];
     clearInterval(rocketTimer);
-    
-    const lesson = lessons[currentLessonIdx];
-    document.getElementById('lessonTitle').innerText = lesson.id;
-    
+
+    const keyboardContainer = document.getElementById('keyboardContainer');
+    const levelUpDashboard = document.getElementById('levelUpDashboard');
     const rocket = document.getElementById('activeRocket');
-    if (lesson.isRocket) {
-      rocket.style.display = 'block';
-      startRocketAscent();
-    } else {
+
+    if (isLevelUpMode) {
+      document.getElementById('lessonTitle').innerText = "LEVEL UP";
+      keyboardContainer.style.display = 'none'; // No keyboard on level up screen
+      levelUpDashboard.style.display = 'block';
       rocket.style.display = 'none';
+      
+      activeLevelUpText = scrambleString(levelUpBaseString);
+      renderChecklist();
+    } else {
+      const lesson = baseLessons[currentLessonIdx];
+      document.getElementById('lessonTitle').innerText = lesson.id;
+      keyboardContainer.style.display = 'flex';
+      levelUpDashboard.style.display = 'none';
+
+      if (lesson.isRocket) {
+        rocket.style.display = 'block';
+        startRocketAscent();
+      } else {
+        rocket.style.display = 'none';
+      }
     }
 
     renderText();
     updateStats();
+    updateTotalStars();
+  }
+
+  function renderChecklist() {
+    const container = document.getElementById('lessonChecklist');
+    container.innerHTML = '';
+    baseLessons.forEach((l) => {
+      const isDone = completedLessons[l.id];
+      const item = document.createElement('div');
+      item.className = `checklist-item ${isDone ? 'completed' : ''}`;
+      item.innerHTML = `
+        <span>Lesson ${l.id}</span>
+        ${isDone ? '<span class="check-icon">✓ Completed</span>' : '<span class="lock-icon">🔒 Pending</span>'}
+      `;
+      container.appendChild(item);
+    });
+  }
+
+  function getActiveText() {
+    return isLevelUpMode ? activeLevelUpText : baseLessons[currentLessonIdx].text;
   }
 
   function renderText() {
     targetContainer.innerHTML = '';
-    const text = lessons[currentLessonIdx].text;
-    const history = lessonMistakes[currentLessonIdx] || [];
+    const text = getActiveText();
+    const history = isLevelUpMode ? [] : (lessonMistakes[currentLessonIdx] || []);
     const historicalMistakeIndices = history.map(m => m.index);
 
     for (let i = 0; i < text.length; i++) {
       const span = document.createElement('span');
       span.className = 'char-node';
       span.innerText = text[i];
-
-      // Highlight spaces or letters cleanly with red boxes for active or historical mistakes
+      
       if (historicalMistakeIndices.includes(i) || errorIndices.includes(i)) {
         span.classList.add('char-error');
       } else if (i === currentIndex) {
@@ -275,26 +473,27 @@
       } else if (i < currentIndex) {
         span.classList.add('char-done');
       }
-
       targetContainer.appendChild(span);
     }
   }
 
   function handleKeyPress(e) {
-    const lesson = lessons[currentLessonIdx];
-    const targetText = lesson.text;
+    if (e.key === 'Shift') return;
+    
+    const targetText = getActiveText();
     const expectedChar = targetText[currentIndex];
 
-    // Key visualization
-    highlightKey(e.code, true);
-
-    // Lesson 6 Shift key validation logic
-    if (lesson.requiresShift) {
-      const isCapital = expectedChar === expectedChar.toUpperCase() && expectedChar !== expectedChar.toLowerCase();
-      if (isCapital && !e.shiftKey) {
-        recordMistake(currentIndex, expectedChar, e.key);
-        renderText();
-        return;
+    if (!isLevelUpMode) {
+      highlightKey(e.code, true);
+      const lesson = baseLessons[currentLessonIdx];
+      if (lesson.requiresShift) {
+        const isCapital = expectedChar === expectedChar.toUpperCase() && expectedChar !== expectedChar.toLowerCase();
+        if (isCapital && !e.shiftKey) {
+          recordMistake(currentIndex, expectedChar, e.key);
+          currentMistakes++;
+          renderText();
+          return;
+        }
       }
     }
 
@@ -305,11 +504,12 @@
       correctTyped++;
       currentIndex++;
       
-      if (lesson.isRocket) {
+      if (!isLevelUpMode && baseLessons[currentLessonIdx].isRocket) {
         resetRocketPosition();
       }
-    } else if (e.key !== 'Shift') {
-      recordMistake(currentIndex, expectedChar, typedChar);
+    } else {
+      currentMistakes++;
+      if (!isLevelUpMode) recordMistake(currentIndex, expectedChar, typedChar);
       errorIndices.push(currentIndex);
     }
 
@@ -323,7 +523,7 @@
   }
 
   function handleKeyUp(e) {
-    highlightKey(e.code, false);
+    if (!isLevelUpMode) highlightKey(e.code, false);
   }
 
   function highlightKey(code, active) {
@@ -343,25 +543,20 @@
     const rocket = document.getElementById('activeRocket');
     rocket.style.top = `${rocketTop}%`;
     rocket.style.filter = "drop-shadow(0 0 8px #3b82f6)";
-
     rocketTimer = setInterval(() => {
       rocketTop -= 1.2;
       rocket.style.top = `${rocketTop}%`;
-
-      // Color transition as rocket nears top
       if (rocketTop < 35) {
         rocket.style.filter = "drop-shadow(0 0 12px #ef4444) hue-rotate(140deg)";
       }
-
       if (rocketTop <= 5) {
-        // Rocket hit top -> mistake
-        recordMistake(currentIndex, lessons[currentLessonIdx].text[currentIndex], 'TIMEOUT');
+        recordMistake(currentIndex, baseLessons[currentLessonIdx].text[currentIndex], 'TIMEOUT');
+        currentMistakes++;
         errorIndices.push(currentIndex);
         currentIndex++;
         resetRocketPosition();
         renderText();
-
-        if (currentIndex >= lessons[currentLessonIdx].text.length) {
+        if (currentIndex >= baseLessons[currentLessonIdx].text.length) {
           clearInterval(rocketTimer);
           checkCompletion();
         }
@@ -388,22 +583,20 @@
       typed: typed,
       time: new Date().toLocaleTimeString()
     });
-    saveMistakeHistory();
-  }
-
-  function saveMistakeHistory() {
-    localStorage.setItem('qwerty_mission1_mistakes', JSON.stringify(lessonMistakes));
-  }
-
-  function loadMistakeHistory() {
-    const data = localStorage.getItem('qwerty_mission1_mistakes');
-    if (data) lessonMistakes = JSON.parse(data);
+    saveProgress();
   }
 
   function updateStats() {
     const total = correctTyped + errorIndices.length;
     const acc = total > 0 ? Math.round((correctTyped / total) * 100) : 100;
     document.getElementById('accuracyVal').innerText = `${acc}%`;
+    document.getElementById('mistakeVal').innerText = currentMistakes;
+  }
+
+  function updateTotalStars() {
+    let count = 0;
+    Object.values(earnedStars).forEach(s => count += s);
+    document.getElementById('totalStarsCount').innerText = count;
   }
 
   function checkCompletion() {
@@ -412,32 +605,69 @@
     const modal = document.getElementById('lessonModal');
     const content = document.getElementById('modalContent');
 
-    if (accuracy < 80) {
-      content.innerHTML = `
-        <h2 style="color: var(--accent-red)">⚠️ Try Again</h2>
-        <p style="margin: 15px 0;">You achieved <strong>${accuracy}%</strong> accuracy. You need at least 80% to complete this lesson.</p>
-        <button class="btn" onclick="closeModal(false)">🔄 Retry Lesson</button>
-      `;
+    if (isLevelUpMode) {
+      // Level Up Challenge Logic: <= 2 mistakes allowed
+      if (currentMistakes <= 2) {
+        triggerFireworks(); // Fireworks ONLY on Level Up completion
+        content.innerHTML = `
+          <h2 style="color: var(--accent-gold); font-size: 1.8rem; margin-bottom: 10px;">🏆 LEVEL UP!</h2>
+          <p style="font-size: 1.1rem; margin: 15px 0; line-height: 1.5;">
+            <strong>Congratulations! You’ve reached the BRONZE level. You are now a CADET!</strong>
+          </p>
+          <p style="color: var(--accent-green); font-size: 0.95rem;">Mistakes: ${currentMistakes} / 2 allowed</p>
+          <button class="btn" onclick="closeModal(false)">Awesome!</button>
+        `;
+      } else {
+        content.innerHTML = `
+          <h2 style="color: var(--accent-red)">⚠️ Challenge Failed</h2>
+          <p style="margin: 15px 0;">You made <strong>${currentMistakes} mistakes</strong>. A maximum of 2 mistakes is allowed to level up.</p>
+          <button class="btn" onclick="closeModal(false)">🔄 Try Level Up Again</button>
+        `;
+      }
     } else {
-      triggerFireworks();
-      content.innerHTML = `
-        <h2 style="color: var(--accent-green)">🎉 Lesson Complete!</h2>
-        <div class="star-rating">
-          <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        </div>
-        <p>Accuracy: <strong>${accuracy}%</strong></p>
-        <button class="btn" onclick="closeModal(true)">Next Lesson ➔</button>
-      `;
+      // Standard Lesson Completion Logic
+      if (accuracy < 80) {
+        content.innerHTML = `
+          <h2 style="color: var(--accent-red)">⚠️ Try Again</h2>
+          <p style="margin: 15px 0;">You achieved <strong>${accuracy}%</strong> accuracy. You need at least 80% to complete this lesson.</p>
+          <button class="btn" onclick="closeModal(false)">🔄 Retry Lesson</button>
+        `;
+      } else {
+        // Calculate stars: 3 stars (100%), 2 stars (>=90%), 1 star (>=80%)
+        let starsAwarded = 1;
+        if (accuracy === 100) starsAwarded = 3;
+        else if (accuracy >= 90) starsAwarded = 2;
+
+        const currentLessonId = baseLessons[currentLessonIdx].id;
+        completedLessons[currentLessonId] = true;
+        earnedStars[currentLessonId] = Math.max(earnedStars[currentLessonId] || 0, starsAwarded);
+        saveProgress();
+
+        let starsHtml = '';
+        for (let i = 0; i < starsAwarded; i++) {
+          starsHtml += `<svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+        }
+
+        content.innerHTML = `
+          <h2 style="color: var(--accent-green)">🎉 Lesson Complete!</h2>
+          <div class="star-rating">${starsHtml}</div>
+          <p>Accuracy: <strong>${accuracy}%</strong></p>
+          <button class="btn" onclick="closeModal(true)">Next Lesson ➔</button>
+        `;
+      }
     }
     modal.style.display = 'flex';
   }
 
   function closeModal(advance) {
     document.getElementById('lessonModal').style.display = 'none';
-    if (advance && currentLessonIdx < lessons.length - 1) {
-      currentLessonIdx++;
+    if (advance && !isLevelUpMode) {
+      if (currentLessonIdx < baseLessons.length - 1) {
+        currentLessonIdx++;
+      } else {
+        isLevelUpMode = true;
+      }
+      renderNav();
     }
     setupLesson();
   }
@@ -449,21 +679,26 @@
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
     let particles = [];
-    for (let i = 0; i < 60; i++) {
-      particles.push({
-        x: canvas.width / 2, y: canvas.height / 2,
-        vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10,
-        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-        radius: Math.random() * 3 + 2, alpha: 1
-      });
+    
+    // Multi-burst fireworks launcher
+    for (let burst = 0; burst < 3; burst++) {
+      const originX = canvas.width * (0.25 + Math.random() * 0.5);
+      const originY = canvas.height * (0.2 + Math.random() * 0.4);
+      for (let i = 0; i < 50; i++) {
+        particles.push({
+          x: originX, y: originY,
+          vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12,
+          color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+          radius: Math.random() * 3 + 2, alpha: 1
+        });
+      }
     }
 
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach((p, i) => {
-        p.x += p.vx; p.y += p.vy; p.alpha -= 0.02;
+        p.x += p.vx; p.y += p.vy; p.alpha -= 0.015;
         ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(p.alpha, 0); ctx.fill();
         if (p.alpha <= 0) particles.splice(i, 1);
@@ -472,6 +707,23 @@
       else canvas.remove();
     }
     animate();
+  }
+
+  function saveProgress() {
+    localStorage.setItem('qwerty_mission1_mistakes', JSON.stringify(lessonMistakes));
+    localStorage.setItem('qwerty_mission1_completed', JSON.stringify(completedLessons));
+    localStorage.setItem('qwerty_mission1_stars', JSON.stringify(earnedStars));
+  }
+
+  function loadProgress() {
+    const mistakesData = localStorage.getItem('qwerty_mission1_mistakes');
+    if (mistakesData) lessonMistakes = JSON.parse(mistakesData);
+
+    const completedData = localStorage.getItem('qwerty_mission1_completed');
+    if (completedData) completedLessons = JSON.parse(completedData);
+
+    const starsData = localStorage.getItem('qwerty_mission1_stars');
+    if (starsData) earnedStars = JSON.parse(starsData);
   }
 
   window.onload = init;
