@@ -159,55 +159,51 @@
       bottom: 12%;
     }
 
-    /* Scattered Wave Canvas Trajectory Map */
+    /* Scattered Grid Map */
     .mission-map {
       position: relative;
       z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       width: 100%;
-      max-width: 1300px;
-      height: 520px;
+      max-width: 1200px;
+      height: 580px;
       margin: 10px auto;
-      padding: 0 20px;
     }
 
     .mission-node {
+      position: absolute;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-decoration: none;
       cursor: pointer;
       transition: transform 0.3s ease;
-      position: relative;
     }
 
     .mission-node:hover {
       transform: scale(1.18) !important;
     }
 
-    /* Scattered vertical positions filling full canvas height */
-    #mission1Node  { transform: translateY(180px); }  /* Bottom-Left Start */
-    #mission2Node  { transform: translateY(40px); }   /* Rising Up */
-    #mission3Node  { transform: translateY(-160px); } /* Peak 1 (High Top) */
-    #mission4Node  { transform: translateY(-30px); }  /* Dipping Down */
-    #mission5Node  { transform: translateY(100px); }  /* Dropping */
-    #mission6Node  { transform: translateY(200px); }  /* Deep Valley 1 (Bottom) */
-    #mission7Node  { transform: translateY(110px); }  /* Starting Rise */
-    #mission8Node  { transform: translateY(-20px); }  /* Crossing Middle */
-    #mission9Node  { transform: translateY(-140px); } /* High Peak 2 */
-    #mission10Node { transform: translateY(-170px); } /* Peak Ridge */
-    #mission11Node { transform: translateY(-20px); }  /* Dropping Mid */
-    #mission12Node { transform: translateY(110px); }  /* Dipping Low */
-    #mission13Node { transform: translateY(190px); }  /* Bottom Valley 2 */
-    #mission14Node { transform: translateY(30px); }   /* Climbing Up */
-    #mission15Node { transform: translateY(-150px); } /* Top-Right Ending */
+    /* Precise Positioning Matching Your Slide Blueprint */
+    #mission1Node  { top: 5%;   left: 2%; }
+    #mission2Node  { top: 20%;  left: 10%; }
+    #mission3Node  { top: 38%;  left: 18%; }
+    #mission4Node  { top: 55%;  left: 12%; }
+    #mission5Node  { top: 70%;  left: 5%; }
+    #mission6Node  { top: 85%;  left: 20%; }
+    #mission7Node  { top: 72%;  left: 32%; }
+    #mission8Node  { top: 52%;  left: 42%; }
+    #mission9Node  { top: 30%;  left: 50%; }
+    #mission10Node { top: 8%;   left: 60%; }
+    #mission11Node { top: 30%;  left: 70%; }
+    #mission12Node { top: 55%;  left: 80%; }
+    #mission13Node { top: 82%;  left: 75%; }
+    #mission14Node { top: 62%;  left: 90%; }
+    #mission15Node { top: 22%;  left: 92%; }
 
     /* Graphic Icon Container */
     .icon-container {
-      width: 70px;
-      height: 70px;
+      width: 65px;
+      height: 65px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -215,13 +211,13 @@
     }
     
     .pixel-emoji {
-      font-size: 3rem;
+      font-size: 2.8rem;
       filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
       animation: float 3.5s ease-in-out infinite;
     }
 
     .planet-body {
-      width: 60px; height: 60px;
+      width: 55px; height: 55px;
       border-radius: 50%;
       position: relative;
       box-shadow: inset -8px -5px 0 0 rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.2);
@@ -234,7 +230,7 @@
     .planet-ring {
       position: absolute;
       top: 50%; left: 50%;
-      width: 80px; height: 20px;
+      width: 75px; height: 18px;
       border: 3px solid rgba(253, 224, 71, 0.75);
       border-radius: 50%;
       transform: translate(-50%, -50%) rotate(-25deg);
@@ -242,7 +238,7 @@
     }
 
     .gas-star {
-      width: 62px; height: 62px;
+      width: 58px; height: 58px;
       background: radial-gradient(circle, #ff7b00 0%, #ff0055 70%, #4a001e 100%);
       border-radius: 50%;
       box-shadow: 0 0 16px #ff0055;
@@ -250,7 +246,7 @@
     }
 
     .moon-icon {
-      width: 58px; height: 58px;
+      width: 52px; height: 52px;
       background: #e2e8f0;
       border-radius: 50%;
       box-shadow: inset -8px -5px 0 0 #94a3b8, 0 0 10px rgba(226, 232, 240, 0.5);
@@ -261,7 +257,7 @@
     .moon-crater-2 { position: absolute; top: 26px; left: 24px; width: 14px; height: 14px; background: #cbd5e1; border-radius: 50%; }
 
     .sun-icon {
-      width: 62px; height: 62px;
+      width: 58px; height: 58px;
       background: radial-gradient(circle, #fde047 0%, #f59e0b 100%);
       border-radius: 50%;
       box-shadow: 0 0 16px #f59e0b, 0 0 25px rgba(245, 158, 11, 0.4);
@@ -270,21 +266,21 @@
 
     /* Mission Labels */
     .mission-label {
-      margin-top: 6px;
+      margin-top: 4px;
       background: rgba(15, 23, 42, 0.92);
       border: 1.5px solid var(--class-theme-color);
       border-radius: 8px;
-      padding: 5px 8px;
+      padding: 4px 8px;
       text-align: center;
       backdrop-filter: blur(4px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
       transition: all 0.3s ease;
-      min-width: 90px;
+      min-width: 85px;
     }
     
     .mission-title {
       font-family: var(--font-tech);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 800;
       color: var(--class-theme-color);
       white-space: nowrap;
@@ -292,13 +288,13 @@
     }
     .mission-subtitle {
       font-family: var(--font-tech);
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 600;
       color: #e2e8f0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      margin-top: 2px;
+      margin-top: 1px;
     }
 
     /* Green Completion Glow Style */
@@ -476,7 +472,7 @@
     <div id="studentBadge" class="student-badge-display" style="display: none;"></div>
   </header>
 
-  <!-- Scattered Waving Mission Path -->
+  <!-- Scattered Custom Blueprint Map -->
   <main class="mission-map">
     <a href="mission1/index.html" class="mission-node" id="mission1Node">
       <div class="icon-container"><div class="pixel-emoji">🚀</div></div>
@@ -665,7 +661,6 @@
     let selectedClassColor = "";
 
     function initLogin() {
-      // Changed from localStorage to sessionStorage so session clears when browser/tab closes
       const savedClass = sessionStorage.getItem('qwerty_class_name');
       const savedColor = sessionStorage.getItem('qwerty_class_color');
       const savedComp = sessionStorage.getItem('qwerty_computer_num');
