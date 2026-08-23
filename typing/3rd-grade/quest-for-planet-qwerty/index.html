@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quest for Planet Qwerty - Mission Hub</title>
   
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   
   <style>
     :root {
@@ -14,7 +15,6 @@
       --secondary: #0ea5e9;
       --accent-yellow: #f59e0b;
       --accent-green: #22c55e;
-      --font-playful: 'Fredoka One', cursive;
       --font-body: 'Open Sans', system-ui, -apple-system, sans-serif;
       --font-tech: 'Share Tech Mono', monospace;
     }
@@ -35,15 +35,6 @@
       padding: 10px 10px 20px 100px;
     }
 
-    .hub-viewport-border {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      border: 10px solid var(--class-theme-color);
-      pointer-events: none;
-      z-index: 100;
-      box-shadow: inset 0 0 20px var(--class-theme-color);
-      transition: border-color 0.4s ease, box-shadow 0.4s ease;
-    }
     #spaceCanvas {
       position: fixed;
       top: 0; left: 0;
@@ -51,37 +42,40 @@
       z-index: 1;
     }
 
-    /* Compact Header */
+    /* Sci-Fi Header Styling */
     header {
       position: relative;
       z-index: 10;
-      margin-top: 5px;
+      margin-top: 10px;
       text-align: center;
     }
     h1 {
-      font-family: var(--font-playful);
-      font-size: 2rem;
+      font-family: var(--font-tech);
+      font-size: 2.2rem;
       color: var(--class-theme-color);
-      text-shadow: 0 0 12px var(--class-theme-color);
-      letter-spacing: 1px;
+      text-shadow: 0 0 10px var(--class-theme-color), 0 0 20px rgba(56, 189, 248, 0.4);
+      letter-spacing: 3px;
+      text-transform: uppercase;
       line-height: 1.1;
     }
     p.subtitle {
-      font-size: 0.85rem;
-      color: #cbd5e1;
-      margin-top: 2px;
-      font-weight: 600;
+      font-family: var(--font-tech);
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-top: 4px;
+      letter-spacing: 1px;
     }
     .student-badge-display {
-      margin-top: 4px;
+      margin-top: 6px;
       font-family: var(--font-tech);
       font-size: 0.85rem;
       background: rgba(15, 23, 42, 0.8);
       border: 1px solid var(--class-theme-color);
       color: var(--class-theme-color);
-      padding: 2px 10px;
-      border-radius: 15px;
+      padding: 2px 12px;
+      border-radius: 12px;
       display: inline-block;
+      letter-spacing: 1px;
     }
 
     /* Rank Tracker Sidebar */
@@ -107,7 +101,7 @@
     .rank-track-line {
       position: absolute;
       top: 35px; bottom: 35px;
-      width: 5px;
+      width: 4px;
       background: #334155;
       z-index: 1;
     }
@@ -151,7 +145,7 @@
       text-align: center;
     }
 
-    /* Friendly Smiling Astronaut */
+    /* Smiling Astronaut Tracker */
     .astronaut-tracker {
       position: absolute;
       left: 50%;
@@ -163,21 +157,26 @@
       bottom: 12%;
     }
 
-    /* S-Curve Waving Path Layout */
+    /* Full S-Curve Grid Layout (Bottom Left to Top Right trajectory) */
     .mission-map {
       position: relative;
       z-index: 10;
       display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 25px 15px;
+      flex-direction: column;
+      gap: 30px;
       width: 100%;
-      max-width: 1150px;
-      margin: 15px auto;
+      max-width: 1100px;
+      margin: 30px auto;
       padding: 10px;
     }
     
+    .map-row {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+    }
+
     .mission-node {
       display: flex;
       flex-direction: column;
@@ -186,36 +185,35 @@
       cursor: pointer;
       transition: transform 0.3s ease;
       position: relative;
-      width: 18%; /* Fits 5 missions nicely across per row */
     }
 
-    /* Wave Pattern Offsets: Bottom-Left to Top-Right trajectory */
-    .mission-node:nth-child(1)  { transform: translateY(50px); }  /* Bottom Left Start */
-    .mission-node:nth-child(2)  { transform: translateY(20px); }
-    .mission-node:nth-child(3)  { transform: translateY(-20px); }
-    .mission-node:nth-child(4)  { transform: translateY(-45px); }
-    .mission-node:nth-child(5)  { transform: translateY(-20px); }
+    /* Wave Curve Heights for Each Row */
+    .row-bottom .mission-node:nth-child(1) { transform: translateY(40px); }  /* Mission 1 (Bottom-Left Start) */
+    .row-bottom .mission-node:nth-child(2) { transform: translateY(10px); }  /* Mission 2 */
+    .row-bottom .mission-node:nth-child(3) { transform: translateY(-20px); } /* Mission 3 */
+    .row-bottom .mission-node:nth-child(4) { transform: translateY(0px); }   /* Mission 4 */
+    .row-bottom .mission-node:nth-child(5) { transform: translateY(30px); }  /* Mission 5 */
 
-    .mission-node:nth-child(6)  { transform: translateY(20px); }
-    .mission-node:nth-child(7)  { transform: translateY(45px); }
-    .mission-node:nth-child(8)  { transform: translateY(20px); }
-    .mission-node:nth-child(9)  { transform: translateY(-20px); }
-    .mission-node:nth-child(10) { transform: translateY(-45px); }
+    .row-mid .mission-node:nth-child(1) { transform: translateY(25px); }  /* Mission 6 */
+    .row-mid .mission-node:nth-child(2) { transform: translateY(-15px); } /* Mission 7 */
+    .row-mid .mission-node:nth-child(3) { transform: translateY(-40px); } /* Mission 8 */
+    .row-mid .mission-node:nth-child(4) { transform: translateY(-15px); } /* Mission 9 */
+    .row-mid .mission-node:nth-child(5) { transform: translateY(25px); }  /* Mission 10 */
 
-    .mission-node:nth-child(11) { transform: translateY(-20px); }
-    .mission-node:nth-child(12) { transform: translateY(15px); }
-    .mission-node:nth-child(13) { transform: translateY(35px); }
-    .mission-node:nth-child(14) { transform: translateY(0px); }
-    .mission-node:nth-child(15) { transform: translateY(-50px); } /* Top Right End */
+    .row-top .mission-node:nth-child(1) { transform: translateY(30px); }  /* Mission 11 */
+    .row-top .mission-node:nth-child(2) { transform: translateY(0px); }   /* Mission 12 */
+    .row-top .mission-node:nth-child(3) { transform: translateY(-20px); } /* Mission 13 */
+    .row-top .mission-node:nth-child(4) { transform: translateY(-35px); } /* Mission 14 */
+    .row-top .mission-node:nth-child(5) { transform: translateY(-50px); } /* Mission 15 (Top-Right End) */
 
     .mission-node:hover {
       transform: scale(1.1) translateY(-5px) !important;
     }
 
-    /* Smaller Graphic Icons (80px x 80px) */
+    /* Graphic Icon Container */
     .icon-container {
-      width: 80px;
-      height: 80px;
+      width: 75px;
+      height: 75px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -223,17 +221,16 @@
     }
     
     .pixel-emoji {
-      font-size: 3.5rem;
+      font-size: 3.2rem;
       filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
       animation: float 3.5s ease-in-out infinite;
     }
 
     .planet-body {
-      width: 65px;
-      height: 65px;
+      width: 60px; height: 60px;
       border-radius: 50%;
       position: relative;
-      box-shadow: inset -9px -6px 0 0 rgba(0,0,0,0.5), 0 0 12px rgba(255,255,255,0.2);
+      box-shadow: inset -8px -5px 0 0 rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.2);
     }
     .planet-red { background: radial-gradient(circle at 30% 30%, #f43f5e, #881337); }
     .planet-purple { background: radial-gradient(circle at 30% 30%, #a855f7, #581c87); }
@@ -243,95 +240,92 @@
     .planet-ring {
       position: absolute;
       top: 50%; left: 50%;
-      width: 95px; height: 22px;
-      border: 4px solid rgba(253, 224, 71, 0.75);
+      width: 85px; height: 20px;
+      border: 3px solid rgba(253, 224, 71, 0.75);
       border-radius: 50%;
       transform: translate(-50%, -50%) rotate(-25deg);
       pointer-events: none;
     }
 
     .gas-star {
-      width: 70px; height: 70px;
+      width: 65px; height: 65px;
       background: radial-gradient(circle, #ff7b00 0%, #ff0055 70%, #4a001e 100%);
       border-radius: 50%;
-      box-shadow: 0 0 20px #ff0055;
+      box-shadow: 0 0 18px #ff0055;
       animation: pulse 2s ease-in-out infinite alternate;
     }
 
     .moon-icon {
-      width: 65px; height: 65px;
+      width: 60px; height: 60px;
       background: #e2e8f0;
       border-radius: 50%;
-      box-shadow: inset -9px -6px 0 0 #94a3b8, 0 0 12px rgba(226, 232, 240, 0.5);
+      box-shadow: inset -8px -5px 0 0 #94a3b8, 0 0 10px rgba(226, 232, 240, 0.5);
       position: relative;
       overflow: hidden;
     }
-    .moon-crater-1 { position: absolute; top: 10px; left: 14px; width: 14px; height: 14px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 1px 1px 0 #94a3b8; }
-    .moon-crater-2 { position: absolute; top: 32px; left: 34px; width: 18px; height: 18px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 1px 1px 0 #94a3b8; }
-    .moon-crater-3 { position: absolute; top: 40px; left: 12px; width: 10px; height: 10px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 1px 1px 0 #94a3b8; }
+    .moon-crater-1 { position: absolute; top: 10px; left: 12px; width: 12px; height: 12px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 1px 1px 0 #94a3b8; }
+    .moon-crater-2 { position: absolute; top: 30px; left: 30px; width: 16px; height: 16px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 1px 1px 0 #94a3b8; }
+    .moon-crater-3 { position: absolute; top: 38px; left: 10px; width: 8px; height: 8px; background: #cbd5e1; border-radius: 50%; box-shadow: inset 1px 1px 0 #94a3b8; }
 
     .sun-icon {
-      width: 70px; height: 70px;
+      width: 65px; height: 65px;
       background: radial-gradient(circle, #fde047 0%, #f59e0b 100%);
       border-radius: 50%;
-      box-shadow: 0 0 20px #f59e0b, 0 0 35px rgba(245, 158, 11, 0.4);
+      box-shadow: 0 0 18px #f59e0b, 0 0 30px rgba(245, 158, 11, 0.4);
       animation: pulse 2.5s ease-in-out infinite alternate;
     }
 
-    /* Tech-Mono Font Styling for Mission Labels */
+    /* Narrow, Compact Mission Labels */
     .mission-label {
-      margin-top: 6px;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1.5px solid var(--class-theme-color);
-      border-radius: 8px;
-      padding: 4px 8px;
+      margin-top: 5px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--class-theme-color);
+      border-radius: 6px;
+      padding: 3px 6px;
       text-align: center;
       backdrop-filter: blur(4px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
       transition: all 0.3s ease;
-      width: 100%;
-      max-width: 140px;
+      width: 105px; /* Narrower width */
     }
     
     .mission-title {
-      font-family: var(--font-tech); /* 'Share Tech Mono' font applied */
-      font-size: 0.9rem;
+      font-family: var(--font-tech);
+      font-size: 0.8rem;
       font-weight: bold;
-      letter-spacing: 0.5px;
       color: var(--class-theme-color);
+      white-space: nowrap;
     }
     .mission-subtitle {
-      font-family: var(--font-tech); /* 'Share Tech Mono' font applied */
-      font-size: 0.72rem;
+      font-family: var(--font-tech);
+      font-size: 0.68rem;
       color: #cbd5e1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .star-score-badge {
       display: none;
       margin-top: 2px;
       font-family: var(--font-tech);
-      font-size: 0.7rem;
-      color: #000000;
-      background: var(--accent-yellow);
-      padding: 1px 6px;
-      border-radius: 8px;
+      font-size: 0.65rem;
+      color: var(--accent-yellow);
       font-weight: bold;
     }
 
     .mission-node.completed .mission-label {
       background: var(--accent-green) !important;
       border-color: #ffffff !important;
-      box-shadow: 0 0 12px rgba(34, 197, 94, 0.6) !important;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.6) !important;
     }
     .mission-node.completed .mission-title,
     .mission-node.completed .mission-subtitle {
       color: #020617 !important;
-      font-weight: 900;
+      font-weight: bold;
     }
     .mission-node.completed .star-score-badge {
-      display: inline-block;
-      background: #020617;
-      color: var(--accent-yellow);
-      border: 1px solid var(--accent-yellow);
+      display: block;
+      color: #020617;
     }
 
     /* Modal Login Screen Styles */
@@ -347,19 +341,20 @@
     }
     .login-card {
       background: #0f172a;
-      border: 3px solid var(--secondary);
-      border-radius: 20px;
+      border: 2px solid var(--secondary);
+      border-radius: 16px;
       padding: 25px;
-      max-width: 600px;
+      max-width: 550px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
+      box-shadow: 0 0 25px rgba(14, 165, 233, 0.25);
     }
     .login-title {
-      font-family: var(--font-playful);
-      font-size: 1.8rem;
+      font-family: var(--font-tech);
+      font-size: 1.6rem;
       color: #38bdf8;
       margin-bottom: 15px;
+      letter-spacing: 1px;
     }
     .login-grid {
       display: grid;
@@ -370,10 +365,10 @@
     .btn-class-select {
       background: #1e293b;
       border: 2px solid #334155;
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 10px;
       color: white;
-      font-family: var(--font-playful);
+      font-family: var(--font-tech);
       font-size: 1rem;
       cursor: pointer;
       display: flex;
@@ -385,13 +380,13 @@
       transform: translateY(-2px);
       border-color: #38bdf8;
     }
-    .helmet-svg { width: 36px; height: 36px; flex-shrink: 0; }
+    .helmet-svg { width: 32px; height: 32px; flex-shrink: 0; }
     .comp-grid {
       display: grid;
       grid-template-columns: repeat(8, 1fr);
       gap: 6px;
       margin-top: 12px;
-      max-height: 250px;
+      max-height: 220px;
       overflow-y: auto;
       padding: 4px;
     }
@@ -400,13 +395,25 @@
       border: 1px solid #334155;
       color: #cbd5e1;
       font-family: var(--font-tech);
-      font-size: 1rem;
-      padding: 8px 0;
+      font-size: 0.95rem;
+      padding: 6px 0;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
     }
     .btn-comp:hover { background: var(--class-theme-color); color: #020617; }
+    .btn-back {
+      margin-top: 15px;
+      background: transparent;
+      border: 1px solid #475569;
+      color: #cbd5e1;
+      font-family: var(--font-tech);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .btn-back:hover { border-color: #38bdf8; color: #38bdf8; }
     .btn-reset-login {
       background: transparent;
       border: 1px solid #475569;
@@ -417,14 +424,15 @@
       cursor: pointer;
     }
 
-    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
-    @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-5px); } }
+    @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.04); } }
 
     footer {
       position: relative;
       z-index: 10;
       margin-top: 10px;
-      font-size: 0.8rem;
+      font-family: var(--font-tech);
+      font-size: 0.85rem;
       color: #64748b;
       display: flex;
       align-items: center;
@@ -433,13 +441,11 @@
   </style>
 </head>
 <body>
-  <div class="hub-viewport-border" id="screenOutline"></div>
   <canvas id="spaceCanvas"></canvas>
 
   <!-- Side Rank Progress Bar -->
   <aside class="rank-tracker-sidebar">
     <div class="rank-track-line"></div>
-    <!-- Smiling Astronaut Tracker Icon -->
     <div class="astronaut-tracker" id="astroTracker">🧑‍🚀</div>
 
     <div class="rank-node rank-diamond" id="rank5Node">
@@ -466,179 +472,169 @@
 
   <header>
     <h1>Quest for Planet Qwerty</h1>
-    <p class="subtitle">Select your mission to begin typing training!</p>
+    <p class="subtitle">SELECT MISSION TO INITIALIZE TYPING SEQUENCE</p>
     <div id="studentBadge" class="student-badge-display" style="display: none;"></div>
   </header>
 
-  <!-- S-Curve Waving Mission Path -->
+  <!-- S-Curve Waving Mission Map Grid -->
   <main class="mission-map">
-    <!-- Mission 1 (Starts Bottom Left) -->
-    <a href="mission1/index.html" class="mission-node" id="mission1Node">
-      <div class="icon-container"><div class="pixel-emoji">🚀</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m1Title">Mission 1</div>
-        <div class="mission-subtitle">FJDK Lift-off</div>
-        <div class="star-score-badge" id="m1Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
-
-    <!-- Mission 2 -->
-    <a href="mission2/index.html" class="mission-node" id="mission2Node">
-      <div class="icon-container">
-        <div class="moon-icon">
-          <div class="moon-crater-1"></div>
-          <div class="moon-crater-2"></div>
-          <div class="moon-crater-3"></div>
+    
+    <!-- TOP ROW (Missions 11 to 15 - Reaches Top Right) -->
+    <div class="map-row row-top">
+      <a href="mission11/index.html" class="mission-node" id="mission11Node">
+        <div class="icon-container"><div class="pixel-emoji">🛸</div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m11Title">Mission 11</div>
+          <div class="mission-subtitle">B and N</div>
+          <div class="star-score-badge" id="m11Stars">⭐ 0 Stars</div>
         </div>
-      </div>
-      <div class="mission-label">
-        <div class="mission-title" id="m2Title">Mission 2</div>
-        <div class="mission-subtitle">SLA; Landing</div>
-        <div class="star-score-badge" id="m2Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+      </a>
 
-    <!-- Mission 3 -->
-    <a href="mission3/index.html" class="mission-node" id="mission3Node">
-      <div class="icon-container"><div class="sun-icon"></div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m3Title">Mission 3</div>
-        <div class="mission-subtitle">Helio Home</div>
-        <div class="star-score-badge" id="m3Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+      <a href="mission12/index.html" class="mission-node" id="mission12Node">
+        <div class="icon-container"><div class="planet-body planet-cyan"></div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m12Title">Mission 12</div>
+          <div class="mission-subtitle">C and ,</div>
+          <div class="star-score-badge" id="m12Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
 
-    <!-- Mission 4 -->
-    <a href="mission4/index.html" class="mission-node" id="mission4Node">
-      <div class="icon-container"><div class="pixel-emoji">🛰️</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m4Title">Mission 4</div>
-        <div class="mission-subtitle">E and I</div>
-        <div class="star-score-badge" id="m4Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+      <a href="mission13/index.html" class="mission-node" id="mission13Node">
+        <div class="icon-container"><div class="pixel-emoji">🌠</div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m13Title">Mission 13</div>
+          <div class="mission-subtitle">X and .</div>
+          <div class="star-score-badge" id="m13Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
 
-    <!-- Mission 5 -->
-    <a href="mission5/index.html" class="mission-node" id="mission5Node">
-      <div class="icon-container">
-        <div class="planet-body planet-red"></div>
-      </div>
-      <div class="mission-label">
-        <div class="mission-title" id="m5Title">Mission 5</div>
-        <div class="mission-subtitle">R and U</div>
-        <div class="star-score-badge" id="m5Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+      <a href="mission14/index.html" class="mission-node" id="mission14Node">
+        <div class="icon-container"><div class="planet-body planet-green"><div class="planet-ring"></div></div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m14Title">Mission 14</div>
+          <div class="mission-subtitle">Z / ?</div>
+          <div class="star-score-badge" id="m14Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
 
-    <!-- Mission 6 -->
-    <a href="mission6/index.html" class="mission-node" id="mission6Node">
-      <div class="icon-container"><div class="pixel-emoji">☄️</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m6Title">Mission 6</div>
-        <div class="mission-subtitle">T and Y</div>
-        <div class="star-score-badge" id="m6Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+      <!-- Mission 15 Ends Top Right -->
+      <a href="mission15/index.html" class="mission-node" id="mission15Node">
+        <div class="icon-container"><div class="pixel-emoji">💥</div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m15Title">Mission 15</div>
+          <div class="mission-subtitle">Punctuation</div>
+          <div class="star-score-badge" id="m15Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
+    </div>
 
-    <!-- Mission 7 -->
-    <a href="mission7/index.html" class="mission-node" id="mission7Node">
-      <div class="icon-container">
-        <div class="planet-body planet-purple"><div class="planet-ring"></div></div>
-      </div>
-      <div class="mission-label">
-        <div class="mission-title" id="m7Title">Mission 7</div>
-        <div class="mission-subtitle">W and O</div>
-        <div class="star-score-badge" id="m7Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+    <!-- MIDDLE ROW (Missions 6 to 10) -->
+    <div class="map-row row-mid">
+      <a href="mission6/index.html" class="mission-node" id="mission6Node">
+        <div class="icon-container"><div class="pixel-emoji">☄️</div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m6Title">Mission 6</div>
+          <div class="mission-subtitle">T and Y</div>
+          <div class="star-score-badge" id="m6Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
 
-    <!-- Mission 8 -->
-    <a href="mission8/index.html" class="mission-node" id="mission8Node">
-      <div class="icon-container"><div class="pixel-emoji">🪨</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m8Title">Mission 8</div>
-        <div class="mission-subtitle">Q and P</div>
-        <div class="star-score-badge" id="m8Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+      <a href="mission7/index.html" class="mission-node" id="mission7Node">
+        <div class="icon-container"><div class="planet-body planet-purple"><div class="planet-ring"></div></div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m7Title">Mission 7</div>
+          <div class="mission-subtitle">W and O</div>
+          <div class="star-score-badge" id="m7Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
 
-    <!-- Mission 9 -->
-    <a href="mission9/index.html" class="mission-node" id="mission9Node">
-      <div class="icon-container"><div class="pixel-emoji">🌀</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m9Title">Mission 9</div>
-        <div class="mission-subtitle">Top Row</div>
-        <div class="star-score-badge" id="m9Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+      <a href="mission8/index.html" class="mission-node" id="mission8Node">
+        <div class="icon-container"><div class="pixel-emoji">🪨</div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m8Title">Mission 8</div>
+          <div class="mission-subtitle">Q and P</div>
+          <div class="star-score-badge" id="m8Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
 
-    <!-- Mission 10 -->
-    <a href="mission10/index.html" class="mission-node" id="mission10Node">
-      <div class="icon-container"><div class="gas-star"></div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m10Title">Mission 10</div>
-        <div class="mission-subtitle">V and M</div>
-        <div class="star-score-badge" id="m10Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+      <a href="mission9/index.html" class="mission-node" id="mission9Node">
+        <div class="icon-container"><div class="pixel-emoji">🌀</div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m9Title">Mission 9</div>
+          <div class="mission-subtitle">Top Row</div>
+          <div class="star-score-badge" id="m9Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
 
-    <!-- Mission 11 -->
-    <a href="mission11/index.html" class="mission-node" id="mission11Node">
-      <div class="icon-container"><div class="pixel-emoji">🛸</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m11Title">Mission 11</div>
-        <div class="mission-subtitle">B and N</div>
-        <div class="star-score-badge" id="m11Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+      <a href="mission10/index.html" class="mission-node" id="mission10Node">
+        <div class="icon-container"><div class="gas-star"></div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m10Title">Mission 10</div>
+          <div class="mission-subtitle">V and M</div>
+          <div class="star-score-badge" id="m10Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
+    </div>
 
-    <!-- Mission 12 -->
-    <a href="mission12/index.html" class="mission-node" id="mission12Node">
-      <div class="icon-container">
-        <div class="planet-body planet-cyan"></div>
-      </div>
-      <div class="mission-label">
-        <div class="mission-title" id="m12Title">Mission 12</div>
-        <div class="mission-subtitle">C and ,</div>
-        <div class="star-score-badge" id="m12Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+    <!-- BOTTOM ROW (Missions 1 to 5 - Starts Bottom Left) -->
+    <div class="map-row row-bottom">
+      <!-- Mission 1 Starts Bottom Left -->
+      <a href="mission1/index.html" class="mission-node" id="mission1Node">
+        <div class="icon-container"><div class="pixel-emoji">🚀</div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m1Title">Mission 1</div>
+          <div class="mission-subtitle">FJDK Lift-off</div>
+          <div class="star-score-badge" id="m1Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
 
-    <!-- Mission 13 -->
-    <a href="mission13/index.html" class="mission-node" id="mission13Node">
-      <div class="icon-container"><div class="pixel-emoji">🌠</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m13Title">Mission 13</div>
-        <div class="mission-subtitle">X and .</div>
-        <div class="star-score-badge" id="m13Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+      <a href="mission2/index.html" class="mission-node" id="mission2Node">
+        <div class="icon-container">
+          <div class="moon-icon">
+            <div class="moon-crater-1"></div>
+            <div class="moon-crater-2"></div>
+            <div class="moon-crater-3"></div>
+          </div>
+        </div>
+        <div class="mission-label">
+          <div class="mission-title" id="m2Title">Mission 2</div>
+          <div class="mission-subtitle">SLA; Landing</div>
+          <div class="star-score-badge" id="m2Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
 
-    <!-- Mission 14 -->
-    <a href="mission14/index.html" class="mission-node" id="mission14Node">
-      <div class="icon-container">
-        <div class="planet-body planet-green"><div class="planet-ring"></div></div>
-      </div>
-      <div class="mission-label">
-        <div class="mission-title" id="m14Title">Mission 14</div>
-        <div class="mission-subtitle">Z / ?</div>
-        <div class="star-score-badge" id="m14Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+      <a href="mission3/index.html" class="mission-node" id="mission3Node">
+        <div class="icon-container"><div class="sun-icon"></div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m3Title">Mission 3</div>
+          <div class="mission-subtitle">Helio Home</div>
+          <div class="star-score-badge" id="m3Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
 
-    <!-- Mission 15 (Ends Top Right) -->
-    <a href="mission15/index.html" class="mission-node" id="mission15Node">
-      <div class="icon-container"><div class="pixel-emoji">💥</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m15Title">Mission 15</div>
-        <div class="mission-subtitle">Punctuation</div>
-        <div class="star-score-badge" id="m15Stars">⭐ 0 / 18 Stars</div>
-      </div>
-    </a>
+      <a href="mission4/index.html" class="mission-node" id="mission4Node">
+        <div class="icon-container"><div class="pixel-emoji">🛰️</div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m4Title">Mission 4</div>
+          <div class="mission-subtitle">E and I</div>
+          <div class="star-score-badge" id="m4Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
+
+      <a href="mission5/index.html" class="mission-node" id="mission5Node">
+        <div class="icon-container"><div class="planet-body planet-red"></div></div>
+        <div class="mission-label">
+          <div class="mission-title" id="m5Title">Mission 5</div>
+          <div class="mission-subtitle">R and U</div>
+          <div class="star-score-badge" id="m5Stars">⭐ 0 Stars</div>
+        </div>
+      </a>
+    </div>
+
   </main>
 
   <footer>
-    <span>Click any celestial object to launch into lessons.</span>
+    <span>Click object to launch lesson</span>
     <button class="btn-reset-login" onclick="clearLogin()">Change Class / Computer</button>
   </footer>
 
@@ -682,9 +678,12 @@
           </button>
         </div>
       </div>
+
       <div id="stepComputer" style="display: none;">
-        <h2 class="login-title" id="compStepTitle">Select Your Computer</h2>
+        <h2 class="login-title" id="compStepTitle">Select Computer</h2>
         <div class="comp-grid" id="compGrid"></div>
+        <!-- Back Button to Class Selection -->
+        <button class="btn-back" onclick="showTeacherStep()">← Back to Classes</button>
       </div>
     </div>
   </div>
@@ -755,7 +754,7 @@
       location.reload();
     }
 
-    // Dynamic Canvas Starfield
+    // Dynamic Canvas Starfield Background
     const canvas = document.getElementById('spaceCanvas');
     const ctx = canvas.getContext('2d');
     let stars = [];
@@ -789,7 +788,7 @@
       requestAnimationFrame(animateStars);
     }
 
-    // Load Mission Progress & Update Side Rank Level
+    // Load Progress & Update Star Counts and Rank
     function loadHubProgress() {
       let completedCount = 0;
 
@@ -803,7 +802,7 @@
           
           if (mNode) mNode.classList.add('completed');
           if (mTitle) mTitle.innerText = `✔ Mission ${i}`;
-          if (mBadge) mBadge.innerText = `⭐ ${mStars} / 18 Stars`;
+          if (mBadge) mBadge.innerText = `⭐ ${mStars} Stars`;
         }
       }
 
