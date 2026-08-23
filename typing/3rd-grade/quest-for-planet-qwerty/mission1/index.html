@@ -89,7 +89,7 @@
       z-index: 2;
     }
 
-    /* Equal Width Highlighting */
+    /* Character Highlighting & Space Width Fix */
     .char-node {
       display: inline-block;
       min-width: 2.2rem;
@@ -183,6 +183,30 @@
     }
     .checklist-item.done { border-color: var(--accent-green); color: #4ade80; }
 
+    /* Teacher Review & Export Controls */
+    .teacher-panel {
+      margin-top: 20px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 15px;
+      width: 100%;
+    }
+    .teacher-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .btn-export {
+      background: var(--accent-green);
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
     /* Modal Overlay */
     .modal {
       display: none;
@@ -212,7 +236,7 @@
       margin-top: 15px;
     }
 
-    /* Dancing & Spinning Lesson Star Visuals */
+    /* Spinning Lesson Star Visuals */
     .star-rating { display: flex; justify-content: center; gap: 10px; margin: 15px 0; }
     .star-icon {
       width: 40px; height: 40px; fill: var(--accent-gold);
@@ -244,7 +268,7 @@
       <div id="activeRocket" style="display: none;">🚀</div>
     </div>
     
-    <!-- Standard & Scrambled Text Output -->
+    <!-- Level Up Banner & Checklist -->
     <div id="levelUpHeader" class="level-up-container" style="display: none;">
       <div class="level-header">LEVEL UP TO BRONZE</div>
       <div class="checklist-item" style="border-color: var(--accent-gold);">
@@ -264,14 +288,26 @@
       <div class="key" id="key-s">S</div>
       <div class="key" id="key-d">D</div>
       <div class="key" id="key-f">F</div>
+      <div class="key" id="key-g">G</div>
+      <div class="key" id="key-h">H</div>
       <div class="key" id="key-j">J</div>
       <div class="key" id="key-k">K</div>
       <div class="key" id="key-l">L</div>
+      <div class="key" id="key-semicolon">;</div>
     </div>
     <div class="key-row">
       <div class="key key-shift" id="key-ShiftLeft">SHIFT (L)</div>
       <div class="key" style="min-width: 200px;" id="key-Space">SPACE</div>
       <div class="key key-shift" id="key-ShiftRight">SHIFT (R)</div>
+    </div>
+  </div>
+
+  <!-- Teacher Export Panel -->
+  <div class="teacher-panel">
+    <h4 style="color: var(--accent-gold);">Teacher Analytics Controls</h4>
+    <div class="teacher-controls">
+      <button class="btn-export" onclick="exportAccuracySummaryCSV()">📊 Export Accuracy Summary (.csv)</button>
+      <button class="btn-export" style="background: var(--accent-red);" onclick="exportMistakesLogCSV()">🎯 Export Key Mistake Log (.csv)</button>
     </div>
   </div>
 </div>
@@ -325,7 +361,6 @@
       nav.appendChild(btn);
     });
 
-    // Final Level Up Button
     const lvlBtn = document.createElement('button');
     lvlBtn.className = `nav-btn level-up-btn ${isLevelUpMode ? 'active' : ''}`;
     lvlBtn.innerText = '⚡ Level Up';
@@ -365,7 +400,7 @@
 
     if (isLevelUpMode) {
       document.getElementById('lessonTitle').innerText = "LEVEL UP: BRONZE";
-      keyboard.style.display = 'none'; // Hide keyboard during Level Up
+      keyboard.style.display = 'none';
       rocket.style.display = 'none';
       levelHeader.style.display = 'flex';
       renderChecklist();
@@ -405,13 +440,15 @@
   function renderText() {
     targetContainer.innerHTML = '';
     const text = activeChallengeText;
+    const history = lessonMistakes[isLevelUpMode ? 'levelup' : currentLessonIdx] || [];
+    const historicalMistakeIndices = history.map(m => m.index);
 
     for (let i = 0; i < text.length; i++) {
       const span = document.createElement('span');
       span.className = 'char-node';
       span.innerText = text[i];
 
-      if (errorIndices.includes(i)) {
+      if (historicalMistakeIndices.includes(i) || errorIndices.includes(i)) {
         span.classList.add('char-error');
       } else if (i === currentIndex) {
         span.classList.add('char-current');
@@ -466,6 +503,7 @@
 
   function highlightKey(code, active) {
     let keyEl = document.getElementById(`key-${code.replace('Key', '').toLowerCase()}`);
+    if (code === 'Semicolon') keyEl = document.getElementById('key-semicolon');
     if (code === 'Space') keyEl = document.getElementById('key-Space');
     if (code === 'ShiftLeft') keyEl = document.getElementById('key-ShiftLeft');
     if (code === 'ShiftRight') keyEl = document.getElementById('key-ShiftRight');
@@ -542,9 +580,8 @@
     const content = document.getElementById('modalContent');
 
     if (isLevelUpMode) {
-      // Level Up Validation Rule: Max 2 mistakes
       if (errorCount <= 2) {
-        triggerFireworks(); // Fireworks go off ONLY on Level Up completion
+        triggerFireworks();
         content.innerHTML = `
           <h2 style="color: var(--accent-gold); font-size: 1.8rem;">🏆 LEVEL UP PASSED!</h2>
           <p style="margin: 15px 0; font-size: 1.1rem;">Congratulations! You’ve reached the <strong>BRONZE</strong> level.</p>
@@ -561,7 +598,6 @@
         `;
       }
     } else {
-      // Standard Lesson Completion Validation (80% Accuracy)
       const total = correctTyped + errorIndices.length;
       const accuracy = total > 0 ? Math.round((correctTyped / total) * 100) : 0;
 
@@ -595,6 +631,36 @@
     } else {
       setupLessonUI();
     }
+  }
+
+  function downloadCSV(csvContent, fileName) {
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function exportAccuracySummaryCSV() {
+    let csv = 'Lesson,Accuracy (%),Status\n';
+    lessons.forEach(l => {
+      const isDone = completedLessons.has(l.id);
+      csv += `"${l.title}","${isDone ? 'Completed' : 'Incomplete'}"\n`;
+    });
+    downloadCSV(csv, 'Student_Accuracy_Summary.csv');
+  }
+
+  function exportMistakesLogCSV() {
+    let csv = 'Lesson ID,Char Index,Expected Key,Typed Key,Time\n';
+    Object.keys(lessonMistakes).forEach(key => {
+      lessonMistakes[key].forEach(m => {
+        csv += `"${key}","${m.index}","${m.expected}","${m.typed}","${m.time}"\n`;
+      });
+    });
+    downloadCSV(csv, 'Student_Mistake_Log.csv');
   }
 
   function triggerFireworks() {
