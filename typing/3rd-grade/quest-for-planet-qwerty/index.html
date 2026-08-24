@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -186,14 +187,14 @@
     #mission1Node  { top: 85%;  left: 3%; }
     #mission2Node  { top: 50%;  left: 20%; }
     #mission3Node  { top: 25%;  left: 6%; }
-    #mission4Node  { top: 0%;  left: 25%; }
+    #mission4Node  { top: 0%;   left: 25%; }
     #mission5Node  { top: 10%;  left: 45%; }
     #mission6Node  { top: 45%;  left: 50%; }
     #mission7Node  { top: 70%;  left: 35%; }
     #mission8Node  { top: 90%;  left: 55%; }
     #mission9Node  { top: 70%;  left: 70%; }
-    #mission10Node { top: 25%;   left: 65%; }
-    #mission11Node { top: 0%;  left: 80%; }
+    #mission10Node { top: 25%;  left: 65%; }
+    #mission11Node { top: 0%;   left: 80%; }
     #mission12Node { top: 15%;  left: 95%; }
     #mission13Node { top: 40%;  left: 85%; }
     #mission14Node { top: 85%;  left: 88%; }
@@ -324,7 +325,7 @@
       border: 2px solid var(--secondary);
       border-radius: 16px;
       padding: 30px;
-      max-width: 580px;
+      max-width: 620px;
       width: 100%;
       text-align: center;
       box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
@@ -374,27 +375,40 @@
       border-color: #38bdf8;
     }
     .helmet-svg { width: 34px; height: 34px; flex-shrink: 0; }
+    
+    /* Updated 8x5 Computer Grid Layout */
     .comp-grid {
       display: grid;
       grid-template-columns: repeat(8, 1fr);
-      gap: 6px;
+      grid-template-rows: repeat(5, auto);
+      gap: 8px;
       margin-top: 12px;
-      max-height: 220px;
+      max-height: 280px;
       overflow-y: auto;
       padding: 4px;
     }
     .btn-comp {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #020617;
       font-family: var(--font-tech);
       font-size: 0.85rem;
       padding: 8px 0;
       border-radius: 6px;
       cursor: pointer;
-      font-weight: bold;
+      font-weight: 800;
+      transition: transform 0.15s ease, filter 0.15s ease;
     }
-    .btn-comp:hover { background: var(--class-theme-color); color: #020617; }
+    .btn-comp:hover {
+      transform: scale(1.08);
+      filter: brightness(1.15);
+    }
+
+    /* Pastel Theme Rotations */
+    .pastel-blue { background-color: #bae6fd; }
+    .pastel-yellow { background-color: #fef08a; }
+    .pastel-green { background-color: #bbf7d0; }
+    .pastel-pink { background-color: #fbcfe8; }
+
     .btn-back {
       margin-top: 18px;
       background: transparent;
@@ -686,11 +700,20 @@
       document.getElementById('stepTeacher').style.display = 'none';
       document.getElementById('stepComputer').style.display = 'block';
       document.getElementById('compStepTitle').innerText = `${className}: Select Computer`;
+      
       const grid = document.getElementById('compGrid');
       grid.innerHTML = '';
-      for (let i = 1; i <= 32; i++) {
+
+      // Pastel color sequence: Blue, Yellow, Green, Pink
+      const pastelClasses = ['pastel-blue', 'pastel-yellow', 'pastel-green', 'pastel-pink'];
+
+      for (let i = 1; i <= 40; i++) {
         const btn = document.createElement('button');
-        btn.className = 'btn-comp';
+        
+        // Cycle colors using modulo % 4
+        const colorClass = pastelClasses[(i - 1) % 4];
+        
+        btn.className = `btn-comp ${colorClass}`;
         btn.innerText = `#${i}`;
         btn.onclick = () => selectComputer(i);
         grid.appendChild(btn);
@@ -712,7 +735,7 @@
     function showStudentBadge(className, compNum) {
       const badge = document.getElementById('studentBadge');
       badge.style.display = 'inline-block';
-      badge.innerText = `CLASS: className.toUpperCase()|COMPUTER#{compNum}`;
+      badge.innerText = `CLASS: ${className.toUpperCase()} | COMPUTER #${compNum}`;
     }
 
     function clearLogin() {
@@ -801,4 +824,3 @@
   </script>
 </body>
 </html>
-
