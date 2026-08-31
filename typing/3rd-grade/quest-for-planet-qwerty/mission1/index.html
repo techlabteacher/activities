@@ -244,59 +244,6 @@
     .char-current { background-color: var(--class-theme-color); color: #020617 !important; font-weight: bold; }
     .char-error { background-color: var(--neon-red) !important; color: white !important; }
 
-    .sky-game-area {
-      background: radial-gradient(circle at 50% 100%, #1e293b 0%, #030712 100%);
-      border: 2px solid var(--class-theme-color);
-      border-radius: 14px;
-      height: 360px;
-      margin-bottom: 15px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .rocket-counter-center {
-      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.85); padding: 6px 20px; border-radius: 20px;
-      font-family: var(--font-tech); border: 1px solid var(--class-theme-color); z-index: 10;
-    }
-
-    .target-rocket {
-      width: 50px; height: 80px;
-      position: absolute; bottom: 20px;
-      display: flex; flex-direction: column; align-items: center;
-      transition: left 0.3s ease-out;
-    }
-
-    .target-rocket.shake { animation: shake 0.2s ease-in-out; }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-8px); }
-      75% { transform: translateX(8px); }
-    }
-
-    .rocket-structure { position: relative; width: 36px; height: 60px; display: flex; align-items: center; justify-content: center; }
-    .rocket-nose { position: absolute; top: 0; width: 18px; height: 18px; background: #cbd5e1; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
-    .rocket-body-main { position: absolute; top: 14px; width: 22px; height: 40px; background: var(--neon-green); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-    .rocket-letter { font-family: var(--font-playful); font-size: 1.1rem; color: #1e293b; font-weight: bold; }
-    .rocket-thruster-flame { width: 10px; height: 14px; background: linear-gradient(180deg, var(--neon-amber), var(--neon-red)); border-radius: 0 0 6px 6px; }
-
-    .video-display-area {
-      background: #030712;
-      border: 2px solid var(--class-theme-color);
-      border-radius: 14px;
-      height: 540px;
-      margin-bottom: 15px;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 15px;
-    }
-    .video-container { width: 100%; height: 100%; border-radius: 10px; overflow: hidden; }
-    .video-container iframe, .video-container div#youtubePlayer { width: 100%; height: 100%; border: none; }
-    .video-status-text { font-family: var(--font-tech); color: var(--neon-amber); font-size: 0.95rem; margin-top: 12px; }
-
     .keyboard-wrapper { width: 100%; max-width: 820px; margin: 0 auto; padding: 12px; background: #030712; border-radius: 14px; border: 1px solid #1e293b; display: none; }
     .homerow-keyboard { display: flex; flex-direction: column; gap: 8px; align-items: center; }
     .kb-row { display: flex; gap: 6px; justify-content: center; width: 100%; }
@@ -325,8 +272,6 @@
     .modal-btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
     .btn-secondary { font-family: var(--font-tech); background: #334155; color: #f8fafc; padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
   </style>
-
-  <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body onload="init()">
 
@@ -361,25 +306,6 @@
 
   <div id="standardTextDisplay" class="terminal-display"><div id="textNodesContainer"></div></div>
 
-  <div id="skyGameDisplay" class="sky-game-area" style="display: none;">
-    <div class="rocket-counter-center">Rockets Destroyed: <span id="launchedCount">0</span> / <span id="targetGoal">20</span></div>
-    <div id="targetRocket" class="target-rocket">
-      <div class="rocket-structure">
-        <div class="rocket-nose"></div>
-        <div class="rocket-body-main"><span id="rocketLetter" class="rocket-letter">F</span></div>
-      </div>
-      <div class="rocket-thruster-flame"></div>
-    </div>
-  </div>
-
-  <div id="videoDisplay" class="video-display-area">
-    <div class="video-container">
-      <div id="youtubePlayer"></div>
-    </div>
-    <div id="videoStatus" class="video-status-text">🔒 Watch the full video to continue...</div>
-    <button id="videoFinishBtn" class="btn-primary" style="margin-top: 10px; display: none;" onclick="completeVideoLesson()">Finish Video & Continue ➔</button>
-  </div>
-
   <div class="keyboard-wrapper" id="keyboardWrapper">
     <div class="homerow-keyboard">
       <div class="kb-row">
@@ -400,7 +326,7 @@
     </div>
   </div>
 
-  <div id="passcodeModal" class="modal-overlay" onclick="handleBackdropClick(event)">
+  <div id="passcodeModal" class="modal-overlay">
     <div class="modal-card">
       <h2 id="passcodeModalTitle" class="modal-title">TEACHER VERIFICATION</h2>
       <p id="passcodeModalSubtext" style="color: #cbd5e1; font-size: 0.9rem; margin-top: 5px;">Enter passcode to enable on-screen keyboard:</p>
@@ -425,17 +351,13 @@
   </div>
 </div>
 
-<script src="rocket-game.js"></script>
-
 <script>
   const TEACHER_PASSCODE = "8760";
   const lessons = [
-    { title: "Lesson 1: F & J", text: "jjj fff jj ff fjj jjf fjf ffj jff jfj ffjfjjfjjffj", type: "typing" },
-    { title: "Lesson 2: D & K", text: "kkk ddd kk dd kkd ddk dkd kdd dkk kdk dddkdkddkdkk", type: "typing" },
-    { title: "Lesson 3: DFJK", text: "ff jj fj fj dd kk kd kd jk jk df df jd jd fk fk kj fd jf", type: "typing" },
-    { title: "Lesson 4: Game", text: "", type: "game" },
-    { title: "Lesson 5: Video", text: "", type: "video" },
-    { title: "Lesson 6: Shift", text: "jJ kK J K fF dD D F jfdk J F D K", type: "typing" }
+    { title: "Lesson 1: F & J", text: "jjj fff jj ff fjj jjf fjf ffj jff jfj ffjfjjfjjffj" },
+    { title: "Lesson 2: D & K", text: "kkk ddd kk dd kkd ddk dkd kdd dkk kdk dddkdkddkdkk" },
+    { title: "Lesson 3: DFJK", text: "ff jj fj fj dd kk kd kd jk jk df df jd jd fk fk kj fd jf" },
+    { title: "Lesson 4: Shift Keys", text: "jJ kK J K fF dD D F jfdk J F D K" }
   ];
 
   let currentLessonIdx = 0;
@@ -446,135 +368,15 @@
   let lessonStars = new Array(lessons.length).fill(0);
   let showKeyboard = false;
   let teacherUnlocked = false;
-  let currentPasscodeMode = 'keyboard';
 
   let currentClassName = 'UNASSIGNED';
   let currentCompNum = '--';
-  
-  let ytPlayer = null;
-  let videoFinished = false;
-
-  let leftShiftDown = false;
-  let rightShiftDown = false;
-
-  let fireworksActive = false;
-  let particles = [];
-
-  function launchFireworks() {
-    const canvas = document.getElementById('fireworksCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    fireworksActive = true;
-    particles = [];
-
-    const colors = ['#22c55e', '#38bdf8', '#f59e0b', '#ec4899', '#a855f7', '#ffffff'];
-
-    function createExplosion(x, y) {
-      const particleCount = 60;
-      for (let i = 0; i < particleCount; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 6 + 2;
-        particles.push({
-          x: x,
-          y: y,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          alpha: 1,
-          decay: Math.random() * 0.015 + 0.008,
-          radius: Math.random() * 3 + 2
-        });
-      }
-    }
-
-    let burstTimer = 0;
-
-    function animate() {
-      if (!fireworksActive) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        return;
-      }
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      burstTimer++;
-      if (burstTimer % 20 === 0) {
-        createExplosion(
-          Math.random() * canvas.width * 0.8 + canvas.width * 0.1,
-          Math.random() * canvas.height * 0.5 + canvas.height * 0.1
-        );
-      }
-
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.04;
-        p.alpha -= p.decay;
-
-        if (p.alpha <= 0) {
-          particles.splice(i, 1);
-          continue;
-        }
-
-        ctx.save();
-        ctx.globalAlpha = p.alpha;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = p.color;
-        ctx.fill();
-        ctx.restore();
-      }
-
-      requestAnimationFrame(animate);
-    }
-
-    animate();
-
-    setTimeout(() => {
-      fireworksActive = false;
-    }, 6000);
-  }
-
-  window.addEventListener('keydown', (e) => {
-    if (e.code === 'ShiftLeft') leftShiftDown = true;
-    if (e.code === 'ShiftRight') rightShiftDown = true;
-  });
-
-  window.addEventListener('keyup', (e) => {
-    if (e.code === 'ShiftLeft') leftShiftDown = false;
-    if (e.code === 'ShiftRight') rightShiftDown = false;
-  });
-
-  function onYouTubeIframeAPIReady() {
-    ytPlayer = new YT.Player('youtubePlayer', {
-      videoId: 'eKKutbjIZCQ',
-      events: { 'onStateChange': onPlayerStateChange }
-    });
-  }
-
-  function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.ENDED) {
-      videoFinished = true;
-      document.getElementById('videoFinishBtn').style.display = 'inline-block';
-      document.getElementById('videoStatus').innerText = '✅ Video complete! Click continue to proceed.';
-      document.getElementById('videoStatus').style.color = 'var(--neon-green)';
-    }
-  }
-
-  function getProfileKey(suffix) {
-    const cleanClass = currentClassName.toUpperCase().replace(/\s+/g, '_');
-    return `m1_${cleanClass}_c${currentCompNum}_${suffix}`;
-  }
 
   function init() {
     loadClassProfile();
     loadProgress();
-    
     renderLessonButtons();
+    
     window.addEventListener('keydown', handleKeyPress);
     window.addEventListener('keyup', handleKeyUp);
     
@@ -586,17 +388,22 @@
   }
 
   function goToHub() {
-    window.location.href = "../index.html";
+    window.location.href = "index.html";
   }
 
   function loadClassProfile() {
     currentClassName = localStorage.getItem('qwerty_class_name') || localStorage.getItem('selectedClass') || 'UNASSIGNED';
-    const savedColor = localStorage.getItem('qwerty_class_color') || localStorage.getItem('selectedClassColor') || '#38bdf8';
     currentCompNum = localStorage.getItem('qwerty_computer_num') || localStorage.getItem('selectedCompNum') || '--';
+    const savedColor = localStorage.getItem('qwerty_class_color') || localStorage.getItem('selectedClassColor') || '#38bdf8';
 
     document.documentElement.style.setProperty('--class-theme-color', savedColor);
     document.getElementById('activeClassBadge').innerText = `CLASS: ${currentClassName.toUpperCase()}`;
     document.getElementById('activeCompBadge').innerText = `COMPUTER: #${currentCompNum}`;
+  }
+
+  function getProfileKey(suffix) {
+    const cleanClass = currentClassName.toUpperCase().replace(/\s+/g, '_');
+    return `m1_${cleanClass}_c${currentCompNum}_${suffix}`;
   }
 
   function loadProgress() {
@@ -607,15 +414,8 @@
     if (savedStars) {
       try {
         const parsed = JSON.parse(savedStars);
-        if (Array.isArray(parsed)) {
-          lessonStars = parsed;
-        }
+        if (Array.isArray(parsed)) lessonStars = parsed;
       } catch (e) {}
-    }
-
-    const videoKey = getProfileKey('video_completed');
-    if (localStorage.getItem(videoKey) === 'true') {
-      lessonStars[4] = Math.max(lessonStars[4], 3);
     }
 
     const totalStars = lessonStars.reduce((a, b) => a + b, 0);
@@ -633,10 +433,6 @@
     document.getElementById('totalStarsCount').innerText = totalStars;
   }
 
-  function checkAllLessonsCompleted() {
-    return lessonStars.every(stars => stars > 0);
-  }
-
   function renderLessonButtons() {
     const navBar = document.getElementById('lessonNavBar');
     navBar.innerHTML = '';
@@ -652,60 +448,15 @@
   function loadLesson(idx) {
     currentLessonIdx = idx;
     renderLessonButtons();
-    const lesson = lessons[currentLessonIdx];
-
-    document.getElementById('standardTextDisplay').style.display = 'none';
-    document.getElementById('skyGameDisplay').style.display = 'none';
-    document.getElementById('videoDisplay').style.display = 'none';
-
-    updateKeyboardDisplayState();
-
-    if (lesson.type === "game") {
-      document.getElementById('skyGameDisplay').style.display = 'block';
-      RocketGame.init((acc) => showCompletionModal(acc));
-    } else if (lesson.type === "video") {
-      document.getElementById('videoDisplay').style.display = 'flex';
-      setupVideoState();
-    } else {
-      targetText = lesson.text;
-      document.getElementById('standardTextDisplay').style.display = 'flex';
-    }
+    targetText = lessons[currentLessonIdx].text;
     resetLessonStateOnly();
   }
 
-  function setupVideoState() {
-    const videoKey = getProfileKey('video_completed');
-    const isAlreadyWatched = localStorage.getItem(videoKey) === 'true';
-    if (isAlreadyWatched) {
-      videoFinished = true;
-      document.getElementById('videoFinishBtn').style.display = 'inline-block';
-      document.getElementById('videoStatus').innerText = '✅ Video already watched! Click continue to proceed.';
-      document.getElementById('videoStatus').style.color = 'var(--neon-green)';
-    } else {
-      videoFinished = false;
-      document.getElementById('videoFinishBtn').style.display = 'none';
-      document.getElementById('videoStatus').innerText = '🔒 Watch the full video to continue...';
-      document.getElementById('videoStatus').style.color = 'var(--neon-amber)';
-      if (ytPlayer && ytPlayer.seekTo) {
-        ytPlayer.seekTo(0);
-        ytPlayer.stopVideo();
-      }
-    }
-  }
-
   function resetLessonStateOnly() {
-    RocketGame.reset();
     currentIndex = 0; totalTyped = 0; correctTyped = 0; errorIndices = [];
     updateAccuracyMeter(100);
     document.getElementById('completionModal').classList.remove('active');
-    
-    if (lessons[currentLessonIdx].type === 'game') {
-      RocketGame.init((acc) => showCompletionModal(acc));
-    } else if (lessons[currentLessonIdx].type === 'video') {
-      setupVideoState();
-    } else {
-      updateTargetAndKeyboard();
-    }
+    updateTargetAndKeyboard();
   }
 
   function updateAccuracyMeter(acc) {
@@ -738,17 +489,10 @@
       container.appendChild(span);
     }
 
-    const isKbVisible = (currentLessonIdx === 5 || showKeyboard);
-    if (isKbVisible) {
+    if (showKeyboard) {
       let keyId = currentChar === ' ' ? 'key-space' : `key-${currentChar.toLowerCase()}`;
       const activeKey = document.getElementById(keyId);
       if (activeKey) activeKey.classList.add('active');
-
-      if (currentChar === currentChar.toUpperCase() && currentChar !== ' ' && currentChar !== ';') {
-        const isRightHand = ['j', 'k', 'l', ';'].includes(currentChar.toLowerCase());
-        const shiftKey = isRightHand ? document.getElementById('key-shiftleft') : document.getElementById('key-shiftright');
-        if (shiftKey) shiftKey.classList.add('active');
-      }
     }
   }
 
@@ -764,30 +508,10 @@
       handleModalAction(); return;
     }
 
-    if (lessons[currentLessonIdx].type === 'game') {
-      const accuracy = RocketGame.handleInput(e.key);
-      if (accuracy !== undefined) updateAccuracyMeter(accuracy);
-      return;
-    }
-
-    if (lessons[currentLessonIdx].type === 'video' || e.key.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
+    if (e.key.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
 
     const expectedChar = targetText[currentIndex];
-    const isUppercaseExpected = (expectedChar === expectedChar.toUpperCase() && expectedChar !== ' ' && expectedChar !== ';');
-
-    let isValid = false;
-    const isLesson6 = (currentLessonIdx === 5);
-
-    if (isUppercaseExpected && isLesson6) {
-      const isRightHandLetter = ['j', 'k', 'l', ';', 'u', 'i', 'o', 'p', 'h', 'n', 'm'].includes(expectedChar.toLowerCase());
-      const usedCorrectShift = isRightHandLetter ? leftShiftDown : rightShiftDown;
-
-      isValid = (e.key === expectedChar && usedCorrectShift);
-    } else if (isUppercaseExpected) {
-      isValid = (e.shiftKey && e.key === expectedChar);
-    } else {
-      isValid = (e.key === expectedChar);
-    }
+    const isValid = (e.key === expectedChar);
 
     totalTyped++;
     if (isValid) {
@@ -795,7 +519,6 @@
       currentIndex++;
     } else {
       errorIndices.push(currentIndex);
-      if (currentLessonIdx < 3) currentIndex++;
     }
 
     const acc = Math.round((correctTyped / totalTyped) * 100);
@@ -813,38 +536,23 @@
   function toggleKeyboardVisibility() {
     if (showKeyboard) {
       showKeyboard = false;
-      teacherUnlocked = false;
-      updateKeyboardDisplayState();
+      document.getElementById('kbToggleText').innerText = 'OFF';
+      document.getElementById('keyboardWrapper').style.display = 'none';
     } else {
       if (teacherUnlocked) {
         showKeyboard = true;
-        updateKeyboardDisplayState();
+        document.getElementById('kbToggleText').innerText = 'ON';
+        document.getElementById('keyboardWrapper').style.display = 'block';
+        updateTargetAndKeyboard();
       } else {
-        openPasscodeModal('keyboard');
+        openPasscodeModal();
       }
     }
   }
 
-  function openTeacherResetModal() {
-    openPasscodeModal('reset');
-  }
-
-  function openPasscodeModal(mode) {
-    currentPasscodeMode = mode;
+  function openPasscodeModal() {
     document.getElementById('passcodeInput').value = '';
     document.getElementById('passcodeError').innerText = '';
-    
-    const titleEl = document.getElementById('passcodeModalTitle');
-    const subtextEl = document.getElementById('passcodeModalSubtext');
-
-    if (mode === 'reset') {
-      titleEl.innerText = "TEACHER RESET";
-      subtextEl.innerText = `Enter passcode to reset ${lessons[currentLessonIdx].title}:`;
-    } else {
-      titleEl.innerText = "TEACHER VERIFICATION";
-      subtextEl.innerText = "Enter passcode to enable on-screen keyboard:";
-    }
-
     document.getElementById('passcodeModal').classList.add('active');
     setTimeout(() => document.getElementById('passcodeInput').focus(), 100);
   }
@@ -853,44 +561,16 @@
     document.getElementById('passcodeModal').classList.remove('active');
   }
 
-  function handleBackdropClick(e) {
-    if (e.target.id === 'passcodeModal') closePasscodeModal();
-  }
-
   function submitPasscodeAction() {
     if (document.getElementById('passcodeInput').value === TEACHER_PASSCODE) {
       closePasscodeModal();
-      if (currentPasscodeMode === 'keyboard') {
-        teacherUnlocked = true;
-        showKeyboard = true;
-        updateKeyboardDisplayState();
-      } else if (currentPasscodeMode === 'reset') {
-        lessonStars[currentLessonIdx] = 0;
-        if (currentLessonIdx === 4) {
-          const videoKey = getProfileKey('video_completed');
-          localStorage.removeItem(videoKey);
-        }
-        saveProgress();
-        renderLessonButtons();
-        resetLessonStateOnly();
-      }
+      teacherUnlocked = true;
+      showKeyboard = true;
+      document.getElementById('kbToggleText').innerText = 'ON';
+      document.getElementById('keyboardWrapper').style.display = 'block';
+      updateTargetAndKeyboard();
     } else {
       document.getElementById('passcodeError').innerText = 'Incorrect Passcode';
-    }
-  }
-
-  function updateKeyboardDisplayState() {
-    const isLesson6 = (currentLessonIdx === 5);
-    const shouldDisplay = (isLesson6 || showKeyboard) && (lessons[currentLessonIdx].type !== 'video');
-    document.getElementById('kbToggleText').innerText = isLesson6 ? 'ON (FORCED)' : (showKeyboard ? 'ON' : 'OFF');
-    document.getElementById('keyboardWrapper').style.display = shouldDisplay ? 'block' : 'none';
-  }
-
-  function completeVideoLesson() { 
-    if (videoFinished) {
-      const videoKey = getProfileKey('video_completed');
-      localStorage.setItem(videoKey, 'true');
-      showCompletionModal(100); 
     }
   }
 
@@ -910,27 +590,6 @@
     document.getElementById('star2').classList.toggle('filled', starsEarned >= 2);
     document.getElementById('star3').classList.toggle('filled', starsEarned >= 3);
     document.getElementById('finalAccuracy').innerText = `${accuracy}%`;
-
-    const titleEl = document.getElementById('modalTitle');
-    const nextBtn = document.getElementById('nextLessonBtn');
-    const isAllComplete = checkAllLessonsCompleted();
-
-    if (isAllComplete) {
-      const completeKey = getProfileKey('completed');
-      localStorage.setItem(completeKey, 'true');
-      titleEl.innerText = "🎉 MISSION 1 COMPLETE! 🎉";
-      document.getElementById('modalBodyText').innerHTML = `Outstanding work Cadet! You earned all green stars and mastered Mission 1!`;
-      nextBtn.innerText = "Stay on Mission 1 🚀";
-      launchFireworks();
-    } else if (currentLessonIdx === lessons.length - 1) {
-      titleEl.innerText = "LESSON 6 COMPLETE!";
-      document.getElementById('modalBodyText').innerHTML = `Accuracy: <strong>${accuracy}%</strong>`;
-      nextBtn.innerText = "Stay on Mission 1 🚀";
-    } else {
-      titleEl.innerText = "LESSON ACCOMPLISHED";
-      document.getElementById('modalBodyText').innerHTML = `Accuracy: <strong>${accuracy}%</strong>`;
-      nextBtn.innerText = "Next Lesson ➔";
-    }
 
     document.getElementById('completionModal').classList.add('active');
   }
