@@ -64,6 +64,26 @@
       color: var(--class-theme-color);
     }
 
+    .btn-hub-nav {
+      font-family: var(--font-tech);
+      background: rgba(56, 189, 248, 0.15);
+      color: #ffffff;
+      border: 1px solid var(--class-theme-color);
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-hub-nav:hover {
+      background: var(--class-theme-color);
+      color: #020617;
+      box-shadow: 0 0 10px var(--class-theme-color);
+    }
+
     .console-header {
       display: flex;
       justify-content: space-between;
@@ -94,19 +114,20 @@
       display: flex;
       flex-wrap: nowrap;
       justify-content: space-between;
-      gap: 6px;
+      gap: 4px;
       margin-bottom: 18px;
       width: 100%;
     }
 
+    /* UPDATED: Increased font size to 0.95rem and reduced padding */
     .btn-lesson {
       flex: 1 1 0;
       min-width: 0;
       font-family: var(--font-tech);
-      font-size: 0.8rem;
-      font-weight: 700;
-      height: 44px;
-      padding: 0 4px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      height: 38px;
+      padding: 0 2px;
       border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.15);
       background: #0f172a;
@@ -115,7 +136,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      gap: 3px;
       transition: all 0.2s ease;
       white-space: nowrap;
       overflow: hidden;
@@ -292,6 +313,7 @@
 
 <div class="rocket-console">
   <div class="student-class-header-bar">
+    <button class="btn-hub-nav" onclick="goToHub()">⬅ RETURN TO HUB</button>
     <span id="activeClassBadge">CLASS: UNASSIGNED</span>
     <span id="activeCompBadge">COMPUTER: #--</span>
   </div>
@@ -438,9 +460,8 @@
 
   function init() {
     loadClassProfile();
-    if (localStorage.getItem('mission1_video_completed') === 'true') {
-      lessonStars[4] = 3;
-    }
+    loadProgress();
+    
     renderLessonButtons();
     window.addEventListener('keydown', handleKeyPress);
     window.addEventListener('keyup', handleKeyUp);
@@ -452,14 +473,44 @@
     loadLesson(0);
   }
 
+  function goToHub() {
+    window.location.href = "../index.html";
+  }
+
   function loadClassProfile() {
-    const savedClass = localStorage.getItem('qwerty_class_name') || 'UNASSIGNED';
-    const savedColor = localStorage.getItem('qwerty_class_color') || '#38bdf8';
-    const savedComp = localStorage.getItem('qwerty_computer_num') || '--';
+    const savedClass = localStorage.getItem('qwerty_class_name') || localStorage.getItem('selectedClass') || 'UNASSIGNED';
+    const savedColor = localStorage.getItem('qwerty_class_color') || localStorage.getItem('selectedClassColor') || '#38bdf8';
+    const savedComp = localStorage.getItem('qwerty_computer_num') || localStorage.getItem('selectedCompNum') || '--';
 
     document.documentElement.style.setProperty('--class-theme-color', savedColor);
     document.getElementById('activeClassBadge').innerText = `CLASS: ${savedClass.toUpperCase()}`;
     document.getElementById('activeCompBadge').innerText = `COMPUTER: #${savedComp}`;
+  }
+
+  function loadProgress() {
+    const savedStars = localStorage.getItem('mission1_lesson_stars');
+    if (savedStars) {
+      try {
+        const parsed = JSON.parse(savedStars);
+        if (Array.isArray(parsed)) {
+          lessonStars = parsed;
+        }
+      } catch (e) {}
+    }
+
+    if (localStorage.getItem('mission1_video_completed') === 'true') {
+      lessonStars[4] = Math.max(lessonStars[4], 3);
+    }
+
+    const totalStars = lessonStars.reduce((a, b) => a + b, 0);
+    document.getElementById('totalStarsCount').innerText = totalStars;
+  }
+
+  function saveProgress() {
+    localStorage.setItem('mission1_lesson_stars', JSON.stringify(lessonStars));
+    const totalStars = lessonStars.reduce((a, b) => a + b, 0);
+    localStorage.setItem('mission1_stars', totalStars);
+    document.getElementById('totalStarsCount').innerText = totalStars;
   }
 
   function renderLessonButtons() {
@@ -701,8 +752,7 @@
 
     if (accuracy >= 80) {
       lessonStars[currentLessonIdx] = Math.max(lessonStars[currentLessonIdx], starsEarned);
-      const totalStars = lessonStars.reduce((a, b) => a + b, 0);
-      document.getElementById('totalStarsCount').innerText = totalStars;
+      saveProgress();
       renderLessonButtons();
     }
 
@@ -714,7 +764,6 @@
     const nextBtn = document.getElementById('nextLessonBtn');
     if (currentLessonIdx === lessons.length - 1) {
       localStorage.setItem('mission1_completed', 'true');
-      localStorage.setItem('mission1_stars', lessonStars.reduce((a, b) => a + b, 0));
       nextBtn.innerText = "Return to Space Hub 🚀";
     } else {
       nextBtn.innerText = "Next Lesson ➔";
@@ -726,7 +775,7 @@
   function handleModalAction() {
     document.getElementById('completionModal').classList.remove('active');
     if (currentLessonIdx === lessons.length - 1) {
-      window.location.href = "../index.html";
+      goToHub();
     } else {
       currentLessonIdx++;
       loadLesson(currentLessonIdx);
