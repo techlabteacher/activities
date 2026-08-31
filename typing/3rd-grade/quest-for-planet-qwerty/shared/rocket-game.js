@@ -175,7 +175,106 @@
   </div>
 </div>
 
-<!-- EXTERNAL ROCKET GAME LOGIC -->
-<script src="../shared/rocket-game.js"></script>
+<script>
+  const ROCKET_GOAL_COUNT = 20;
+  const keyXPositions = { 'a': 15, 's': 25, 'd': 35, 'f': 45, 'j': 55, 'k': 65, 'l': 75, ';': 85 };
+
+  let targetText = "";
+  let currentIndex = 0;
+  let totalTyped = 0, correctTyped = 0;
+  let rocketAnim = null;
+  let isAnimatingRocket = false;
+
+  function initGame() {
+    window.addEventListener('keydown', handleKeyPress);
+    resetGame();
+  }
+
+  function generateRandomSequence(length) {
+    const chars = ["f", "j", "d", "k"];
+    let res = "";
+    for (let i = 0; i < length; i++) res += chars[Math.floor(Math.random() * chars.length)];
+    return res;
+  }
+
+  function resetGame() {
+    clearInterval(rocketAnim);
+    isAnimatingRocket = false;
+    currentIndex = 0; totalTyped = 0; correctTyped = 0;
+    targetText = generateRandomSequence(ROCKET_GOAL_COUNT);
+    document.getElementById('launchedCount').innerText = 0;
+    document.getElementById('accuracyVal').innerText = "100%";
+    document.getElementById('completionModal').classList.remove('active');
+    positionGameRocket();
+  }
+
+  function positionGameRocket() {
+    const rocket = document.getElementById('targetRocket');
+    const char = targetText[currentIndex].toLowerCase();
+    const xPos = keyXPositions[char] || 50;
+    rocket.style.left = `calc(${xPos}% - 25px)`;
+    rocket.style.bottom = '20px';
+    document.getElementById('rocketLetter').innerText = targetText[currentIndex].toUpperCase();
+  }
+
+  function launchRocketAnimation() {
+    if (isAnimatingRocket) return;
+    isAnimatingRocket = true;
+    const rocket = document.getElementById('targetRocket');
+    let pos = 20;
+    clearInterval(rocketAnim);
+    rocketAnim = setInterval(() => {
+      pos += 18;
+      rocket.style.bottom = `${pos}px`;
+      if (pos > 400) {
+        clearInterval(rocketAnim);
+        isAnimatingRocket = false;
+        currentIndex++;
+        document.getElementById('launchedCount').innerText = currentIndex;
+        if (currentIndex >= targetText.length) {
+          showCompletionModal(Math.round((correctTyped / totalTyped) * 100));
+        } else {
+          positionGameRocket();
+        }
+      }
+    }, 20);
+  }
+
+  function handleKeyPress(e) {
+    if (e.key === ' ' || e.key.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
+    if (isAnimatingRocket || currentIndex >= targetText.length) return;
+
+    totalTyped++;
+    const expectedChar = targetText[currentIndex];
+
+    if (e.key.toLowerCase() === expectedChar.toLowerCase()) {
+      correctTyped++;
+      launchRocketAnimation();
+    } else {
+      const rocket = document.getElementById('targetRocket');
+      rocket.classList.add('shake');
+      setTimeout(() => rocket.classList.remove('shake'), 200);
+    }
+
+    const acc = Math.round((correctTyped / totalTyped) * 100);
+    const txt = document.getElementById('accuracyVal');
+    txt.innerText = `${acc}%`;
+    txt.style.color = acc >= 90 ? 'var(--neon-green)' : (acc >= 80 ? 'var(--neon-amber)' : 'var(--neon-red)');
+  }
+
+  function showCompletionModal(accuracy) {
+    let starsEarned = 0;
+    if (accuracy >= 80 && accuracy <= 84) starsEarned = 1;
+    else if (accuracy >= 85 && accuracy <= 89) starsEarned = 2;
+    else if (accuracy >= 90) starsEarned = 3;
+
+    document.getElementById('star1').classList.toggle('filled', starsEarned >= 1);
+    document.getElementById('star2').classList.toggle('filled', starsEarned >= 2);
+    document.getElementById('star3').classList.toggle('filled', starsEarned >= 3);
+    document.getElementById('finalAccuracy').innerText = `${accuracy}%`;
+
+    document.getElementById('completionModal').classList.add('active');
+  }
+</script>
 </body>
 </html>
