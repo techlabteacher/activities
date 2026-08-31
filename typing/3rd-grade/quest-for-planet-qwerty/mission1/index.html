@@ -1,5 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mission 1: FJDK Lift-off</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Share+Tech+Mono&family=Fredoka+One&family=Open+Sans:wght@600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --class-theme-color: #38bdf8;
+      --neon-green: #22c55e;
+      --neon-amber: #f59e0b;
+      --neon-red: #ef4444;
+      --font-tech: 'Share Tech Mono', monospace;
+      --font-header: 'Orbitron', sans-serif;
+      --font-playful: 'Fredoka One', cursive;
 
-function handleKeyPress(e) {
+      --col-pinky: #f48ebe;
+      --col-ring: #ffa336;
+      --col-middle: #fdf200;
+      --col-index-l: #20c98d;
+      --col-index-r: #50affa;
+      --col-thumb: #aa8cfd;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body { 
+      background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #030712 100%);
+      color: #f8fafc; 
+      font-family: 'Open Sans', sans-serif; 
+      min-height: 100vh;
+      padding: 15px 10px; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .rocket-console { 
+      max-width: 980px; 
+      width: 100%;
+      background: rgba(19, 27, 46, 0.95); 
+      border-radius: 24px; 
+      padding: 25px; 
+      box-shadow: 0 0 35px var(--class-theme-color); 
+      border: 3px solid var(--class-theme-color); 
+      position: relative;
+    }
+
+    .student-class-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(3, 7, 18, 0.9);
+      border: 1px solid var(--class-theme-color);
+      padding: 6px 16px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-family: var(--font-header);
+      font-size: 0.85rem;
+      color: var(--class-theme-color);
+    }
+
+    .console-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(10, 14, 23, 0.8);
+      padding: 12px 20px;
+      border-radius: 14px;
+      margin-bottom: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .title-group { display: flex; align-items: center; gap: 12px; }
+    .header-rocket-icon { font-size: 2.2rem; filter: drop-shadow(0 0 8px var(--class-theme-color)); }
+    .app-title { font-family: var(--font-header); color: var(--class-theme-color); font-size: 1.4rem; font-weight: 800; }
+
+    .star-badge {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1.5px solid var(--neon-amber);
+      color: var(--neon-amber);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-family: var(--font-tech);
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .lesson-nav-bar {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 18px;
+      width: 100%;
+    }
+
+    .btn-lesson {
+      flex: 1 1 0;
+      min-width: 0;
+      font-family: var(--font-tech);
+      font-size: 0.8rem;
+      font-weight: 700;
+      height: 44px;
+      padding: 0 4px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: #0f172a;
+      color: #94a3b8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-lesson:hover {
+      border-color: var(--class-theme-color);
+      color: #ffffff;
+    }
+
+    .btn-lesson.active {
+      border-color: var(--class-theme-color);
+      color: var(--class-theme-color);
+      box-shadow: 0 0 10px var(--class-theme-color);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    .btn-lesson.completed {
+      background: var(--neon-green) !important;
+      color: #000000 !important;
+      border-color: var(--neon-green) !important;
+      font-weight: 900;
+    }
+
+    .telemetry-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 10px 18px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      gap: 12px;
+    }
+
+    .accuracy-meter-container { display: flex; align-items: center; gap: 12px; flex: 1; }
+    .meter-label { font-family: var(--font-tech); font-size: 0.85rem; color: #cbd5e1; }
+    .meter-track { flex: 1; height: 14px; background: #090d16; border-radius: 10px; overflow: hidden; border: 1px solid #334155; }
+    .meter-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--neon-red), var(--neon-amber), var(--neon-green)); transition: width 0.3s; }
+    .accuracy-text { font-family: var(--font-tech); font-weight: bold; font-size: 1rem; }
+
+    .btn-control {
+      font-family: var(--font-tech);
+      background: #1e293b;
+      color: var(--class-theme-color);
+      border: 1px solid var(--class-theme-color);
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-control:hover { background: rgba(56, 189, 248, 0.2); }
+
+    .terminal-display {
+      background: #030712;
+      border: 2px solid #1e293b;
+      border-radius: 14px;
+      padding: 20px 15px;
+      margin-bottom: 15px;
+      font-family: var(--font-tech);
+      font-size: 1.8rem;
+      min-height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    #textNodesContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      row-gap: 8px;
+    }
+
+    .char-node { display: inline-block; padding: 1px 2px; margin: 0; border-radius: 3px; min-width: 0.6em; text-align: center; }
+    .char-node.space-node { min-width: 0.5em; }
+    .char-done { color: #475569; }
+    .char-current { background-color: var(--class-theme-color); color: #020617 !important; font-weight: bold; }
+    .char-error { background-color: var(--neon-red) !important; color: white !important; }
+
+    .sky-game-area {
+      background: radial-gradient(circle at 50% 100%, #1e293b 0%, #030712 100%);
+      border: 2px solid var(--class-theme-color);
+      border-radius: 14px;
+      height: 360px;
+      margin-bottom: 15px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rocket-counter-center {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.85); padding: 6px 20px; border-radius: 20px;
+      font-family: var(--font-tech); border: 1px solid var(--class-theme-color); z-index: 10;
+    }
+
+    .target-rocket {
+      width: 50px; height: 80px;
+      position: absolute; bottom: 20px;
+      display: flex; flex-direction: column; align-items: center;
+      transition: left 0.3s ease-out;
+    }
+
+    .target-rocket.shake { animation: shake 0.2s ease-in-out; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+
+    .rocket-structure { position: relative; width: 36px; height: 60px; display: flex; align-items: center; justify-content: center; }
+    .rocket-nose { position: absolute; top: 0; width: 18px; height: 18px; background: #cbd5e1; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+    .rocket-body-main { position: absolute; top: 14px; width: 22px; height: 40px; background: var(--neon-green); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .rocket-letter { font-family: var(--font-playful); font-size: 1.1rem; color: #1e293b; font-weight: bold; }
+    .rocket-thruster-flame { width: 10px; height: 14px; background: linear-gradient(180deg, var(--neon-amber), var(--neon-red)); border-radius: 0 0 6px 6px; }
+
+    .video-display-area {
+      background: #030712;
+      border: 2px solid var(--class-theme-color);
+      border-radius: 14px;
+      height: 540px;
+      margin-bottom: 15px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+    .video-container { width: 100%; height: 100%; border-radius: 10px; overflow: hidden; }
+    .video-container iframe, .video-container div#youtubePlayer { width: 100%; height: 100%; border: none; }
+    .video-status-text { font-family: var(--font-tech); color: var(--neon-amber); font-size: 0.95rem; margin-top: 12px; }
+
+    .keyboard-wrapper { width: 100%; max-width: 820px; margin: 0 auto; padding: 12px; background: #030712; border-radius: 14px; border: 1px solid #1e293b; display: none; }
+    .homerow-keyboard { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+    .kb-row { display: flex; gap: 6px; justify-content: center; width: 100%; }
+    .k { width: 54px; height: 54px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-tech); font-weight: bold; font-size: 1.2rem; color: #020617; transition: all 0.1s; }
+    .k-shift { width: 90px; background: #64748b; color: white; }
+    .col-a { background: var(--col-pinky); } .col-s { background: var(--col-ring); } .col-d { background: var(--col-middle); } .col-f { background: var(--col-index-l); }
+    .col-j { background: var(--col-index-r); } .col-k { background: var(--col-middle); } .col-l { background: var(--col-ring); } .col-semi { background: var(--col-pinky); }
+    .k-space { width: 280px; background: var(--col-thumb); }
+    .k.active { transform: translateY(2px); box-shadow: 0 0 12px var(--class-theme-color); filter: brightness(1.3); }
+    .k.pressed { transform: translateY(4px); filter: brightness(0.8); }
+
+    .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(3, 7, 18, 0.92); border-radius: 24px; display: flex; justify-content: center; align-items: center; z-index: 30; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-card { background: #0f172a; border: 2px solid var(--class-theme-color); border-radius: 20px; padding: 30px; max-width: 440px; width: 90%; text-align: center; }
+    .modal-title { font-family: var(--font-header); color: var(--class-theme-color); font-size: 1.5rem; margin-bottom: 10px; }
+    .stars-container { font-size: 2.2rem; margin: 10px 0; color: #334155; }
+    .star.filled { color: var(--neon-amber); }
+    .btn-primary { font-family: var(--font-tech); background: var(--class-theme-color); color: #020617; padding: 10px 24px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: transform 0.1s; }
+    .btn-primary:hover { transform: scale(1.05); }
+
+    .passcode-input {
+      font-family: var(--font-tech); font-size: 1.8rem; letter-spacing: 12px; text-align: center;
+      width: 180px; padding: 8px; margin: 15px auto; border-radius: 8px; border: 2px solid var(--class-theme-color);
+      background: #030712; color: #ffffff; outline: none; display: block;
+    }
+    .modal-btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+    .btn-secondary { font-family: var(--font-tech); background: #334155; color: #f8fafc; padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+  </style>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+</head>
+<body onload="init()">
+
+<div class="rocket-console">
+  <div class="student-class-header-bar">
+    <span id="activeClassBadge">CLASS: UNASSIGNED</span>
+    <span id="activeCompBadge">COMPUTER: #--</span>
+  </div>
+
+  <div class="console-header">
+    <div class="title-group">
+      <span class="header-rocket-icon">🚀</span>
+      <span class="app-title">Mission 1: FJDK Lift-off</span>
+    </div>
+    <div class="star-badge">⭐ STARS: <span id="totalStarsCount">0</span></div>
+  </div>
+
+  <div class="lesson-nav-bar" id="lessonNavBar"></div>
+
+  <div class="telemetry-bar">
+    <div class="accuracy-meter-container">
+      <span class="meter-label">ACCURACY:</span>
+      <div class="meter-track"><div id="accuracyMeterFill" class="meter-fill"></div></div>
+      <span id="accuracyVal" class="accuracy-text" style="color: var(--neon-green);">100%</span>
+    </div>
+    <button class="btn-control" onclick="toggleKeyboardVisibility()">KEYBOARD: <span id="kbToggleText">OFF</span></button>
+    <button class="btn-control" onclick="resetLesson()">RESET</button>
+  </div>
+
+  <div id="standardTextDisplay" class="terminal-display"><div id="textNodesContainer"></div></div>
+
+  <div id="skyGameDisplay" class="sky-game-area" style="display: none;">
+    <div class="rocket-counter-center">Rockets Destroyed: <span id="launchedCount">0</span> / <span id="targetGoal">20</span></div>
+    <div id="targetRocket" class="target-rocket">
+      <div class="rocket-structure">
+        <div class="rocket-nose"></div>
+        <div class="rocket-body-main"><span id="rocketLetter" class="rocket-letter">F</span></div>
+      </div>
+      <div class="rocket-thruster-flame"></div>
+    </div>
+  </div>
+
+  <div id="videoDisplay" class="video-display-area">
+    <div class="video-container">
+      <div id="youtubePlayer"></div>
+    </div>
+    <div id="videoStatus" class="video-status-text">🔒 Watch the full video to continue...</div>
+    <button id="videoFinishBtn" class="btn-primary" style="margin-top: 10px; display: none;" onclick="completeVideoLesson()">Finish Video & Continue ➔</button>
+  </div>
+
+  <div class="keyboard-wrapper" id="keyboardWrapper">
+    <div class="homerow-keyboard">
+      <div class="kb-row">
+        <div class="k k-shift" id="key-shiftleft">SHIFT</div>
+        <div class="k col-a" id="key-a">A</div>
+        <div class="k col-s" id="key-s">S</div>
+        <div class="k col-d" id="key-d">D</div>
+        <div class="k col-f" id="key-f">F</div>
+        <div class="k col-j" id="key-j">J</div>
+        <div class="k col-k" id="key-k">K</div>
+        <div class="k col-l" id="key-l">L</div>
+        <div class="k col-semi" id="key-;">;</div>
+        <div class="k k-shift" id="key-shiftright">SHIFT</div>
+      </div>
+      <div id="spacebarRow" class="kb-row">
+        <div class="k k-space" id="key-space">SPACE</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="passcodeModal" class="modal-overlay" onclick="handleBackdropClick(event)">
+    <div class="modal-card">
+      <h2 class="modal-title">TEACHER VERIFICATION</h2>
+      <p style="color: #cbd5e1; font-size: 0.9rem; margin-top: 5px;">Enter passcode to enable on-screen keyboard:</p>
+      <input type="password" id="passcodeInput" class="passcode-input" maxlength="4" autocomplete="off">
+      <div id="passcodeError" style="color: var(--neon-red); font-size: 0.85rem; height: 18px; margin-bottom: 5px;"></div>
+      <div class="modal-btn-group">
+        <button class="btn-secondary" onclick="closePasscodeModal()">Cancel</button>
+        <button class="btn-primary" onclick="verifyPasscode()">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="completionModal" class="modal-overlay">
+    <div class="modal-card">
+      <h2 id="modalTitle" class="modal-title">MISSION ACCOMPLISHED</h2>
+      <div class="stars-container">
+        <span class="star" id="star1">★</span><span class="star" id="star2">★</span><span class="star" id="star3">★</span>
+      </div>
+      <p style="margin-bottom: 15px; color: #cbd5e1;">Accuracy: <strong id="finalAccuracy">100%</strong></p>
+      <button id="nextLessonBtn" class="btn-primary" onclick="handleModalAction()">Next Lesson ➔</button>
+    </div>
+  </div>
+</div>
+
+<script src="rocket-game.js"></script>
+
+<script>
+  const TEACHER_PASSCODE = "8760";
+  const lessons = [
+    { title: "Lesson 1: F & J", text: "jjj fff jj ff fjj jjf fjf ffj jff jfj ffjfjjfjjffj", type: "typing" },
+    { title: "Lesson 2: D & K", text: "kkk ddd kk dd kkd ddk dkd kdd dkk kdk dddkdkddkdkk", type: "typing" },
+    { title: "Lesson 3: DFJK", text: "ff jj fj fj dd kk kd kd jk jk df df jd jd fk fk kj fd jf", type: "typing" },
+    { title: "Lesson 4: Game", text: "", type: "game" },
+    { title: "Lesson 5: Video", text: "", type: "video" },
+    { title: "Lesson 6: Shift", text: "jJ kK J K fF dD D F jfdk J F D K", type: "typing" }
+  ];
+
+  let currentLessonIdx = 0;
+  let targetText = "";
+  let currentIndex = 0;
+  let totalTyped = 0, correctTyped = 0;
+  let errorIndices = [];
+  let lessonStars = new Array(lessons.length).fill(0);
+  let showKeyboard = false;
+  let teacherUnlocked = false;
+  
+  let ytPlayer = null;
+  let videoFinished = false;
+
+  let leftShiftDown = false;
+  let rightShiftDown = false;
+
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'ShiftLeft') leftShiftDown = true;
+    if (e.code === 'ShiftRight') rightShiftDown = true;
+  });
+
+  window.addEventListener('keyup', (e) => {
+    if (e.code === 'ShiftLeft') leftShiftDown = false;
+    if (e.code === 'ShiftRight') rightShiftDown = false;
+  });
+
+  function onYouTubeIframeAPIReady() {
+    ytPlayer = new YT.Player('youtubePlayer', {
+      videoId: 'eKKutbjIZCQ',
+      events: { 'onStateChange': onPlayerStateChange }
+    });
+  }
+
+  function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+      videoFinished = true;
+      document.getElementById('videoFinishBtn').style.display = 'inline-block';
+      document.getElementById('videoStatus').innerText = '✅ Video complete! Click continue to proceed.';
+      document.getElementById('videoStatus').style.color = 'var(--neon-green)';
+    }
+  }
+
+  function init() {
+    loadClassProfile();
+    if (localStorage.getItem('mission1_video_completed') === 'true') {
+      lessonStars[4] = 3;
+    }
+    renderLessonButtons();
+    window.addEventListener('keydown', handleKeyPress);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    document.getElementById('passcodeInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') verifyPasscode();
+    });
+
+    loadLesson(0);
+  }
+
+  function loadClassProfile() {
+    const savedClass = localStorage.getItem('qwerty_class_name') || 'UNASSIGNED';
+    const savedColor = localStorage.getItem('qwerty_class_color') || '#38bdf8';
+    const savedComp = localStorage.getItem('qwerty_computer_num') || '--';
+
+    document.documentElement.style.setProperty('--class-theme-color', savedColor);
+    document.getElementById('activeClassBadge').innerText = `CLASS: ${savedClass.toUpperCase()}`;
+    document.getElementById('activeCompBadge').innerText = `COMPUTER: #${savedComp}`;
+  }
+
+  function renderLessonButtons() {
+    const navBar = document.getElementById('lessonNavBar');
+    navBar.innerHTML = '';
+    lessons.forEach((l, idx) => {
+      const btn = document.createElement('button');
+      btn.className = `btn-lesson ${idx === currentLessonIdx ? 'active' : ''} ${lessonStars[idx] > 0 ? 'completed' : ''}`;
+      btn.innerHTML = `${lessonStars[idx] > 0 ? '✔ ' : ''}${l.title}`;
+      btn.onclick = () => loadLesson(idx);
+      navBar.appendChild(btn);
+    });
+  }
+
+  function loadLesson(idx) {
+    currentLessonIdx = idx;
+    renderLessonButtons();
+    const lesson = lessons[currentLessonIdx];
+
+    document.getElementById('standardTextDisplay').style.display = 'none';
+    document.getElementById('skyGameDisplay').style.display = 'none';
+    document.getElementById('videoDisplay').style.display = 'none';
+
+    updateKeyboardDisplayState();
+
+    if (lesson.type === "game") {
+      document.getElementById('skyGameDisplay').style.display = 'block';
+      RocketGame.init((acc) => showCompletionModal(acc));
+    } else if (lesson.type === "video") {
+      document.getElementById('videoDisplay').style.display = 'flex';
+      setupVideoState();
+    } else {
+      targetText = lesson.text;
+      document.getElementById('standardTextDisplay').style.display = 'flex';
+    }
+    resetLesson();
+  }
+
+  function setupVideoState() {
+    const isAlreadyWatched = localStorage.getItem('mission1_video_completed') === 'true';
+    if (isAlreadyWatched) {
+      videoFinished = true;
+      document.getElementById('videoFinishBtn').style.display = 'inline-block';
+      document.getElementById('videoStatus').innerText = '✅ Video already watched! Click continue to proceed.';
+      document.getElementById('videoStatus').style.color = 'var(--neon-green)';
+    } else {
+      videoFinished = false;
+      document.getElementById('videoFinishBtn').style.display = 'none';
+      document.getElementById('videoStatus').innerText = '🔒 Watch the full video to continue...';
+      document.getElementById('videoStatus').style.color = 'var(--neon-amber)';
+      if (ytPlayer && ytPlayer.seekTo) {
+        ytPlayer.seekTo(0);
+        ytPlayer.stopVideo();
+      }
+    }
+  }
+
+  function resetLesson() {
+    RocketGame.reset();
+    currentIndex = 0; totalTyped = 0; correctTyped = 0; errorIndices = [];
+    updateAccuracyMeter(100);
+    document.getElementById('completionModal').classList.remove('active');
+    
+    if (lessons[currentLessonIdx].type === 'game') {
+      RocketGame.init((acc) => showCompletionModal(acc));
+    } else if (lessons[currentLessonIdx].type === 'video') {
+      setupVideoState();
+    } else {
+      updateTargetAndKeyboard();
+    }
+  }
+
+  function updateAccuracyMeter(acc) {
+    document.getElementById('accuracyMeterFill').style.width = `${acc}%`;
+    const txt = document.getElementById('accuracyVal');
+    txt.innerText = `${acc}%`;
+    txt.style.color = acc >= 90 ? 'var(--neon-green)' : (acc >= 80 ? 'var(--neon-amber)' : 'var(--neon-red)');
+  }
+
+  function updateTargetAndKeyboard() {
+    document.querySelectorAll('.k').forEach(k => k.classList.remove('active'));
+    if (currentIndex >= targetText.length) return;
+
+    const currentChar = targetText[currentIndex];
+    const container = document.getElementById('textNodesContainer');
+    container.innerHTML = '';
+    
+    for (let i = 0; i < targetText.length; i++) {
+      const span = document.createElement('span');
+      span.className = 'char-node';
+      if (targetText[i] === ' ') {
+        span.classList.add('space-node');
+        span.innerHTML = '&nbsp;';
+      } else {
+        span.innerText = targetText[i];
+      }
+      
+      if (i < currentIndex) span.classList.add(errorIndices.includes(i) ? 'char-error' : 'char-done');
+      else if (i === currentIndex) span.classList.add('char-current');
+      container.appendChild(span);
+    }
+
+    const isKbVisible = (currentLessonIdx === 5 || showKeyboard);
+    if (isKbVisible) {
+      let keyId = currentChar === ' ' ? 'key-space' : `key-${currentChar.toLowerCase()}`;
+      const activeKey = document.getElementById(keyId);
+      if (activeKey) activeKey.classList.add('active');
+
+      if (currentChar === currentChar.toUpperCase() && currentChar !== ' ' && currentChar !== ';') {
+        const isRightHand = ['j', 'k', 'l', ';'].includes(currentChar.toLowerCase());
+        const shiftKey = isRightHand ? document.getElementById('key-shiftleft') : document.getElementById('key-shiftright');
+        if (shiftKey) shiftKey.classList.add('active');
+      }
+    }
+  }
+
+  function handleKeyPress(e) {
     if (document.getElementById('passcodeModal').classList.contains('active')) return;
     if (e.key === ' ') e.preventDefault();
     
@@ -25,20 +602,16 @@ function handleKeyPress(e) {
     const isUppercaseExpected = (expectedChar === expectedChar.toUpperCase() && expectedChar !== ' ' && expectedChar !== ';');
 
     let isValid = false;
-
-    // Check if we are currently on Lesson 6 (Index 5)
     const isLesson6 = (currentLessonIdx === 5);
 
     if (isUppercaseExpected && isLesson6) {
-      // STRICT SHIFT RULE (Only enforced on Lesson 6)
-      // Right-hand keys (J, K) require Left Shift
-      // Left-hand keys (F, D) require Right Shift
+      // STRICT SHIFT RULE (ONLY LESSON 6)
       const isRightHandLetter = ['j', 'k', 'l', ';', 'u', 'i', 'o', 'p', 'h', 'n', 'm'].includes(expectedChar.toLowerCase());
       const usedCorrectShift = isRightHandLetter ? leftShiftDown : rightShiftDown;
 
       isValid = (e.key === expectedChar && usedCorrectShift);
     } else if (isUppercaseExpected) {
-      // General uppercase check for any other lesson (accepts either Shift key)
+      // STANDARD LESSONS (either shift key accepted)
       isValid = (e.shiftKey && e.key === expectedChar);
     } else {
       isValid = (e.key === expectedChar);
@@ -58,3 +631,107 @@ function handleKeyPress(e) {
     updateTargetAndKeyboard();
     if (currentIndex >= targetText.length) showCompletionModal(acc);
   }
+
+  function handleKeyUp(e) {
+    let keyId = e.key === ' ' ? 'key-space' : `key-${e.key.toLowerCase()}`;
+    let pressedKeyEl = document.getElementById(keyId);
+    if (pressedKeyEl) pressedKeyEl.classList.remove('pressed');
+  }
+
+  function toggleKeyboardVisibility() {
+    if (showKeyboard) {
+      showKeyboard = false;
+      teacherUnlocked = false;
+      updateKeyboardDisplayState();
+    } else {
+      if (teacherUnlocked) {
+        showKeyboard = true;
+        updateKeyboardDisplayState();
+      } else {
+        openPasscodeModal();
+      }
+    }
+  }
+
+  function openPasscodeModal() {
+    document.getElementById('passcodeInput').value = '';
+    document.getElementById('passcodeError').innerText = '';
+    document.getElementById('passcodeModal').classList.add('active');
+    setTimeout(() => document.getElementById('passcodeInput').focus(), 100);
+  }
+
+  function closePasscodeModal() {
+    document.getElementById('passcodeModal').classList.remove('active');
+  }
+
+  function handleBackdropClick(e) {
+    if (e.target.id === 'passcodeModal') closePasscodeModal();
+  }
+
+  function verifyPasscode() {
+    if (document.getElementById('passcodeInput').value === TEACHER_PASSCODE) {
+      teacherUnlocked = true;
+      showKeyboard = true;
+      closePasscodeModal();
+      updateKeyboardDisplayState();
+    } else {
+      document.getElementById('passcodeError').innerText = 'Incorrect Passcode';
+    }
+  }
+
+  function updateKeyboardDisplayState() {
+    const isLesson6 = (currentLessonIdx === 5);
+    const shouldDisplay = (isLesson6 || showKeyboard) && (lessons[currentLessonIdx].type !== 'video');
+    document.getElementById('kbToggleText').innerText = isLesson6 ? 'ON (FORCED)' : (showKeyboard ? 'ON' : 'OFF');
+    document.getElementById('keyboardWrapper').style.display = shouldDisplay ? 'block' : 'none';
+  }
+
+  function completeVideoLesson() { 
+    if (videoFinished) {
+      localStorage.setItem('mission1_video_completed', 'true');
+      showCompletionModal(100); 
+    }
+  }
+
+  function showCompletionModal(accuracy) {
+    let starsEarned = 0;
+    if (accuracy >= 80 && accuracy <= 84) starsEarned = 1;
+    else if (accuracy >= 85 && accuracy <= 89) starsEarned = 2;
+    else if (accuracy >= 90) starsEarned = 3;
+
+    if (accuracy >= 80) {
+      lessonStars[currentLessonIdx] = Math.max(lessonStars[currentLessonIdx], starsEarned);
+      const totalStars = lessonStars.reduce((a, b) => a + b, 0);
+      document.getElementById('totalStarsCount').innerText = totalStars;
+      renderLessonButtons();
+    }
+
+    document.getElementById('star1').classList.toggle('filled', starsEarned >= 1);
+    document.getElementById('star2').classList.toggle('filled', starsEarned >= 2);
+    document.getElementById('star3').classList.toggle('filled', starsEarned >= 3);
+    document.getElementById('finalAccuracy').innerText = `${accuracy}%`;
+
+    const nextBtn = document.getElementById('nextLessonBtn');
+    if (currentLessonIdx === lessons.length - 1) {
+      localStorage.setItem('mission1_completed', 'true');
+      localStorage.setItem('mission1_stars', lessonStars.reduce((a, b) => a + b, 0));
+      nextBtn.innerText = "Return to Space Hub 🚀";
+    } else {
+      nextBtn.innerText = "Next Lesson ➔";
+    }
+
+    document.getElementById('completionModal').classList.add('active');
+  }
+
+  function handleModalAction() {
+    document.getElementById('completionModal').classList.remove('active');
+    if (currentLessonIdx === lessons.length - 1) {
+      window.location.href = "../index.html";
+    } else {
+      currentLessonIdx++;
+      loadLesson(currentLessonIdx);
+    }
+  }
+</script>
+</body>
+</html>
