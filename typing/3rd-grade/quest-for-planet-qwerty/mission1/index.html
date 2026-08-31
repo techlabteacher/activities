@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mission 1: FJDK Lift-off - Flight Console</title>
+  <title>Mission 1: FJDK Lift-off</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Share+Tech+Mono&family=Fredoka+One&family=Open+Sans:wght@600;700&display=swap" rel="stylesheet">
   
   <style>
@@ -90,7 +90,6 @@
       font-weight: bold;
     }
 
-    /* Force all 6 lessons onto a single line */
     .lesson-nav-bar {
       display: flex;
       flex-wrap: nowrap;
@@ -176,6 +175,7 @@
 
     .btn-control:hover { background: rgba(56, 189, 248, 0.2); }
 
+    /* MAIN DISPLAY WINDOW (FOR TYPING LESSONS) */
     .terminal-display {
       background: #030712;
       border: 2px solid #1e293b;
@@ -189,9 +189,6 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      letter-spacing: 0px;
-      overflow-x: hidden;
-      white-space: normal;
       word-break: break-word;
     }
 
@@ -202,19 +199,13 @@
       row-gap: 8px;
     }
 
-    .char-node { 
-      display: inline-block; 
-      padding: 1px 2px; 
-      margin: 0; 
-      border-radius: 3px; 
-      min-width: 0.6em;
-      text-align: center;
-    }
+    .char-node { display: inline-block; padding: 1px 2px; margin: 0; border-radius: 3px; min-width: 0.6em; text-align: center; }
     .char-node.space-node { min-width: 0.5em; }
     .char-done { color: #475569; }
     .char-current { background-color: var(--class-theme-color); color: #020617 !important; font-weight: bold; }
     .char-error { background-color: var(--neon-red) !important; color: white !important; }
 
+    /* MAIN DISPLAY WINDOW (FOR LESSON 4 GAME) */
     .sky-game-area {
       background: radial-gradient(circle at 50% 100%, #1e293b 0%, #030712 100%);
       border: 2px solid var(--class-theme-color);
@@ -252,6 +243,7 @@
     .rocket-letter { font-family: var(--font-playful); font-size: 1.1rem; color: #1e293b; font-weight: bold; }
     .rocket-thruster-flame { width: 10px; height: 14px; background: linear-gradient(180deg, var(--neon-amber), var(--neon-red)); border-radius: 0 0 6px 6px; }
 
+    /* MAIN DISPLAY WINDOW (FOR LESSON 5 VIDEO) */
     .video-display-area {
       background: #030712;
       border: 2px solid var(--class-theme-color);
@@ -266,14 +258,9 @@
     }
     .video-container { width: 100%; height: 100%; border-radius: 10px; overflow: hidden; }
     .video-container iframe, .video-container div#youtubePlayer { width: 100%; height: 100%; border: none; }
+    .video-status-text { font-family: var(--font-tech); color: var(--neon-amber); font-size: 0.95rem; margin-top: 12px; }
 
-    .video-status-text {
-      font-family: var(--font-tech);
-      color: var(--neon-amber);
-      font-size: 0.95rem;
-      margin-top: 12px;
-    }
-
+    /* KEYBOARD & MODALS */
     .keyboard-wrapper { width: 100%; max-width: 820px; margin: 0 auto; padding: 12px; background: #030712; border-radius: 14px; border: 1px solid #1e293b; display: none; }
     .homerow-keyboard { display: flex; flex-direction: column; gap: 8px; align-items: center; }
     .kb-row { display: flex; gap: 6px; justify-content: center; width: 100%; }
@@ -295,45 +282,15 @@
     .btn-primary:hover { transform: scale(1.05); }
 
     .passcode-input {
-      font-family: var(--font-tech);
-      font-size: 1.8rem;
-      letter-spacing: 12px;
-      text-align: center;
-      width: 180px;
-      padding: 8px;
-      margin: 15px auto;
-      border-radius: 8px;
-      border: 2px solid var(--class-theme-color);
-      background: #030712;
-      color: #ffffff;
-      outline: none;
-      display: block;
+      font-family: var(--font-tech); font-size: 1.8rem; letter-spacing: 12px; text-align: center;
+      width: 180px; padding: 8px; margin: 15px auto; border-radius: 8px; border: 2px solid var(--class-theme-color);
+      background: #030712; color: #ffffff; outline: none; display: block;
     }
-    .passcode-input:focus {
-      box-shadow: 0 0 10px var(--class-theme-color);
-    }
-    .modal-btn-group {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 15px;
-    }
-    .btn-secondary {
-      font-family: var(--font-tech);
-      background: #334155;
-      color: #f8fafc;
-      padding: 10px 20px;
-      border-radius: 8px;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .btn-secondary:hover {
-      background: #475569;
-    }
+    .modal-btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+    .btn-secondary { font-family: var(--font-tech); background: #334155; color: #f8fafc; padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
   </style>
-  
-  <!-- Load YouTube IFrame Player API -->
+
+  <!-- YouTube API -->
   <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body onload="init()">
@@ -353,8 +310,10 @@
     <div class="star-badge">⭐ STARS: <span id="totalStarsCount">0</span></div>
   </div>
 
+  <!-- Lesson Selector Buttons -->
   <div class="lesson-nav-bar" id="lessonNavBar"></div>
 
+  <!-- Telemetry Bar -->
   <div class="telemetry-bar">
     <div class="accuracy-meter-container">
       <span class="meter-label">ACCURACY:</span>
@@ -365,9 +324,10 @@
     <button class="btn-control" onclick="resetLesson()">RESET</button>
   </div>
 
+  <!-- 1. DISPLAY WINDOW: TYPING LESSONS (1, 2, 3, 6) -->
   <div id="standardTextDisplay" class="terminal-display"><div id="textNodesContainer"></div></div>
 
-  <!-- Lesson 4 Rocket Game -->
+  <!-- 2. DISPLAY WINDOW: GAME (LESSON 4) -->
   <div id="skyGameDisplay" class="sky-game-area" style="display: none;">
     <div class="rocket-counter-center">Rockets Destroyed: <span id="launchedCount">0</span> / <span id="targetGoal">20</span></div>
     <div id="targetRocket" class="target-rocket">
@@ -379,7 +339,7 @@
     </div>
   </div>
 
-  <!-- Lesson 5 Video Player -->
+  <!-- 3. DISPLAY WINDOW: VIDEO (LESSON 5) -->
   <div id="videoDisplay" class="video-display-area">
     <div class="video-container">
       <div id="youtubePlayer"></div>
@@ -436,8 +396,11 @@
   </div>
 </div>
 
+<!-- Load Separate Rocket Game Script First -->
+<script src="rocket-game.js"></script>
+
+<!-- Main Page Logic -->
 <script>
-  const ROCKET_GOAL_COUNT = 20;
   const TEACHER_PASSCODE = "8760";
   const lessons = [
     { title: "Lesson 1: F & J", text: "jjj fff jj ff fjj jjf fjf ffj jff jfj ffjfjjfjjffj", type: "typing" },
@@ -448,8 +411,6 @@
     { title: "Lesson 6: Shift", text: "jJ kK J K fF dD D F jfdk J F D K", type: "typing" }
   ];
 
-  const keyXPositions = { 'a': 15, 's': 25, 'd': 35, 'f': 45, 'j': 55, 'k': 65, 'l': 75, ';': 85 };
-
   let currentLessonIdx = 0;
   let targetText = "";
   let currentIndex = 0;
@@ -458,21 +419,14 @@
   let lessonStars = new Array(lessons.length).fill(0);
   let showKeyboard = false;
   let teacherUnlocked = false;
-  let rocketAnim = null;
-  let isAnimatingRocket = false;
   
-  // YouTube API Variables
   let ytPlayer = null;
-  let isYtApiReady = false;
   let videoFinished = false;
 
   function onYouTubeIframeAPIReady() {
-    isYtApiReady = true;
     ytPlayer = new YT.Player('youtubePlayer', {
       videoId: 'eKKutbjIZCQ',
-      events: {
-        'onStateChange': onPlayerStateChange
-      }
+      events: { 'onStateChange': onPlayerStateChange }
     });
   }
 
@@ -487,17 +441,14 @@
 
   function init() {
     loadClassProfile();
-    
-    // Check if video was previously completed in localStorage
     if (localStorage.getItem('mission1_video_completed') === 'true') {
-      lessonStars[4] = 3; // Mark Lesson 5 as completed in local state
+      lessonStars[4] = 3;
     }
-
     renderLessonButtons();
     window.addEventListener('keydown', handleKeyPress);
     window.addEventListener('keyup', handleKeyUp);
     
-    document.getElementById('passcodeInput').addEventListener('keydown', function(e) {
+    document.getElementById('passcodeInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') verifyPasscode();
     });
 
@@ -512,63 +463,6 @@
     document.documentElement.style.setProperty('--class-theme-color', savedColor);
     document.getElementById('activeClassBadge').innerText = `CLASS: ${savedClass.toUpperCase()}`;
     document.getElementById('activeCompBadge').innerText = `COMPUTER: #${savedComp}`;
-  }
-
-  function toggleKeyboardVisibility() {
-    if (showKeyboard) {
-      showKeyboard = false;
-      teacherUnlocked = false;
-      updateKeyboardDisplayState();
-    } else {
-      if (teacherUnlocked) {
-        showKeyboard = true;
-        updateKeyboardDisplayState();
-      } else {
-        openPasscodeModal();
-      }
-    }
-  }
-
-  function openPasscodeModal() {
-    const input = document.getElementById('passcodeInput');
-    input.value = '';
-    document.getElementById('passcodeError').innerText = '';
-    document.getElementById('passcodeModal').classList.add('active');
-    setTimeout(() => input.focus(), 100);
-  }
-
-  function closePasscodeModal() {
-    document.getElementById('passcodeModal').classList.remove('active');
-    document.getElementById('passcodeInput').value = '';
-    document.getElementById('passcodeError').innerText = '';
-  }
-
-  function handleBackdropClick(event) {
-    if (event.target.id === 'passcodeModal') {
-      closePasscodeModal();
-    }
-  }
-
-  function verifyPasscode() {
-    const val = document.getElementById('passcodeInput').value;
-    if (val === TEACHER_PASSCODE) {
-      teacherUnlocked = true;
-      showKeyboard = true;
-      closePasscodeModal();
-      updateKeyboardDisplayState();
-    } else {
-      document.getElementById('passcodeError').innerText = 'Incorrect Passcode';
-      document.getElementById('passcodeInput').value = '';
-      document.getElementById('passcodeInput').focus();
-    }
-  }
-
-  function updateKeyboardDisplayState() {
-    const isLesson6 = (currentLessonIdx === 5);
-    const shouldDisplay = (isLesson6 || showKeyboard) && (lessons[currentLessonIdx].type !== 'video');
-    
-    document.getElementById('kbToggleText').innerText = isLesson6 ? 'ON (FORCED)' : (showKeyboard ? 'ON' : 'OFF');
-    document.getElementById('keyboardWrapper').style.display = shouldDisplay ? 'block' : 'none';
   }
 
   function renderLessonButtons() {
@@ -595,8 +489,8 @@
     updateKeyboardDisplayState();
 
     if (lesson.type === "game") {
-      targetText = generateRandomSequence(ROCKET_GOAL_COUNT);
       document.getElementById('skyGameDisplay').style.display = 'block';
+      RocketGame.init((acc) => showCompletionModal(acc));
     } else if (lesson.type === "video") {
       document.getElementById('videoDisplay').style.display = 'flex';
       setupVideoState();
@@ -609,7 +503,6 @@
 
   function setupVideoState() {
     const isAlreadyWatched = localStorage.getItem('mission1_video_completed') === 'true';
-
     if (isAlreadyWatched) {
       videoFinished = true;
       document.getElementById('videoFinishBtn').style.display = 'inline-block';
@@ -628,52 +521,18 @@
   }
 
   function resetLesson() {
-    clearInterval(rocketAnim);
-    isAnimatingRocket = false;
+    RocketGame.reset();
     currentIndex = 0; totalTyped = 0; correctTyped = 0; errorIndices = [];
     updateAccuracyMeter(100);
     document.getElementById('completionModal').classList.remove('active');
     
     if (lessons[currentLessonIdx].type === 'game') {
-      document.getElementById('launchedCount').innerText = 0;
-      positionGameRocket();
+      RocketGame.init((acc) => showCompletionModal(acc));
     } else if (lessons[currentLessonIdx].type === 'video') {
       setupVideoState();
     } else {
       updateTargetAndKeyboard();
     }
-  }
-
-  function positionGameRocket() {
-    const rocket = document.getElementById('targetRocket');
-    const char = targetText[currentIndex].toLowerCase();
-    const xPos = keyXPositions[char] || 50;
-    rocket.style.left = `calc(${xPos}% - 25px)`;
-    rocket.style.bottom = '20px';
-    document.getElementById('rocketLetter').innerText = targetText[currentIndex].toUpperCase();
-  }
-
-  function launchRocketAnimation() {
-    if (isAnimatingRocket) return;
-    isAnimatingRocket = true;
-    const rocket = document.getElementById('targetRocket');
-    let pos = 20;
-    clearInterval(rocketAnim);
-    rocketAnim = setInterval(() => {
-      pos += 18;
-      rocket.style.bottom = `${pos}px`;
-      if (pos > 360) {
-        clearInterval(rocketAnim);
-        isAnimatingRocket = false;
-        currentIndex++;
-        document.getElementById('launchedCount').innerText = currentIndex;
-        if (currentIndex >= targetText.length) {
-          showCompletionModal(Math.round((correctTyped / totalTyped) * 100));
-        } else {
-          positionGameRocket();
-        }
-      }
-    }, 20);
   }
 
   function updateAccuracyMeter(acc) {
@@ -685,12 +544,12 @@
 
   function updateTargetAndKeyboard() {
     document.querySelectorAll('.k').forEach(k => k.classList.remove('active'));
-
     if (currentIndex >= targetText.length) return;
-    const currentChar = targetText[currentIndex];
 
+    const currentChar = targetText[currentIndex];
     const container = document.getElementById('textNodesContainer');
     container.innerHTML = '';
+    
     for (let i = 0; i < targetText.length; i++) {
       const span = document.createElement('span');
       span.className = 'char-node';
@@ -721,13 +580,7 @@
   }
 
   function handleKeyPress(e) {
-    if (e.key === 'Escape' && document.getElementById('passcodeModal').classList.contains('active')) {
-      closePasscodeModal();
-      return;
-    }
-
     if (document.getElementById('passcodeModal').classList.contains('active')) return;
-    
     if (e.key === ' ') e.preventDefault();
     
     let keyId = e.key === ' ' ? 'key-space' : `key-${e.key.toLowerCase()}`;
@@ -737,14 +590,21 @@
     if (e.key === 'Enter' && document.getElementById('completionModal').classList.contains('active')) {
       handleModalAction(); return;
     }
-    if (lessons[currentLessonIdx].type === 'video' || e.key.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
-    if (isAnimatingRocket) return;
 
+    // GAME LESSON HANDLER
+    if (lessons[currentLessonIdx].type === 'game') {
+      const accuracy = RocketGame.handleInput(e.key);
+      if (accuracy !== undefined) updateAccuracyMeter(accuracy);
+      return;
+    }
+
+    if (lessons[currentLessonIdx].type === 'video' || e.key.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
+
+    // TYPING LESSON HANDLER
     const expectedChar = targetText[currentIndex];
     const isUppercaseExpected = (expectedChar === expectedChar.toUpperCase() && expectedChar !== ' ' && expectedChar !== ';');
 
     let isValid = false;
-
     if (isUppercaseExpected) {
       const isRightHand = ['j', 'k', 'l', ';'].includes(expectedChar.toLowerCase());
       const hasCorrectShift = isRightHand ? e.getModifierState('ShiftLeft') : e.getModifierState('ShiftRight');
@@ -754,32 +614,18 @@
     }
 
     totalTyped++;
-
     if (isValid) {
       correctTyped++;
-      if (lessons[currentLessonIdx].type === 'game') {
-        launchRocketAnimation();
-      } else {
-        currentIndex++;
-      }
+      currentIndex++;
     } else {
       errorIndices.push(currentIndex);
-      if (lessons[currentLessonIdx].type === 'game') {
-        const rocket = document.getElementById('targetRocket');
-        rocket.classList.add('shake');
-        setTimeout(() => rocket.classList.remove('shake'), 200);
-      } else if (currentLessonIdx < 3) {
-        currentIndex++;
-      }
+      if (currentLessonIdx < 3) currentIndex++;
     }
 
     const acc = Math.round((correctTyped / totalTyped) * 100);
     updateAccuracyMeter(acc);
-
-    if (lessons[currentLessonIdx].type !== 'game') {
-      updateTargetAndKeyboard();
-      if (currentIndex >= targetText.length) showCompletionModal(acc);
-    }
+    updateTargetAndKeyboard();
+    if (currentIndex >= targetText.length) showCompletionModal(acc);
   }
 
   function handleKeyUp(e) {
@@ -788,18 +634,59 @@
     if (pressedKeyEl) pressedKeyEl.classList.remove('pressed');
   }
 
+  function toggleKeyboardVisibility() {
+    if (showKeyboard) {
+      showKeyboard = false;
+      teacherUnlocked = false;
+      updateKeyboardDisplayState();
+    } else {
+      if (teacherUnlocked) {
+        showKeyboard = true;
+        updateKeyboardDisplayState();
+      } else {
+        openPasscodeModal();
+      }
+    }
+  }
+
+  function openPasscodeModal() {
+    document.getElementById('passcodeInput').value = '';
+    document.getElementById('passcodeError').innerText = '';
+    document.getElementById('passcodeModal').classList.add('active');
+    setTimeout(() => document.getElementById('passcodeInput').focus(), 100);
+  }
+
+  function closePasscodeModal() {
+    document.getElementById('passcodeModal').classList.remove('active');
+  }
+
+  function handleBackdropClick(e) {
+    if (e.target.id === 'passcodeModal') closePasscodeModal();
+  }
+
+  function verifyPasscode() {
+    if (document.getElementById('passcodeInput').value === TEACHER_PASSCODE) {
+      teacherUnlocked = true;
+      showKeyboard = true;
+      closePasscodeModal();
+      updateKeyboardDisplayState();
+    } else {
+      document.getElementById('passcodeError').innerText = 'Incorrect Passcode';
+    }
+  }
+
+  function updateKeyboardDisplayState() {
+    const isLesson6 = (currentLessonIdx === 5);
+    const shouldDisplay = (isLesson6 || showKeyboard) && (lessons[currentLessonIdx].type !== 'video');
+    document.getElementById('kbToggleText').innerText = isLesson6 ? 'ON (FORCED)' : (showKeyboard ? 'ON' : 'OFF');
+    document.getElementById('keyboardWrapper').style.display = shouldDisplay ? 'block' : 'none';
+  }
+
   function completeVideoLesson() { 
     if (videoFinished) {
       localStorage.setItem('mission1_video_completed', 'true');
       showCompletionModal(100); 
     }
-  }
-
-  function generateRandomSequence(length) {
-    const chars = ["f", "j", "d", "k"];
-    let res = "";
-    for (let i = 0; i < length; i++) res += chars[Math.floor(Math.random() * chars.length)];
-    return res;
   }
 
   function showCompletionModal(accuracy) {
