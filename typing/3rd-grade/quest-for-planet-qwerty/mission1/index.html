@@ -41,7 +41,6 @@
       overflow-x: hidden;
     }
 
-    /* Fireworks Canvas Overlay */
     #fireworksCanvas {
       position: fixed;
       top: 0;
@@ -447,7 +446,10 @@
   let lessonStars = new Array(lessons.length).fill(0);
   let showKeyboard = false;
   let teacherUnlocked = false;
-  let currentPasscodeMode = 'keyboard'; // 'keyboard' or 'reset'
+  let currentPasscodeMode = 'keyboard';
+
+  let currentClassName = 'UNASSIGNED';
+  let currentCompNum = '--';
   
   let ytPlayer = null;
   let videoFinished = false;
@@ -455,7 +457,6 @@
   let leftShiftDown = false;
   let rightShiftDown = false;
 
-  // Fireworks Animation System
   let fireworksActive = false;
   let particles = [];
 
@@ -509,7 +510,7 @@
         const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.04; // gravity
+        p.vy += 0.04;
         p.alpha -= p.decay;
 
         if (p.alpha <= 0) {
@@ -564,6 +565,12 @@
     }
   }
 
+  // Generate unique keys for each student profile (160 profiles max)
+  function getProfileKey(suffix) {
+    const cleanClass = currentClassName.toUpperCase().replace(/\s+/g, '_');
+    return `m1_${cleanClass}_c${currentCompNum}_${suffix}`;
+  }
+
   function init() {
     loadClassProfile();
     loadProgress();
@@ -584,19 +591,20 @@
   }
 
   function loadClassProfile() {
-    const savedClass = localStorage.getItem('qwerty_class_name') || localStorage.getItem('selectedClass') || 'UNASSIGNED';
+    currentClassName = localStorage.getItem('qwerty_class_name') || localStorage.getItem('selectedClass') || 'UNASSIGNED';
     const savedColor = localStorage.getItem('qwerty_class_color') || localStorage.getItem('selectedClassColor') || '#38bdf8';
-    
-    // UPDATED: Dynamically fetch computer number using preferred keys
-    let savedComp = localStorage.getItem('qwerty_computer_num') || localStorage.getItem('selectedCompNum') || '--';
+    currentCompNum = localStorage.getItem('qwerty_computer_num') || localStorage.getItem('selectedCompNum') || '--';
     
     document.documentElement.style.setProperty('--class-theme-color', savedColor);
-    document.getElementById('activeClassBadge').innerText = `CLASS: ${savedClass.toUpperCase()}`;
-    document.getElementById('activeCompBadge').innerText = `COMPUTER: #${savedComp}`;
+    document.getElementById('activeClassBadge').innerText = `CLASS: ${currentClassName.toUpperCase()}`;
+    document.getElementById('activeCompBadge').innerText = `COMPUTER: #${currentCompNum}`;
   }
 
   function loadProgress() {
-    const savedStars = localStorage.getItem('mission1_lesson_stars');
+    const profileStarsKey = getProfileKey('lesson_stars');
+    const savedStars = localStorage.getItem(profileStarsKey);
+    lessonStars = new Array(lessons.length).fill(0);
+
     if (savedStars) {
       try {
         const parsed = JSON.parse(savedStars);
@@ -606,7 +614,8 @@
       } catch (e) {}
     }
 
-    if (localStorage.getItem('mission1_video_completed') === 'true') {
+    const videoKey = getProfileKey('video_completed');
+    if (localStorage.getItem(videoKey) === 'true') {
       lessonStars[4] = Math.max(lessonStars[4], 3);
     }
 
@@ -615,9 +624,13 @@
   }
 
   function saveProgress() {
-    localStorage.setItem('mission1_lesson_stars', JSON.stringify(lessonStars));
+    const profileStarsKey = getProfileKey('lesson_stars');
+    localStorage.setItem(profileStarsKey, JSON.stringify(lessonStars));
+    
     const totalStars = lessonStars.reduce((a, b) => a + b, 0);
-    localStorage.setItem('mission1_stars', totalStars);
+    const profileTotalKey = getProfileKey('stars');
+    localStorage.setItem(profileTotalKey, totalStars);
+    
     document.getElementById('totalStarsCount').innerText = totalStars;
   }
 
@@ -662,7 +675,8 @@
   }
 
   function setupVideoState() {
-    const isAlreadyWatched = localStorage.getItem('mission1_video_completed') === 'true';
+    const videoKey = getProfileKey('video_completed');
+    const isAlreadyWatched = localStorage.getItem(videoKey) === 'true';
     if (isAlreadyWatched) {
       videoFinished = true;
       document.getElementById('videoFinishBtn').style.display = 'inline-block';
@@ -751,7 +765,6 @@
       handleModalAction(); return;
     }
 
-    // GAME LESSON HANDLER
     if (lessons[currentLessonIdx].type === 'game') {
       const accuracy = RocketGame.handleInput(e.key);
       if (accuracy !== undefined) updateAccuracyMeter(accuracy);
@@ -760,7 +773,6 @@
 
     if (lessons[currentLessonIdx].type === 'video' || e.key.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
 
-    // TYPING LESSON HANDLER
     const expectedChar = targetText[currentIndex];
     const isUppercaseExpected = (expectedChar === expectedChar.toUpperCase() && expectedChar !== ' ' && expectedChar !== ';');
 
@@ -854,10 +866,10 @@
         showKeyboard = true;
         updateKeyboardDisplayState();
       } else if (currentPasscodeMode === 'reset') {
-        // Clear progress for current lesson
         lessonStars[currentLessonIdx] = 0;
         if (currentLessonIdx === 4) {
-          localStorage.removeItem('mission1_video_completed');
+          const videoKey = getProfileKey('video_completed');
+          localStorage.removeItem(videoKey);
         }
         saveProgress();
         renderLessonButtons();
@@ -877,7 +889,8 @@
 
   function completeVideoLesson() { 
     if (videoFinished) {
-      localStorage.setItem('mission1_video_completed', 'true');
+      const videoKey = getProfileKey('video_completed');
+      localStorage.setItem(videoKey, 'true');
       showCompletionModal(100); 
     }
   }
@@ -904,7 +917,8 @@
     const isAllComplete = checkAllLessonsCompleted();
 
     if (isAllComplete) {
-      localStorage.setItem('mission1_completed', 'true');
+      const completeKey = getProfileKey('completed');
+      localStorage.setItem(completeKey, 'true');
       titleEl.innerText = "🎉 MISSION 1 COMPLETE! 🎉";
       document.getElementById('modalBodyText').innerHTML = `Outstanding work Cadet! You earned all green stars and mastered Mission 1!`;
       nextBtn.innerText = "Stay on Mission 1 🚀";
