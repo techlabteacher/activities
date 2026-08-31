@@ -37,6 +37,19 @@
       align-items: center;
       justify-content: center;
       user-select: none;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Fireworks Canvas Overlay */
+    #fireworksCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 99;
     }
 
     .rocket-console { 
@@ -48,6 +61,7 @@
       box-shadow: 0 0 35px var(--class-theme-color); 
       border: 3px solid var(--class-theme-color); 
       position: relative;
+      z-index: 10;
     }
 
     .student-class-header-bar {
@@ -119,7 +133,6 @@
       width: 100%;
     }
 
-    /* UPDATED: Increased font size to 0.95rem and reduced padding */
     .btn-lesson {
       flex: 1 1 0;
       min-width: 0;
@@ -195,6 +208,13 @@
     }
 
     .btn-control:hover { background: rgba(56, 189, 248, 0.2); }
+    .btn-control.btn-reset-teacher {
+      border-color: var(--neon-amber);
+      color: var(--neon-amber);
+    }
+    .btn-control.btn-reset-teacher:hover {
+      background: rgba(245, 158, 11, 0.2);
+    }
 
     .terminal-display {
       background: #030712;
@@ -311,6 +331,8 @@
 </head>
 <body onload="init()">
 
+<canvas id="fireworksCanvas"></canvas>
+
 <div class="rocket-console">
   <div class="student-class-header-bar">
     <button class="btn-hub-nav" onclick="goToHub()">⬅ RETURN TO HUB</button>
@@ -335,7 +357,7 @@
       <span id="accuracyVal" class="accuracy-text" style="color: var(--neon-green);">100%</span>
     </div>
     <button class="btn-control" onclick="toggleKeyboardVisibility()">KEYBOARD: <span id="kbToggleText">OFF</span></button>
-    <button class="btn-control" onclick="resetLesson()">RESET</button>
+    <button class="btn-control btn-reset-teacher" onclick="openTeacherResetModal()">RESET LESSON 🔒</button>
   </div>
 
   <div id="standardTextDisplay" class="terminal-display"><div id="textNodesContainer"></div></div>
@@ -381,13 +403,13 @@
 
   <div id="passcodeModal" class="modal-overlay" onclick="handleBackdropClick(event)">
     <div class="modal-card">
-      <h2 class="modal-title">TEACHER VERIFICATION</h2>
-      <p style="color: #cbd5e1; font-size: 0.9rem; margin-top: 5px;">Enter passcode to enable on-screen keyboard:</p>
+      <h2 id="passcodeModalTitle" class="modal-title">TEACHER VERIFICATION</h2>
+      <p id="passcodeModalSubtext" style="color: #cbd5e1; font-size: 0.9rem; margin-top: 5px;">Enter passcode to enable on-screen keyboard:</p>
       <input type="password" id="passcodeInput" class="passcode-input" maxlength="4" autocomplete="off">
       <div id="passcodeError" style="color: var(--neon-red); font-size: 0.85rem; height: 18px; margin-bottom: 5px;"></div>
       <div class="modal-btn-group">
         <button class="btn-secondary" onclick="closePasscodeModal()">Cancel</button>
-        <button class="btn-primary" onclick="verifyPasscode()">Unlock</button>
+        <button class="btn-primary" onclick="submitPasscodeAction()">Submit</button>
       </div>
     </div>
   </div>
@@ -398,7 +420,7 @@
       <div class="stars-container">
         <span class="star" id="star1">★</span><span class="star" id="star2">★</span><span class="star" id="star3">★</span>
       </div>
-      <p style="margin-bottom: 15px; color: #cbd5e1;">Accuracy: <strong id="finalAccuracy">100%</strong></p>
+      <p style="margin-bottom: 15px; color: #cbd5e1;" id="modalBodyText">Accuracy: <strong id="finalAccuracy">100%</strong></p>
       <button id="nextLessonBtn" class="btn-primary" onclick="handleModalAction()">Next Lesson ➔</button>
     </div>
   </div>
@@ -425,12 +447,96 @@
   let lessonStars = new Array(lessons.length).fill(0);
   let showKeyboard = false;
   let teacherUnlocked = false;
+  let currentPasscodeMode = 'keyboard'; // 'keyboard' or 'reset'
   
   let ytPlayer = null;
   let videoFinished = false;
 
   let leftShiftDown = false;
   let rightShiftDown = false;
+
+  // Fireworks Animation System
+  let fireworksActive = false;
+  let particles = [];
+
+  function launchFireworks() {
+    const canvas = document.getElementById('fireworksCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    fireworksActive = true;
+    particles = [];
+
+    const colors = ['#22c55e', '#38bdf8', '#f59e0b', '#ec4899', '#a855f7', '#ffffff'];
+
+    function createExplosion(x, y) {
+      const particleCount = 60;
+      for (let i = 0; i < particleCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 6 + 2;
+        particles.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          alpha: 1,
+          decay: Math.random() * 0.015 + 0.008,
+          radius: Math.random() * 3 + 2
+        });
+      }
+    }
+
+    let burstTimer = 0;
+
+    function animate() {
+      if (!fireworksActive) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      burstTimer++;
+      if (burstTimer % 20 === 0) {
+        createExplosion(
+          Math.random() * canvas.width * 0.8 + canvas.width * 0.1,
+          Math.random() * canvas.height * 0.5 + canvas.height * 0.1
+        );
+      }
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.04; // gravity
+        p.alpha -= p.decay;
+
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = p.color;
+        ctx.fill();
+        ctx.restore();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    setTimeout(() => {
+      fireworksActive = false;
+    }, 6000);
+  }
 
   window.addEventListener('keydown', (e) => {
     if (e.code === 'ShiftLeft') leftShiftDown = true;
@@ -467,7 +573,7 @@
     window.addEventListener('keyup', handleKeyUp);
     
     document.getElementById('passcodeInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') verifyPasscode();
+      if (e.key === 'Enter') submitPasscodeAction();
     });
 
     loadLesson(0);
@@ -480,8 +586,10 @@
   function loadClassProfile() {
     const savedClass = localStorage.getItem('qwerty_class_name') || localStorage.getItem('selectedClass') || 'UNASSIGNED';
     const savedColor = localStorage.getItem('qwerty_class_color') || localStorage.getItem('selectedClassColor') || '#38bdf8';
-    const savedComp = localStorage.getItem('qwerty_computer_num') || localStorage.getItem('selectedCompNum') || '--';
-
+    
+    // UPDATED: Dynamically fetch computer number using preferred keys
+    let savedComp = localStorage.getItem('qwerty_computer_num') || localStorage.getItem('selectedCompNum') || '--';
+    
     document.documentElement.style.setProperty('--class-theme-color', savedColor);
     document.getElementById('activeClassBadge').innerText = `CLASS: ${savedClass.toUpperCase()}`;
     document.getElementById('activeCompBadge').innerText = `COMPUTER: #${savedComp}`;
@@ -511,6 +619,10 @@
     const totalStars = lessonStars.reduce((a, b) => a + b, 0);
     localStorage.setItem('mission1_stars', totalStars);
     document.getElementById('totalStarsCount').innerText = totalStars;
+  }
+
+  function checkAllLessonsCompleted() {
+    return lessonStars.every(stars => stars > 0);
   }
 
   function renderLessonButtons() {
@@ -546,7 +658,7 @@
       targetText = lesson.text;
       document.getElementById('standardTextDisplay').style.display = 'flex';
     }
-    resetLesson();
+    resetLessonStateOnly();
   }
 
   function setupVideoState() {
@@ -568,7 +680,7 @@
     }
   }
 
-  function resetLesson() {
+  function resetLessonStateOnly() {
     RocketGame.reset();
     currentIndex = 0; totalTyped = 0; correctTyped = 0; errorIndices = [];
     updateAccuracyMeter(100);
@@ -656,13 +768,11 @@
     const isLesson6 = (currentLessonIdx === 5);
 
     if (isUppercaseExpected && isLesson6) {
-      // STRICT SHIFT RULE (ONLY LESSON 6)
       const isRightHandLetter = ['j', 'k', 'l', ';', 'u', 'i', 'o', 'p', 'h', 'n', 'm'].includes(expectedChar.toLowerCase());
       const usedCorrectShift = isRightHandLetter ? leftShiftDown : rightShiftDown;
 
       isValid = (e.key === expectedChar && usedCorrectShift);
     } else if (isUppercaseExpected) {
-      // STANDARD LESSONS (either shift key accepted)
       isValid = (e.shiftKey && e.key === expectedChar);
     } else {
       isValid = (e.key === expectedChar);
@@ -699,14 +809,31 @@
         showKeyboard = true;
         updateKeyboardDisplayState();
       } else {
-        openPasscodeModal();
+        openPasscodeModal('keyboard');
       }
     }
   }
 
-  function openPasscodeModal() {
+  function openTeacherResetModal() {
+    openPasscodeModal('reset');
+  }
+
+  function openPasscodeModal(mode) {
+    currentPasscodeMode = mode;
     document.getElementById('passcodeInput').value = '';
     document.getElementById('passcodeError').innerText = '';
+    
+    const titleEl = document.getElementById('passcodeModalTitle');
+    const subtextEl = document.getElementById('passcodeModalSubtext');
+
+    if (mode === 'reset') {
+      titleEl.innerText = "TEACHER RESET";
+      subtextEl.innerText = `Enter passcode to reset ${lessons[currentLessonIdx].title}:`;
+    } else {
+      titleEl.innerText = "TEACHER VERIFICATION";
+      subtextEl.innerText = "Enter passcode to enable on-screen keyboard:";
+    }
+
     document.getElementById('passcodeModal').classList.add('active');
     setTimeout(() => document.getElementById('passcodeInput').focus(), 100);
   }
@@ -719,12 +846,23 @@
     if (e.target.id === 'passcodeModal') closePasscodeModal();
   }
 
-  function verifyPasscode() {
+  function submitPasscodeAction() {
     if (document.getElementById('passcodeInput').value === TEACHER_PASSCODE) {
-      teacherUnlocked = true;
-      showKeyboard = true;
       closePasscodeModal();
-      updateKeyboardDisplayState();
+      if (currentPasscodeMode === 'keyboard') {
+        teacherUnlocked = true;
+        showKeyboard = true;
+        updateKeyboardDisplayState();
+      } else if (currentPasscodeMode === 'reset') {
+        // Clear progress for current lesson
+        lessonStars[currentLessonIdx] = 0;
+        if (currentLessonIdx === 4) {
+          localStorage.removeItem('mission1_video_completed');
+        }
+        saveProgress();
+        renderLessonButtons();
+        resetLessonStateOnly();
+      }
     } else {
       document.getElementById('passcodeError').innerText = 'Incorrect Passcode';
     }
@@ -761,11 +899,23 @@
     document.getElementById('star3').classList.toggle('filled', starsEarned >= 3);
     document.getElementById('finalAccuracy').innerText = `${accuracy}%`;
 
+    const titleEl = document.getElementById('modalTitle');
     const nextBtn = document.getElementById('nextLessonBtn');
-    if (currentLessonIdx === lessons.length - 1) {
+    const isAllComplete = checkAllLessonsCompleted();
+
+    if (isAllComplete) {
       localStorage.setItem('mission1_completed', 'true');
-      nextBtn.innerText = "Return to Space Hub 🚀";
+      titleEl.innerText = "🎉 MISSION 1 COMPLETE! 🎉";
+      document.getElementById('modalBodyText').innerHTML = `Outstanding work Cadet! You earned all green stars and mastered Mission 1!`;
+      nextBtn.innerText = "Stay on Mission 1 🚀";
+      launchFireworks();
+    } else if (currentLessonIdx === lessons.length - 1) {
+      titleEl.innerText = "LESSON 6 COMPLETE!";
+      document.getElementById('modalBodyText').innerHTML = `Accuracy: <strong>${accuracy}%</strong>`;
+      nextBtn.innerText = "Stay on Mission 1 🚀";
     } else {
+      titleEl.innerText = "LESSON ACCOMPLISHED";
+      document.getElementById('modalBodyText').innerHTML = `Accuracy: <strong>${accuracy}%</strong>`;
       nextBtn.innerText = "Next Lesson ➔";
     }
 
@@ -774,11 +924,11 @@
 
   function handleModalAction() {
     document.getElementById('completionModal').classList.remove('active');
-    if (currentLessonIdx === lessons.length - 1) {
-      goToHub();
-    } else {
+    if (currentLessonIdx < lessons.length - 1) {
       currentLessonIdx++;
       loadLesson(currentLessonIdx);
+    } else {
+      resetLessonStateOnly();
     }
   }
 </script>
