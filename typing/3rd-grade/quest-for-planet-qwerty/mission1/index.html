@@ -565,7 +565,6 @@
     }
   }
 
-  // Generate unique keys for each student profile (160 profiles max)
   function getProfileKey(suffix) {
     const cleanClass = currentClassName.toUpperCase().replace(/\s+/g, '_');
     return `m1_${cleanClass}_c${currentCompNum}_${suffix}`;
@@ -594,7 +593,7 @@
     currentClassName = localStorage.getItem('qwerty_class_name') || localStorage.getItem('selectedClass') || 'UNASSIGNED';
     const savedColor = localStorage.getItem('qwerty_class_color') || localStorage.getItem('selectedClassColor') || '#38bdf8';
     currentCompNum = localStorage.getItem('qwerty_computer_num') || localStorage.getItem('selectedCompNum') || '--';
-    
+
     document.documentElement.style.setProperty('--class-theme-color', savedColor);
     document.getElementById('activeClassBadge').innerText = `CLASS: ${currentClassName.toUpperCase()}`;
     document.getElementById('activeCompBadge').innerText = `COMPUTER: #${currentCompNum}`;
