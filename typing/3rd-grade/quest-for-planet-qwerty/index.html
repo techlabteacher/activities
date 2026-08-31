@@ -3,823 +3,387 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quest for Planet Qwerty - Mission Hub</title>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
-  
+  <title>Keyboarding Mission Hub</title>
   <style>
-    :root {
-      --class-theme-color: #38bdf8;
-      --primary: #4f46e5;
-      --secondary: #0ea5e9;
-      --accent-yellow: #f59e0b;
-      --accent-green: #22c55e;
-      --font-body: 'Open Sans', system-ui, -apple-system, sans-serif;
-      --font-tech: 'Orbitron', sans-serif;
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     body {
-      background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #090d16 100%);
+      background-color: #121826;
       color: #ffffff;
-      font-family: var(--font-body);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      overflow-x: hidden;
-      overflow-y: auto;
-      position: relative;
-      padding: 10px 10px 20px 100px;
     }
 
-    #spaceCanvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 1;
-    }
-
-    /* Sci-Fi Header Styling */
     header {
-      position: relative;
-      z-index: 10;
-      margin-top: 10px;
-      text-align: center;
-    }
-    h1 {
-      font-family: var(--font-tech);
-      font-weight: 900;
-      font-size: 2.3rem;
-      color: var(--class-theme-color);
-      text-shadow: 0 0 12px var(--class-theme-color), 0 0 25px rgba(56, 189, 248, 0.5);
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      line-height: 1.1;
-    }
-    p.subtitle {
-      font-family: var(--font-tech);
-      font-size: 0.8rem;
-      color: #94a3b8;
-      margin-top: 6px;
-      letter-spacing: 2px;
-    }
-    .student-badge-display {
-      margin-top: 8px;
-      font-family: var(--font-tech);
-      font-size: 0.85rem;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid var(--class-theme-color);
-      color: var(--class-theme-color);
-      padding: 4px 16px;
-      border-radius: 12px;
-      display: inline-block;
-      letter-spacing: 1.5px;
-    }
-
-    /* Rank Tracker Sidebar */
-    .rank-tracker-sidebar {
-      position: fixed;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 90;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: rgba(15, 23, 42, 0.85);
-      border: 2px solid var(--class-theme-color);
-      border-radius: 16px;
-      padding: 12px 8px;
-      backdrop-filter: blur(5px);
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      height: 75vh;
-      width: 75px;
-      justify-content: space-between;
-    }
-    .rank-track-line {
-      position: absolute;
-      top: 35px; bottom: 35px;
-      width: 4px;
-      background: #334155;
-      z-index: 1;
-    }
-    .rank-node {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      opacity: 0.35;
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-    .rank-node.active {
-      opacity: 1;
-      transform: scale(1.1);
-    }
-    .rank-badge {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      border: 2px solid #ffffff;
-      background: #1e293b;
-    }
-    .rank-bronze .rank-badge { background: #cd7f32; border-color: #ffd700; }
-    .rank-silver .rank-badge { background: #c0c0c0; border-color: #ffffff; }
-    .rank-gold .rank-badge { background: #ffd700; border-color: #fff8dc; color: #000; }
-    .rank-platinum .rank-badge { background: #e5e4e2; border-color: #38bdf8; color: #000; }
-    .rank-diamond .rank-badge { background: #b9f2ff; border-color: #00f0ff; color: #000; }
-
-    .rank-label {
-      font-size: 0.5rem;
-      font-family: var(--font-tech);
-      font-weight: bold;
-      margin-top: 3px;
-      text-transform: uppercase;
-      text-shadow: 0 2px 4px #000;
-      text-align: center;
-      letter-spacing: 0.5px;
-    }
-
-    /* Smiling Astronaut Tracker */
-    .astronaut-tracker {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 1.8rem;
-      z-index: 3;
-      transition: bottom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      filter: drop-shadow(0 0 8px #38bdf8);
-      bottom: 12%;
-    }
-
-    /* Scattered Grid Map */
-    .mission-map {
-      position: relative;
-      z-index: 10;
       width: 100%;
-      max-width: 1200px;
-      height: 580px;
-      margin: 10px auto;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 25px;
+      background: #1f293d;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      margin-bottom: 25px;
+    }
+
+    .badge {
+      background: #3b82f6;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+
+    .change-btn {
+      background: #374151;
+      color: #ccc;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 10px;
+      font-size: 0.8rem;
+    }
+
+    .change-btn:hover { background: #4b5563; color: #fff; }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .modal-card {
+      background: #1f293d;
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+
+    .modal-card select, .modal-card input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0 20px 0;
+      border-radius: 8px;
+      border: 1px solid #374151;
+      background: #111827;
+      color: white;
+      font-size: 1rem;
+    }
+
+    .start-btn {
+      width: 100%;
+      padding: 12px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .start-btn:hover { background: #1d4ed8; }
+
+    /* Map / Sector Grid */
+    .hub-container {
+      width: 100%;
+      max-width: 900px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .sector-card {
+      background: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .sector-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #38bdf8;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 6px;
     }
 
     .mission-node {
-      position: absolute;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-decoration: none;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
-
-    .mission-node:hover {
-      transform: scale(1.18) !important;
-    }
-
-    /* Precise Positioning Matching Your Slide Blueprint */
-    #mission1Node  { top: 85%;  left: 3%; }
-    #mission2Node  { top: 50%;  left: 20%; }
-    #mission3Node  { top: 25%;  left: 6%; }
-    #mission4Node  { top: 0%;   left: 25%; }
-    #mission5Node  { top: 10%;  left: 45%; }
-    #mission6Node  { top: 45%;  left: 50%; }
-    #mission7Node  { top: 70%;  left: 35%; }
-    #mission8Node  { top: 90%;  left: 55%; }
-    #mission9Node  { top: 70%;  left: 70%; }
-    #mission10Node { top: 25%;  left: 65%; }
-    #mission11Node { top: 0%;   left: 80%; }
-    #mission12Node { top: 15%;  left: 95%; }
-    #mission13Node { top: 40%;  left: 85%; }
-    #mission14Node { top: 85%;  left: 88%; }
-    #mission15Node { top: 60%;  left: 100%; }
-
-    /* Graphic Icon Container */
-    .icon-container {
-      width: 65px;
-      height: 65px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-    
-    .pixel-emoji {
-      font-size: 2.8rem;
-      filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
-      animation: float 3.5s ease-in-out infinite;
-    }
-
-    .planet-body {
-      width: 55px; height: 55px;
-      border-radius: 50%;
-      position: relative;
-      box-shadow: inset -8px -5px 0 0 rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.2);
-    }
-    .planet-red { background: radial-gradient(circle at 30% 30%, #f43f5e, #881337); }
-    .planet-purple { background: radial-gradient(circle at 30% 30%, #a855f7, #581c87); }
-    .planet-cyan { background: radial-gradient(circle at 30% 30%, #06b6d4, #164e63); }
-    .planet-green { background: radial-gradient(circle at 30% 30%, #10b981, #064e3b); }
-    
-    .planet-ring {
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 75px; height: 18px;
-      border: 3px solid rgba(253, 224, 71, 0.75);
-      border-radius: 50%;
-      transform: translate(-50%, -50%) rotate(-25deg);
-      pointer-events: none;
-    }
-
-    .gas-star {
-      width: 58px; height: 58px;
-      background: radial-gradient(circle, #ff7b00 0%, #ff0055 70%, #4a001e 100%);
-      border-radius: 50%;
-      box-shadow: 0 0 16px #ff0055;
-      animation: pulse 2s ease-in-out infinite alternate;
-    }
-
-    .moon-icon {
-      width: 52px; height: 52px;
-      background: #e2e8f0;
-      border-radius: 50%;
-      box-shadow: inset -8px -5px 0 0 #94a3b8, 0 0 10px rgba(226, 232, 240, 0.5);
-      position: relative;
-      overflow: hidden;
-    }
-    .moon-crater-1 { position: absolute; top: 8px; left: 10px; width: 10px; height: 10px; background: #cbd5e1; border-radius: 50%; }
-    .moon-crater-2 { position: absolute; top: 26px; left: 24px; width: 14px; height: 14px; background: #cbd5e1; border-radius: 50%; }
-
-    .sun-icon {
-      width: 58px; height: 58px;
-      background: radial-gradient(circle, #fde047 0%, #f59e0b 100%);
-      border-radius: 50%;
-      box-shadow: 0 0 16px #f59e0b, 0 0 25px rgba(245, 158, 11, 0.4);
-      animation: pulse 2.5s ease-in-out infinite alternate;
-    }
-
-    /* Mission Labels */
-    .mission-label {
-      margin-top: 4px;
-      background: rgba(15, 23, 42, 0.92);
-      border: 1.5px solid var(--class-theme-color);
-      border-radius: 8px;
-      padding: 4px 8px;
-      text-align: center;
-      backdrop-filter: blur(4px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      transition: all 0.3s ease;
-      min-width: 85px;
-    }
-    
-    .mission-title {
-      font-family: var(--font-tech);
-      font-size: 0.8rem;
-      font-weight: 800;
-      color: var(--class-theme-color);
-      white-space: nowrap;
-      letter-spacing: 0.5px;
-    }
-    .mission-subtitle {
-      font-family: var(--font-tech);
-      font-size: 0.65rem;
-      font-weight: 600;
-      color: #e2e8f0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-top: 1px;
-    }
-
-    /* Green Completion Glow Style */
-    .mission-node.completed .mission-label {
-      background: var(--accent-green) !important;
-      border-color: #ffffff !important;
-      box-shadow: 0 0 14px rgba(34, 197, 94, 0.85) !important;
-    }
-    .mission-node.completed .mission-title,
-    .mission-node.completed .mission-subtitle {
-      color: #020617 !important;
-      font-weight: 800;
-    }
-
-    /* Modal Login Screen Styles */
-    .login-modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(3, 7, 18, 0.96);
-      z-index: 200;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    .login-card {
       background: #0f172a;
-      border: 2px solid var(--secondary);
-      border-radius: 16px;
-      padding: 30px;
-      max-width: 620px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
-    }
-    
-    .game-main-title {
-      font-family: var(--font-tech);
-      font-size: 1.6rem;
-      font-weight: 900;
-      color: var(--secondary);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
-      margin-bottom: 4px;
-    }
-
-    .login-title {
-      font-family: var(--font-tech);
-      font-size: 1.1rem;
-      color: #cbd5e1;
-      margin-bottom: 20px;
-      letter-spacing: 1px;
-    }
-    .login-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 10px;
-    }
-    .btn-class-select {
-      background: #1e293b;
-      border: 2px solid #334155;
-      border-radius: 10px;
+      border-radius: 8px;
       padding: 12px;
-      color: white;
-      font-family: var(--font-tech);
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
+      margin-bottom: 10px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      transition: transform 0.2s, border-color 0.2s;
     }
-    .btn-class-select:hover {
-      transform: translateY(-2px);
-      border-color: #38bdf8;
+
+    .mission-node.completed {
+      border-left: 4px solid #10b981;
+      background: #132a24;
     }
-    .helmet-svg { width: 34px; height: 34px; flex-shrink: 0; }
+
+    .node-title { font-weight: bold; }
+    .node-stats { font-size: 0.85rem; color: #94a3b8; }
     
-    /* 8x5 Computer Grid Layout */
-    .comp-grid {
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      grid-template-rows: repeat(5, auto);
-      gap: 8px;
-      margin-top: 12px;
-      max-height: 280px;
-      overflow-y: auto;
-      padding: 4px;
-    }
-    .btn-comp {
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #020617;
-      font-family: var(--font-tech);
-      font-size: 0.85rem;
-      padding: 8px 0;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 800;
-      transition: transform 0.15s ease, filter 0.15s ease;
-    }
-    .btn-comp:hover {
-      transform: scale(1.08);
-      filter: brightness(1.15);
+    .test-panel {
+      margin-top: 30px;
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 900px;
+      text-align: center;
     }
 
-    /* Pastel Theme Rotations */
-    .pastel-blue { background-color: #bae6fd; }
-    .pastel-yellow { background-color: #fef08a; }
-    .pastel-green { background-color: #bbf7d0; }
-    .pastel-pink { background-color: #fbcfe8; }
-
-    .btn-back {
-      margin-top: 18px;
-      background: transparent;
-      border: 1px solid #475569;
-      color: #cbd5e1;
-      font-family: var(--font-tech);
-      font-size: 0.8rem;
+    .test-btn {
+      background: #059669;
+      color: white;
+      border: none;
       padding: 8px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      display: inline-block;
-    }
-    .btn-back:hover { border-color: #38bdf8; color: #38bdf8; }
-    .btn-reset-login {
-      background: transparent;
-      border: 1px solid #475569;
-      color: #94a3b8;
-      font-family: var(--font-tech);
-      font-size: 0.8rem;
-      padding: 5px 12px;
+      margin: 5px;
       border-radius: 6px;
       cursor: pointer;
     }
-
-    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-5px); } }
-    @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.04); } }
-
-    footer {
-      position: relative;
-      z-index: 10;
-      margin-top: 10px;
-      font-family: var(--font-tech);
-      font-size: 0.8rem;
-      color: #64748b;
-      display: flex;
-      align-items: center;
-      gap: 15px;
+    
+    .reset-btn {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      margin: 5px;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <canvas id="spaceCanvas"></canvas>
 
-  <!-- Side Rank Progress Bar -->
-  <aside class="rank-tracker-sidebar">
-    <div class="rank-track-line"></div>
-    <div class="astronaut-tracker" id="astroTracker">🧑‍🚀</div>
-
-    <div class="rank-node rank-diamond" id="rank5Node">
-      <div class="rank-badge">◆</div>
-      <div class="rank-label">Diamond<br>Master</div>
-    </div>
-    <div class="rank-node rank-platinum" id="rank4Node">
-      <div class="rank-badge">✦</div>
-      <div class="rank-label">Platinum<br>Pilot</div>
-    </div>
-    <div class="rank-node rank-gold" id="rank3Node">
-      <div class="rank-badge">★</div>
-      <div class="rank-label">Gold<br>Specialist</div>
-    </div>
-    <div class="rank-node rank-silver" id="rank2Node">
-      <div class="rank-badge">▲</div>
-      <div class="rank-label">Silver<br>Astronaut</div>
-    </div>
-    <div class="rank-node rank-bronze active" id="rank1Node">
-      <div class="rank-badge">●</div>
-      <div class="rank-label">Bronze<br>Cadet</div>
-    </div>
-  </aside>
-
+  <!-- Header Banner -->
   <header>
-    <h1>Quest for Planet Qwerty</h1>
-    <p class="subtitle">SELECT MISSION TO INITIALIZE TYPING SEQUENCE</p>
-    <div id="studentBadge" class="student-badge-display" style="display: none;"></div>
+    <h2>🚀 Keyboarding Mission Hub</h2>
+    <div>
+      <span id="userBadge" class="badge">Select Profile</span>
+      <button class="change-btn" onclick="openLoginModal()">Change</button>
+    </div>
   </header>
 
-  <!-- Scattered Custom Blueprint Map -->
-  <main class="mission-map">
-    <a href="mission1/index.html" class="mission-node" id="mission1Node">
-      <div class="icon-container"><div class="pixel-emoji">🚀</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m1Title">Mission 1</div>
-        <div class="mission-subtitle">FJDK</div>
-      </div>
-    </a>
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal-overlay">
+    <div class="modal-card">
+      <h2>Welcome Back!</h2>
+      <p style="color: #94a3b8; font-size: 0.9rem;">Select your teacher and computer number to load your progress.</p>
+      
+      <label style="text-align:left; display:block; font-size:0.85rem; color:#94a3b8;">Teacher / Group:</label>
+      <select id="teacherSelect">
+        <option value="Bottita">Bottita</option>
+        <option value="Raddatz">Raddatz</option>
+        <option value="Blue Group">Blue Group</option>
+        <option value="Red Group">Red Group</option>
+      </select>
 
-    <a href="mission2/index.html" class="mission-node" id="mission2Node">
-      <div class="icon-container">
-        <div class="moon-icon">
-          <div class="moon-crater-1"></div>
-          <div class="moon-crater-2"></div>
-        </div>
-      </div>
-      <div class="mission-label">
-        <div class="mission-title" id="m2Title">Mission 2</div>
-        <div class="mission-subtitle">SLA;</div>
-      </div>
-    </a>
+      <label style="text-align:left; display:block; font-size:0.85rem; color:#94a3b8;">Computer # (1 - 40):</label>
+      <input type="number" id="computerNumInput" min="1" max="40" value="1">
 
-    <a href="mission3/index.html" class="mission-node" id="mission3Node">
-      <div class="icon-container"><div class="sun-icon"></div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m3Title">Mission 3</div>
-        <div class="mission-subtitle">Home Row</div>
-      </div>
-    </a>
-
-    <a href="mission4/index.html" class="mission-node" id="mission4Node">
-      <div class="icon-container"><div class="pixel-emoji">🛰️</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m4Title">Mission 4</div>
-        <div class="mission-subtitle">E and I</div>
-      </div>
-    </a>
-
-    <a href="mission5/index.html" class="mission-node" id="mission5Node">
-      <div class="icon-container"><div class="planet-body planet-red"></div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m5Title">Mission 5</div>
-        <div class="mission-subtitle">R and U</div>
-      </div>
-    </a>
-
-    <a href="mission6/index.html" class="mission-node" id="mission6Node">
-      <div class="icon-container"><div class="pixel-emoji">☄️</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m6Title">Mission 6</div>
-        <div class="mission-subtitle">T and Y</div>
-      </div>
-    </a>
-
-    <a href="mission7/index.html" class="mission-node" id="mission7Node">
-      <div class="icon-container"><div class="planet-body planet-purple"><div class="planet-ring"></div></div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m7Title">Mission 7</div>
-        <div class="mission-subtitle">W and O</div>
-      </div>
-    </a>
-
-    <a href="mission8/index.html" class="mission-node" id="mission8Node">
-      <div class="icon-container"><div class="pixel-emoji">🪨</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m8Title">Mission 8</div>
-        <div class="mission-subtitle">Q and P</div>
-      </div>
-    </a>
-
-    <a href="mission9/index.html" class="mission-node" id="mission9Node">
-      <div class="icon-container"><div class="pixel-emoji">🌀</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m9Title">Mission 9</div>
-        <div class="mission-subtitle">Top Row</div>
-      </div>
-    </a>
-
-    <a href="mission10/index.html" class="mission-node" id="mission10Node">
-      <div class="icon-container"><div class="gas-star"></div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m10Title">Mission 10</div>
-        <div class="mission-subtitle">V and M</div>
-      </div>
-    </a>
-
-    <a href="mission11/index.html" class="mission-node" id="mission11Node">
-      <div class="icon-container"><div class="pixel-emoji">🛸</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m11Title">Mission 11</div>
-        <div class="mission-subtitle">B and N</div>
-      </div>
-    </a>
-
-    <a href="mission12/index.html" class="mission-node" id="mission12Node">
-      <div class="icon-container"><div class="planet-body planet-cyan"></div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m12Title">Mission 12</div>
-        <div class="mission-subtitle">C and ,</div>
-      </div>
-    </a>
-
-    <a href="mission13/index.html" class="mission-node" id="mission13Node">
-      <div class="icon-container"><div class="pixel-emoji">🌠</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m13Title">Mission 13</div>
-        <div class="mission-subtitle">X and .</div>
-      </div>
-    </a>
-
-    <a href="mission14/index.html" class="mission-node" id="mission14Node">
-      <div class="icon-container"><div class="planet-body planet-green"><div class="planet-ring"></div></div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m14Title">Mission 14</div>
-        <div class="mission-subtitle">Z / ?</div>
-      </div>
-    </a>
-
-    <a href="mission15/index.html" class="mission-node" id="mission15Node">
-      <div class="icon-container"><div class="pixel-emoji">💥</div></div>
-      <div class="mission-label">
-        <div class="mission-title" id="m15Title">Mission 15</div>
-        <div class="mission-subtitle">Final</div>
-      </div>
-    </a>
-  </main>
-
-  <footer>
-    <span>Select destination to initiate flight</span>
-    <button class="btn-reset-login" onclick="clearLogin()">Change Class / Computer</button>
-  </footer>
-
-  <!-- Start Screen Login Modal -->
-  <div class="login-modal-overlay" id="loginModal">
-    <div class="login-card">
-      <h1 class="game-main-title">The Quest for Planet Qwerty</h1>
-
-      <div id="stepTeacher">
-        <h2 class="login-title">Select Your Class</h2>
-        <div class="login-grid">
-          <button class="btn-class-select" onclick="selectClass('Bottita', '#ec4899')">
-            <svg class="helmet-svg" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="40" fill="#ec4899"/>
-              <path d="M 25 45 Q 50 25 75 45 Q 75 70 50 70 Q 25 70 25 45 Z" fill="#020617"/>
-              <path d="M 30 43 Q 50 28 65 43" stroke="#38bdf8" stroke-width="4" fill="none"/>
-            </svg>
-            Bottita
-          </button>
-          <button class="btn-class-select" onclick="selectClass('Blue Group', '#22c55e')">
-            <svg class="helmet-svg" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="40" fill="#22c55e"/>
-              <path d="M 25 45 Q 50 25 75 45 Q 75 70 50 70 Q 25 70 25 45 Z" fill="#020617"/>
-              <path d="M 30 43 Q 50 28 65 43" stroke="#38bdf8" stroke-width="4" fill="none"/>
-            </svg>
-            Blue Group
-          </button>
-          <button class="btn-class-select" onclick="selectClass('Raddatz', '#eab308')">
-            <svg class="helmet-svg" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="40" fill="#eab308"/>
-              <path d="M 25 45 Q 50 25 75 45 Q 75 70 50 70 Q 25 70 25 45 Z" fill="#020617"/>
-              <path d="M 30 43 Q 50 28 65 43" stroke="#38bdf8" stroke-width="4" fill="none"/>
-            </svg>
-            Raddatz
-          </button>
-          <button class="btn-class-select" onclick="selectClass('Red Group', '#f97316')">
-            <svg class="helmet-svg" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="40" fill="#f97316"/>
-              <path d="M 25 45 Q 50 25 75 45 Q 75 70 50 70 Q 25 70 25 45 Z" fill="#020617"/>
-              <path d="M 30 43 Q 50 28 65 43" stroke="#38bdf8" stroke-width="4" fill="none"/>
-            </svg>
-            Red Group
-          </button>
-        </div>
-      </div>
-
-      <div id="stepComputer" style="display: none;">
-        <h2 class="login-title" id="compStepTitle">Select Computer</h2>
-        <div class="comp-grid" id="compGrid"></div>
-        <button class="btn-back" onclick="showTeacherStep()">← Back to Classes</button>
-      </div>
+      <button class="start-btn" onclick="submitLogin()">Start Mission</button>
     </div>
   </div>
 
+  <!-- Mission Hub Grid -->
+  <div class="hub-container">
+    
+    <!-- Sector 1: Home Row -->
+    <div class="sector-card">
+      <div class="sector-title">Sector 1: Home Row</div>
+      
+      <div class="mission-node" id="node_m1">
+        <div>
+          <div class="node-title" id="title_m1">Mission 1</div>
+          <div class="node-stats" id="stats_m1">Not Started</div>
+        </div>
+        <div id="stars_m1">⭐⭐⭐</div>
+      </div>
+
+      <div class="mission-node" id="node_m2">
+        <div>
+          <div class="node-title" id="title_m2">Mission 2</div>
+          <div class="node-stats" id="stats_m2">Not Started</div>
+        </div>
+        <div id="stars_m2">⭐⭐⭐</div>
+      </div>
+
+      <div class="mission-node" id="node_m3">
+        <div>
+          <div class="node-title" id="title_m3">Mission 3</div>
+          <div class="node-stats" id="stats_m3">Not Started</div>
+        </div>
+        <div id="stars_m3">⭐⭐⭐</div>
+      </div>
+    </div>
+
+    <!-- Additional Sectors can be added below following the same format -->
+
+  </div>
+
+  <!-- Developer/Testing Control Panel -->
+  <div class="test-panel">
+    <h3>🧪 Local Testing Controls</h3>
+    <p style="font-size: 0.85rem; color: #94a3b8;">Simulate finishing lessons to test local storage saving without playing full games.</p>
+    <button class="test-btn" onclick="simulateCompleteLesson('mission1', 'lesson1', 3, 98)">Simulate Mission 1, Lesson 1 (3 Stars, 98%)</button>
+    <button class="test-btn" onclick="simulateCompleteLesson('mission1', 'lesson2', 2, 85)">Simulate Mission 1, Lesson 2 (2 Stars, 85%)</button>
+    <button class="reset-btn" onclick="clearCurrentStudentData()">Clear Current Student Local Data</button>
+  </div>
+
   <script>
-    let selectedClassName = "";
-    let selectedClassColor = "";
+    // ----------------------------------------------------
+    // 1. LOGIN & PROFILE MANAGEMENT
+    // ----------------------------------------------------
+    function openLoginModal() {
+      document.getElementById('loginModal').style.display = 'flex';
+    }
 
-    function initLogin() {
-      const savedClass = sessionStorage.getItem('qwerty_class_name');
-      const savedColor = sessionStorage.getItem('qwerty_class_color');
-      const savedComp = sessionStorage.getItem('qwerty_computer_num');
-      
-      if (savedClass && savedColor && savedComp) {
-        applyTheme(savedColor);
-        showStudentBadge(savedClass, savedComp);
-        document.getElementById('loginModal').style.display = 'none';
-      } else {
-        document.getElementById('loginModal').style.display = 'flex';
-        showTeacherStep();
+    function submitLogin() {
+      const teacher = document.getElementById('teacherSelect').value;
+      const compNum = document.getElementById('computerNumInput').value;
+
+      if (!compNum || compNum < 1 || compNum > 40) {
+        alert("Please enter a valid computer number (1-40).");
+        return;
       }
-    }
 
-    function showTeacherStep() {
-      document.getElementById('stepTeacher').style.display = 'block';
-      document.getElementById('stepComputer').style.display = 'none';
-    }
+      const userId = `${teacher}_Student${compNum}`;
 
-    function selectClass(className, classColor) {
-      selectedClassName = className;
-      selectedClassColor = classColor;
-      applyTheme(classColor);
-      document.getElementById('stepTeacher').style.display = 'none';
-      document.getElementById('stepComputer').style.display = 'block';
-      document.getElementById('compStepTitle').innerText = `${className}: Select Computer`;
-      
-      const grid = document.getElementById('compGrid');
-      grid.innerHTML = '';
+      // Save active profile to Session Memory
+      sessionStorage.setItem('active_teacher', teacher);
+      sessionStorage.setItem('active_student_num', compNum);
+      sessionStorage.setItem('active_user_id', userId);
 
-      // Pastel color sequence: Blue, Yellow, Green, Pink
-      const pastelClasses = ['pastel-blue', 'pastel-yellow', 'pastel-green', 'pastel-pink'];
-
-      for (let i = 1; i <= 40; i++) {
-        const btn = document.createElement('button');
-        
-        // Cycle colors using modulo % 4
-        const colorClass = pastelClasses[(i - 1) % 4];
-        
-        btn.className = `btn-comp ${colorClass}`;
-        btn.innerText = `#${i}`;
-        btn.onclick = () => selectComputer(i);
-        grid.appendChild(btn);
-      }
-    }
-
-    function selectComputer(compNum) {
-      sessionStorage.setItem('qwerty_class_name', selectedClassName);
-      sessionStorage.setItem('qwerty_class_color', selectedClassColor);
-      sessionStorage.setItem('qwerty_computer_num', compNum);
-      showStudentBadge(selectedClassName, compNum);
+      // Hide modal & update Header Badge
       document.getElementById('loginModal').style.display = 'none';
+      document.getElementById('userBadge').innerText = `${teacher} | Comp #${compNum}`;
+
+      // Render Map for this specific student
+      loadStudentProgress(userId);
     }
 
-    function applyTheme(color) {
-      document.documentElement.style.setProperty('--class-theme-color', color);
+    // Auto-login on page refresh if active session exists
+    window.addEventListener('DOMContentLoaded', () => {
+      const activeUser = sessionStorage.getItem('active_user_id');
+      const teacher = sessionStorage.getItem('active_teacher');
+      const compNum = sessionStorage.getItem('active_student_num');
+
+      if (activeUser && teacher && compNum) {
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('userBadge').innerText = `${teacher} | Comp #${compNum}`;
+        loadStudentProgress(activeUser);
+      } else {
+        openLoginModal();
+      }
+    });
+
+    // ----------------------------------------------------
+    // 2. SAVING & READING LOCAL STORAGE
+    // ----------------------------------------------------
+    
+    // Core function to save scores locally (Call this from game complete screens)
+    function saveLessonScore(missionId, lessonId, stars, accuracy) {
+      const userId = sessionStorage.getItem('active_user_id');
+      if (!userId) return;
+
+      // LocalStorage Key Patterns:
+      // Bottita_Student5_mission1_lesson1_stars
+      // Bottita_Student5_mission1_lesson1_accuracy
+      localStorage.setItem(`${userId}_${missionId}_${lessonId}_stars`, stars);
+      localStorage.setItem(`${userId}_${missionId}_${lessonId}_accuracy`, accuracy);
+
+      // Update Mission Progress
+      loadStudentProgress(userId);
     }
 
-    function showStudentBadge(className, compNum) {
-      const badge = document.getElementById('studentBadge');
-      badge.style.display = 'inline-block';
-      badge.innerText = `CLASS: ${className.toUpperCase()} | COMPUTER #${compNum}`;
-    }
+    // Reads local storage and updates Mission 1, 2, 3 nodes
+    function loadStudentProgress(userId) {
+      const missions = ['mission1', 'mission2', 'mission3'];
 
-    function clearLogin() {
-      sessionStorage.removeItem('qwerty_class_name');
-      sessionStorage.removeItem('qwerty_class_color');
-      sessionStorage.removeItem('qwerty_computer_num');
-      location.reload();
-    }
+      missions.forEach((mId, index) => {
+        const mNum = index + 1;
+        let totalStars = 0;
+        let completedLessons = 0;
+        let totalAccuracy = 0;
 
-    // Dynamic Canvas Starfield Background
-    const canvas = document.getElementById('spaceCanvas');
-    const ctx = canvas.getContext('2d');
-    let stars = [];
+        // Check 6 lessons per mission
+        for (let l = 1; l <= 6; l++) {
+          const lessonStars = localStorage.getItem(`${userId}_${mId}_lesson${l}_stars`);
+          const lessonAcc = localStorage.getItem(`${userId}_${mId}_lesson${l}_accuracy`);
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      initStars();
-    }
+          if (lessonStars !== null) {
+            completedLessons++;
+            totalStars += parseInt(lessonStars);
+            totalAccuracy += parseFloat(lessonAcc);
+          }
+        }
 
-    function initStars() {
-      stars = Array.from({ length: 120 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 1.5 + 0.5,
-        alpha: Math.random(),
-        speed: Math.random() * 0.02 + 0.005
-      }));
-    }
+        const node = document.getElementById(`node_m${mNum}`);
+        const title = document.getElementById(`title_m${mNum}`);
+        const stats = document.getElementById(`stats_m${mNum}`);
+        const starsDisplay = document.getElementById(`stars_m${mNum}`);
 
-    function animateStars() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      stars.forEach(star => {
-        star.alpha += star.speed;
-        if (star.alpha >= 1 || star.alpha <= 0.1) star.speed = -star.speed;
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, star.alpha)})`;
-        ctx.fill();
-      });
-      requestAnimationFrame(animateStars);
-    }
-
-    // Load Hub Completion Status
-    function loadHubProgress() {
-      let completedCount = 0;
-
-      for (let i = 1; i <= 15; i++) {
-        const mStars = localStorage.getItem(`mission${i}_stars`);
-        if (mStars !== null && parseInt(mStars) > 0) {
-          completedCount++;
-          const mNode = document.getElementById(`mission${i}Node`);
-          const mTitle = document.getElementById(`m${i}Title`);
+        if (completedLessons > 0) {
+          const avgAccuracy = Math.round(totalAccuracy / completedLessons);
+          node.classList.add('completed');
+          title.innerText = `✔ Mission ${mNum}`;
+          stats.innerText = `${completedLessons}/6 Lessons | Avg Acc: ${avgAccuracy}%`;
           
-          if (mNode) mNode.classList.add('completed');
-          if (mTitle) mTitle.innerText = `✔ Mission ${i}`;
-        }
-      }
-
-      updateRankTracker(completedCount);
-    }
-
-    function updateRankTracker(completedMissions) {
-      let rankLevel = Math.floor(completedMissions / 3);
-      if (rankLevel > 4) rankLevel = 4;
-
-      const positionPercentages = [12, 31, 50, 69, 88]; 
-      const astro = document.getElementById('astroTracker');
-      astro.style.bottom = `${positionPercentages[rankLevel]}%`;
-
-      for (let r = 1; r <= 5; r++) {
-        const node = document.getElementById(`rank${r}Node`);
-        if (r <= rankLevel + 1) {
-          node.classList.add('active');
+          // Render visual star icons
+          const avgStars = Math.round(totalStars / completedLessons);
+          starsDisplay.innerText = '⭐'.repeat(avgStars);
         } else {
-          node.classList.remove('active');
+          node.classList.remove('completed');
+          title.innerText = `Mission ${mNum}`;
+          stats.innerText = `0/6 Lessons Completed`;
+          starsDisplay.innerText = '☆☆☆';
         }
-      }
+      });
     }
 
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    animateStars();
-    initLogin();
-    loadHubProgress();
+    // ----------------------------------------------------
+    // 3. TESTING HELPERS
+    // ----------------------------------------------------
+    function simulateCompleteLesson(missionId, lessonId, stars, accuracy) {
+      saveLessonScore(missionId, lessonId, stars, accuracy);
+      alert(`Saved: ${sessionStorage.getItem('active_user_id')} -> ${missionId} ${lessonId}: ${stars} Stars, ${accuracy}% Acc`);
+    }
+
+    function clearCurrentStudentData() {
+      const userId = sessionStorage.getItem('active_user_id');
+      if (!userId) return;
+
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith(userId)) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      alert(`Cleared data for ${userId}`);
+      loadStudentProgress(userId);
+    }
   </script>
 </body>
 </html>
