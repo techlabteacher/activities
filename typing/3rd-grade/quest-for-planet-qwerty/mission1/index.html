@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lesson 4: Rocket Defense</title>
+  <title>Planet QWERTY - Mission 1</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Share+Tech+Mono&family=Fredoka+One&family=Open+Sans:wght@600;700&display=swap" rel="stylesheet">
   
   <style>
@@ -57,55 +57,92 @@
     .title-group { display: flex; align-items: center; gap: 12px; }
     .app-title { font-family: var(--font-header); color: var(--class-theme-color); font-size: 1.3rem; font-weight: 800; }
 
-    .sky-game-area {
+    .lesson-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-lesson {
+      font-family: var(--font-tech);
+      background: #0f172a;
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .btn-lesson:hover {
+      border-color: var(--class-theme-color);
+      color: #f8fafc;
+    }
+
+    .btn-lesson.active {
+      background: var(--class-theme-color);
+      color: #020617;
+      border-color: var(--class-theme-color);
+      box-shadow: 0 0 12px var(--class-theme-color);
+    }
+
+    /* Main Display Area */
+    .lesson-content-area {
+      width: 100%;
+      height: 480px;
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Standard Tutor UI */
+    .standard-tutor-container {
       background: radial-gradient(circle at 50% 100%, #1e293b 0%, #030712 100%);
       border: 2px solid var(--class-theme-color);
       border-radius: 14px;
-      height: 400px;
-      margin-bottom: 15px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .rocket-counter-center {
-      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.85); padding: 6px 20px; border-radius: 20px;
-      font-family: var(--font-tech); border: 1px solid var(--class-theme-color); z-index: 10;
-    }
-
-    .target-rocket {
-      width: 50px; height: 80px;
-      position: absolute; bottom: 20px;
-      display: flex; flex-direction: column; align-items: center;
-      transition: left 0.3s ease-out;
-    }
-
-    .target-rocket.shake { animation: shake 0.2s ease-in-out; }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-8px); }
-      75% { transform: translateX(8px); }
-    }
-
-    .rocket-structure { position: relative; width: 36px; height: 60px; display: flex; align-items: center; justify-content: center; }
-    .rocket-nose { position: absolute; top: 0; width: 18px; height: 18px; background: #cbd5e1; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
-    .rocket-body-main { position: absolute; top: 14px; width: 22px; height: 40px; background: var(--neon-green); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-    .rocket-letter { font-family: var(--font-playful); font-size: 1.1rem; color: #1e293b; font-weight: bold; }
-    .rocket-thruster-flame { width: 10px; height: 14px; background: linear-gradient(180deg, var(--neon-amber), var(--neon-red)); border-radius: 0 0 6px 6px; }
-
-    .telemetry-bar {
+      height: 100%;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-      background: rgba(15, 23, 42, 0.6);
-      padding: 10px 18px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
     }
 
-    .meter-label { font-family: var(--font-tech); font-size: 0.85rem; color: #cbd5e1; margin-right: 10px; }
-    .accuracy-text { font-family: var(--font-tech); font-weight: bold; font-size: 1rem; color: var(--neon-green); }
+    .prompt-box {
+      font-family: var(--font-tech);
+      font-size: 2.2rem;
+      letter-spacing: 4px;
+      color: var(--class-theme-color);
+      background: rgba(15, 23, 42, 0.8);
+      padding: 15px 30px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .tutor-input {
+      font-family: var(--font-tech);
+      font-size: 1.5rem;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 2px solid var(--class-theme-color);
+      background: #0f172a;
+      color: #fff;
+      text-align: center;
+      outline: none;
+      width: 250px;
+    }
+
+    /* Embedded Mini-Game Iframe */
+    .game-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 14px;
+    }
 
     .btn-control {
       font-family: var(--font-tech);
@@ -121,61 +158,69 @@
       transition: background 0.2s;
     }
     .btn-control:hover { background: rgba(56, 189, 248, 0.2); }
-
-    .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(3, 7, 18, 0.92); border-radius: 24px; display: flex; justify-content: center; align-items: center; z-index: 30; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-    .modal-overlay.active { opacity: 1; pointer-events: auto; }
-    .modal-card { background: #0f172a; border: 2px solid var(--class-theme-color); border-radius: 20px; padding: 30px; max-width: 440px; width: 90%; text-align: center; }
-    .modal-title { font-family: var(--font-header); color: var(--class-theme-color); font-size: 1.5rem; margin-bottom: 10px; }
-    .stars-container { font-size: 2.2rem; margin: 10px 0; color: #334155; }
-    .star.filled { color: var(--neon-amber); }
-    .btn-primary { font-family: var(--font-tech); background: var(--class-theme-color); color: #020617; padding: 10px 24px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: transform 0.1s; }
-    .btn-primary:hover { transform: scale(1.05); }
   </style>
 </head>
-<body onload="initGame()">
+<body onload="selectLesson(1)">
 
 <div class="game-console">
   <div class="console-header">
     <div class="title-group">
       <span style="font-size: 1.8rem;">🚀</span>
-      <span class="app-title">Lesson 4: Rocket Defense</span>
+      <span id="lessonTitleDisplay" class="app-title">Lesson 1: Index Keys</span>
     </div>
-    <button class="btn-control" onclick="resetGame()">RESTART</button>
+    <button class="btn-control" onclick="reloadCurrentLesson()">RESTART</button>
   </div>
 
-  <div class="sky-game-area">
-    <div class="rocket-counter-center">Rockets Destroyed: <span id="launchedCount">0</span> / <span id="targetGoal">20</span></div>
-    <div id="targetRocket" class="target-rocket">
-      <div class="rocket-structure">
-        <div class="rocket-nose"></div>
-        <div class="rocket-body-main"><span id="rocketLetter" class="rocket-letter">F</span></div>
-      </div>
-      <div class="rocket-thruster-flame"></div>
-    </div>
+  <!-- Lesson Navigation Bar -->
+  <div class="lesson-nav">
+    <button class="btn-lesson" id="btnLesson1" onclick="selectLesson(1)">Lesson 1: Index Keys</button>
+    <button class="btn-lesson" id="btnLesson2" onclick="selectLesson(2)">Lesson 2: Inner Keys</button>
+    <button class="btn-lesson" id="btnLesson3" onclick="selectLesson(3)">Lesson 3: Outer Keys</button>
+    <button class="btn-lesson" id="btnLesson4" onclick="selectLesson(4)">Lesson 4: Rocket Defense</button>
   </div>
 
-  <div class="telemetry-bar">
-    <div>
-      <span class="meter-label">ACCURACY:</span>
-      <span id="accuracyVal" class="accuracy-text">100%</span>
-    </div>
-    <button class="btn-control" onclick="window.close()">CLOSE GAME</button>
-  </div>
-
-  <!-- Completion Modal -->
-  <div id="completionModal" class="modal-overlay">
-    <div class="modal-card">
-      <h2 class="modal-title">DEFENSE COMPLETE!</h2>
-      <div class="stars-container">
-        <span class="star" id="star1">★</span><span class="star" id="star2">★</span><span class="star" id="star3">★</span>
-      </div>
-      <p style="margin-bottom: 15px; color: #cbd5e1;">Accuracy: <strong id="finalAccuracy">100%</strong></p>
-      <button class="btn-primary" onclick="resetGame()">Play Again 🚀</button>
-    </div>
-  </div>
+  <!-- Dynamic Content Area -->
+  <div id="lessonContentArea" class="lesson-content-area"></div>
 </div>
 
-<!-- EXTERNAL ROCKET GAME LOGIC -->
-<script src="../shared/rocket-game.js"></script>
+<script>
+  const LESSONS = {
+    1: { title: "Lesson 1: Index Keys (F & J)", type: "standard", keys: "f j f j j f f j" },
+    2: { title: "Lesson 2: Inner Keys (D & K)", type: "standard", keys: "d k d k f d j k" },
+    3: { title: "Lesson 3: Outer Keys (A & L)", type: "standard", keys: "a l a l s k d l" },
+    4: { title: "Lesson 4: Rocket Defense", type: "game", url: "../games/rocket-defense/index.html" }
+  };
+
+  let activeLessonId = 1;
+
+  function selectLesson(id) {
+    activeLessonId = id;
+
+    // Update active button state
+    document.querySelectorAll('.btn-lesson').forEach((btn, index) => {
+      btn.classList.toggle('active', (index + 1) === id);
+    });
+
+    const lesson = LESSONS[id];
+    document.getElementById('lessonTitleDisplay').innerText = lesson.title;
+
+    const area = document.getElementById('lessonContentArea');
+
+    if (lesson.type === 'standard') {
+      area.innerHTML = `
+        <div class="standard-tutor-container">
+          <div class="prompt-box">${lesson.keys}</div>
+          <input type="text" class="tutor-input" placeholder="Type here..." autofocus />
+        </div>
+      `;
+    } else if (lesson.type === 'game') {
+      area.innerHTML = `<iframe id="gameFrame" class="game-iframe" src="${lesson.url}"></iframe>`;
+    }
+  }
+
+  function reloadCurrentLesson() {
+    selectLesson(activeLessonId);
+  }
+</script>
 </body>
 </html>
