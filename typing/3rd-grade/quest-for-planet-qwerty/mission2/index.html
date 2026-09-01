@@ -693,6 +693,7 @@
 
   function handleKeyPress(e) {
     if (document.getElementById('passcodeModal').classList.contains('active')) return;
+    if (e.key === 'Shift') return;
     if (e.key === ' ') e.preventDefault();
     
     let keyId = e.key === ' ' ? 'key-space' : `key-${e.key.toLowerCase()}`;
@@ -737,10 +738,12 @@
     totalTyped++;
     if (isValid) {
       correctTyped++;
-      currentIndex++;
     } else {
       errorIndices.push(currentIndex);
     }
+    
+    // Always advance to the next character without stalling or requiring Backspace
+    currentIndex++;
 
     const acc = Math.round((correctTyped / totalTyped) * 100);
     updateAccuracyMeter(acc);
