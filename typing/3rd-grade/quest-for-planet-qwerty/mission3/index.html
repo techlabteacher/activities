@@ -525,6 +525,20 @@
       height: 100%;
       border: 0;
     }
+
+    .modal-link-btn {
+      display: inline-block;
+      margin-top: 10px;
+      color: #38bdf8;
+      font-family: var(--font-tech);
+      font-weight: bold;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .modal-link-btn:hover {
+      color: #7dd3fc;
+    }
   </style>
 
   <!-- External Game Logic Scripts -->
@@ -620,7 +634,7 @@
         </div>
         <div class="checklist-item">
           <span class="checklist-icon">✅</span>
-          <span><strong>COVER:</strong> Grab a black cover. Work on a project while waiting for Mrs. Miller to watch you.</span>
+          <span><strong>COVER:</strong> Grab a black cover. Work on a project while waiting for Mrs. Miller.</span>
         </div>
         <div class="checklist-item">
           <span class="checklist-icon">✅</span>
@@ -701,6 +715,7 @@
         <span class="star" id="star5">★</span>
       </div>
       <p style="margin-bottom: 15px; color: #cbd5e1; font-size: 1.1rem;" id="modalBodyText">Accuracy: <strong id="finalAccuracy">100%</strong></p>
+      <div id="videoModalLinkContainer"></div>
       <button id="nextLessonBtn" class="btn-primary" onclick="handleModalAction()">Next Lesson ➔</button>
     </div>
   </div>
@@ -1328,9 +1343,10 @@
     const titleEl = document.getElementById('modalTitle');
     const bodyTextEl = document.getElementById('modalBodyText');
     const nextBtn = document.getElementById('nextLessonBtn');
+    const videoLinkContainer = document.getElementById('videoModalLinkContainer');
+    videoLinkContainer.innerHTML = '';
     
     const isLastLesson = (currentLessonIdx === lessons.length - 1);
-    const totalAccumulatedStars = lessonStars.reduce((a, b) => a + b, 0);
 
     if (!lastAttemptPassed) {
       starsContainer.style.display = 'none';
@@ -1351,8 +1367,9 @@
 
       if (isLastLesson) {
         titleEl.innerText = "🎉 MISSION 3 COMPLETE! 🎉";
-        bodyTextEl.innerHTML = `Lesson Accuracy: <strong>${accuracy}%</strong><br>Total Mission Stars Earned: <strong style="color:var(--neon-amber);">${totalAccumulatedStars} / 30</strong>`;
-        nextBtn.innerText = "Check Level-Up Readiness 🎖️";
+        bodyTextEl.innerHTML = `You've finished your lessons and are ready to level up! Ready to become a Cadet? Watch the final video first then click the "Level Up" button.`;
+        videoLinkContainer.innerHTML = `<span class="modal-link-btn" onclick="openVideoModal()">📹 Watch Final Video</span>`;
+        nextBtn.innerText = "Level Up 🎖️";
         launchFireworks();
       } else {
         titleEl.innerText = "LESSON ACCOMPLISHED";
