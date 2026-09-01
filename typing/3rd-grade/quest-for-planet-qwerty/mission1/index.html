@@ -435,7 +435,7 @@
   <div id="completionModal" class="modal-overlay">
     <div class="modal-card">
       <h2 id="modalTitle" class="modal-title">LESSON ACCOMPLISHED</h2>
-      <div class="stars-container">
+      <div class="stars-container" id="modalStarsContainer">
         <span class="star" id="star1">★</span>
         <span class="star" id="star2">★</span>
         <span class="star" id="star3">★</span>
@@ -548,6 +548,7 @@
   let showKeyboard = false;
   let teacherUnlocked = false;
   let currentPasscodeMode = 'keyboard';
+  let lastAttemptPassed = false;
   
   let ytPlayer = null;
   let videoFinished = false;
@@ -997,20 +998,15 @@
     else if (accuracy >= 90 && accuracy <= 94) starsEarned = 4;
     else if (accuracy >= 95) starsEarned = 5;
 
-    if (accuracy >= 80) {
+    lastAttemptPassed = (accuracy >= 80);
+
+    if (lastAttemptPassed) {
       lessonStars[currentLessonIdx] = Math.max(lessonStars[currentLessonIdx], starsEarned);
       saveProgress();
       renderLessonButtons();
     }
 
-    // Set lesson star display
-    for (let i = 1; i <= 5; i++) {
-      const starEl = document.getElementById(`star${i}`);
-      if (starEl) {
-        starEl.className = `star ${starsEarned >= i ? 'filled' : ''}`;
-      }
-    }
-
+    const starsContainer = document.getElementById('modalStarsContainer');
     const titleEl = document.getElementById('modalTitle');
     const bodyTextEl = document.getElementById('modalBodyText');
     const nextBtn = document.getElementById('nextLessonBtn');
@@ -1018,15 +1014,34 @@
     const isLastLesson = (currentLessonIdx === lessons.length - 1);
     const totalAccumulatedStars = lessonStars.reduce((a, b) => a + b, 0);
 
-    if (isLastLesson) {
-      titleEl.innerText = "🎉 MISSION 1 COMPLETE! 🎉";
-      bodyTextEl.innerHTML = `Lesson Accuracy: <strong>${accuracy}%</strong><br>Total Mission Stars Earned: <strong style="color:var(--neon-amber);">${totalAccumulatedStars} / 30</strong>`;
-      nextBtn.innerText = "Restart Mission 1 🚀";
-      launchFireworks();
+    if (!lastAttemptPassed) {
+      starsContainer.style.display = 'none';
+      titleEl.innerText = "TRY AGAIN!";
+      titleEl.style.color = "var(--neon-red)";
+      bodyTextEl.innerHTML = `Accuracy: <strong style="color: var(--neon-red);">${accuracy}%</strong><br><br>You need at least <strong>80%</strong> accuracy to earn stars and pass this lesson. Give it another try!`;
+      nextBtn.innerText = "Try Lesson Again 🔄";
     } else {
-      titleEl.innerText = "LESSON ACCOMPLISHED";
-      bodyTextEl.innerHTML = `Accuracy: <strong>${accuracy}%</strong>`;
-      nextBtn.innerText = "Next Lesson ➔";
+      starsContainer.style.display = 'flex';
+      titleEl.style.color = "var(--class-theme-color)";
+      
+      // Set lesson star display
+      for (let i = 1; i <= 5; i++) {
+        const starEl = document.getElementById(`star${i}`);
+        if (starEl) {
+          starEl.className = `star ${starsEarned >= i ? 'filled' : ''}`;
+        }
+      }
+
+      if (isLastLesson) {
+        titleEl.innerText = "🎉 MISSION 1 COMPLETE! 🎉";
+        bodyTextEl.innerHTML = `Lesson Accuracy: <strong>${accuracy}%</strong><br>Total Mission Stars Earned: <strong style="color:var(--neon-amber);">${totalAccumulatedStars} / 30</strong>`;
+        nextBtn.innerText = "Check your mission score 🚀";
+        launchFireworks();
+      } else {
+        titleEl.innerText = "LESSON ACCOMPLISHED";
+        bodyTextEl.innerHTML = `Accuracy: <strong>${accuracy}%</strong>`;
+        nextBtn.innerText = "Next Lesson ➔";
+      }
     }
 
     document.getElementById('completionModal').classList.add('active');
@@ -1034,6 +1049,12 @@
 
   function handleModalAction() {
     document.getElementById('completionModal').classList.remove('active');
+    
+    if (!lastAttemptPassed) {
+      resetLessonStateOnly();
+      return;
+    }
+
     if (currentLessonIdx < lessons.length - 1) {
       loadLesson(currentLessonIdx + 1);
     } else {
