@@ -63,12 +63,25 @@ const RocketGame = {
     if (this._keyListener) {
       window.removeEventListener('keydown', this._keyListener);
     }
+
     this._keyListener = (e) => {
-      if (!this.gameActive) return;
-      // Prevent browser default actions for keys like semicolon or space
-      if (e.key === ';' || e.key === ' ') e.preventDefault();
-      this.handleInput(e.key);
+      if (!this.gameActive || this.isAnimating) return;
+
+      let pressedKey = e.key ? e.key.toLowerCase() : "";
+
+      // Fallback detection for physical layout keys
+      if (e.code === 'Semicolon') pressedKey = ';';
+      if (e.code && e.code.startsWith('Key')) {
+        pressedKey = e.code.replace('Key', '').toLowerCase();
+      }
+
+      if (pressedKey === ';' || e.key === ' ') e.preventDefault();
+
+      if (pressedKey) {
+        this.handleInput(pressedKey);
+      }
     };
+
     window.addEventListener('keydown', this._keyListener);
   },
 
@@ -80,7 +93,7 @@ const RocketGame = {
         .rocket-arena {
           position: relative;
           width: 100%;
-          height: 580px; /* Increased height */
+          height: 580px;
           background: #020617;
           overflow: hidden;
           font-family: system-ui, -apple-system, sans-serif;
@@ -133,6 +146,7 @@ const RocketGame = {
           color: #020617;
           text-shadow: 0 0 3px rgba(255,255,255,0.9);
           pointer-events: none;
+          text-transform: lowercase; /* Lowercase letters */
         }
         .rocket-flame {
           position: absolute;
@@ -216,7 +230,7 @@ const RocketGame = {
             <path d="M48 50 C58 55, 60 75, 56 82 L48 70 Z" id="rocketFinRight" fill="#0f172a"/>
             <circle cx="30" cy="36" r="14" fill="#ffffff" stroke="#020617" stroke-width="2"/>
           </svg>
-          <div id="rocketLetter" class="rocket-badge">F</div>
+          <div id="rocketLetter" class="rocket-badge">f</div>
           <div id="rocketFlame" class="rocket-flame"></div>
         </div>
 
@@ -242,7 +256,6 @@ const RocketGame = {
     };
     resizeCanvas();
 
-    // Create stars
     const stars = Array.from({ length: 90 }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
@@ -251,7 +264,6 @@ const RocketGame = {
       twinkleSpeed: (Math.random() * 0.02 + 0.005) * (Math.random() < 0.5 ? 1 : -1)
     }));
 
-    // Shooting star state
     let shootingStar = null;
 
     const spawnShootingStar = () => {
@@ -269,7 +281,6 @@ const RocketGame = {
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Render stars with twinkling
       stars.forEach(star => {
         star.alpha += star.twinkleSpeed;
         if (star.alpha <= 0.1 || star.alpha >= 1) star.twinkleSpeed *= -1;
@@ -280,7 +291,6 @@ const RocketGame = {
         ctx.fill();
       });
 
-      // Handle shooting stars
       if (!shootingStar && Math.random() < 0.015) {
         spawnShootingStar();
       }
@@ -347,7 +357,7 @@ const RocketGame = {
       return;
     }
 
-    const currentChar = this.targetSequence[this.currentIndex];
+    const currentChar = this.targetSequence[this.currentIndex].toLowerCase();
     const rocket = document.getElementById('targetRocket');
     const body = document.getElementById('rocketBody');
     const letterEl = document.getElementById('rocketLetter');
@@ -357,7 +367,6 @@ const RocketGame = {
 
     if (flame) flame.classList.remove('super-boost');
 
-    // X position matching keyboard column and color setup
     const xPos = this.keyPositions[currentChar] || 50;
     const themeColor = this.keyColors[currentChar] || '#0284c7';
 
@@ -367,7 +376,7 @@ const RocketGame = {
     rocket.style.bottom = `${this.currentBottom}%`;
 
     body.setAttribute('fill', themeColor);
-    letterEl.innerText = currentChar.toUpperCase();
+    letterEl.innerText = currentChar; // Displays lowercase letter
 
     this.isAnimating = false;
     this.startRising();
@@ -384,7 +393,6 @@ const RocketGame = {
         rocket.style.bottom = `${this.currentBottom}%`;
       }
 
-      // If rocket hits top, shake and drop to bottom for retry
       if (this.currentBottom >= this.maxBottom) {
         this.totalAttempts++;
         this.shakeRocket();
@@ -396,10 +404,12 @@ const RocketGame = {
   handleInput(key) {
     if (!this.gameActive || this.isAnimating) return;
 
-    const expectedChar = this.targetSequence[this.currentIndex];
+    const expectedChar = this.targetSequence[this.currentIndex].toLowerCase();
+    const inputChar = key.toLowerCase();
+
     this.totalAttempts++;
 
-    if (key.toLowerCase() === expectedChar.toLowerCase()) {
+    if (inputChar === expectedChar) {
       this.correctCount++;
       this.launchRocketSuccess();
     } else {
@@ -417,7 +427,6 @@ const RocketGame = {
     const flame = document.getElementById('rocketFlame');
     if (flame) flame.classList.add('super-boost');
 
-    // Shoot rocket upwards off screen
     this.launchInterval = setInterval(() => {
       this.currentBottom += 4.5;
       if (rocket) rocket.style.bottom = `${this.currentBottom}%`;
