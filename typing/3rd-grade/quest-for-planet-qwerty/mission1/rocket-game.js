@@ -9,14 +9,15 @@ const RocketGame = {
   gameActive: false,
   riseInterval: null,
   launchInterval: null,
+  starAnimFrame: null,
   isAnimating: false,
   onCompleteCallback: null,
 
   // Vertical movement limits (bottom %)
   minBottom: 5,
-  maxBottom: 80,
+  maxBottom: 85,
   currentBottom: 5,
-  riseSpeed: 0.2, // Speed of rising rocket
+  riseSpeed: 0.18, // Speed of rising rocket
 
   // Key X-positions (percentage matching keyboard columns)
   keyPositions: {
@@ -42,7 +43,6 @@ const RocketGame = {
     this.reset();
     this.onCompleteCallback = typeof onComplete === 'function' ? onComplete : null;
 
-    // Handle string sequence or direct call format
     let rawSeq = typeof sequenceText === 'string' ? sequenceText : "";
     let validChars = rawSeq.toLowerCase().replace(/[^a-z;]/g, '');
 
@@ -54,7 +54,22 @@ const RocketGame = {
     this.goalCount = this.targetSequence.length;
 
     this.renderGameContainer();
+    this.setupSpaceBackground();
+    this.bindGlobalKeyboard();
     this.showInstructionsPopup();
+  },
+
+  bindGlobalKeyboard() {
+    if (this._keyListener) {
+      window.removeEventListener('keydown', this._keyListener);
+    }
+    this._keyListener = (e) => {
+      if (!this.gameActive) return;
+      // Prevent browser default actions for keys like semicolon or space
+      if (e.key === ';' || e.key === ' ') e.preventDefault();
+      this.handleInput(e.key);
+    };
+    window.addEventListener('keydown', this._keyListener);
   },
 
   renderGameContainer() {
@@ -65,11 +80,19 @@ const RocketGame = {
         .rocket-arena {
           position: relative;
           width: 100%;
-          height: 100%;
-          min-height: 400px;
-          background: radial-gradient(circle at 50% 100%, #0f172a 0%, #020617 100%);
+          height: 580px; /* Increased height */
+          background: #020617;
           overflow: hidden;
           font-family: system-ui, -apple-system, sans-serif;
+          user-select: none;
+        }
+        .star-canvas {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 1;
         }
         .rocket-tracker {
           position: absolute;
@@ -81,27 +104,28 @@ const RocketGame = {
           color: #94a3b8;
           font-size: 1.1rem;
           font-weight: 600;
-          z-index: 5;
+          z-index: 10;
         }
         .rocket-entity {
           position: absolute;
-          width: 55px;
-          height: 85px;
-          z-index: 10;
+          width: 60px;
+          height: 90px;
+          z-index: 20;
           display: none;
+          transform: translateX(-50%);
         }
         .rocket-entity.shake {
           animation: rocketShake 0.25s cubic-bezier(.36,.07,.19,.97) both;
         }
         @keyframes rocketShake {
-          10%, 90% { transform: translate3d(-2px, 0, 0); }
-          20%, 80% { transform: translate3d(4px, 0, 0); }
-          30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
-          40%, 60% { transform: translate3d(6px, 0, 0); }
+          10%, 90% { transform: translate3d(-2px, 0, 0) translateX(-50%); }
+          20%, 80% { transform: translate3d(4px, 0, 0) translateX(-50%); }
+          30%, 50%, 70% { transform: translate3d(-6px, 0, 0) translateX(-50%); }
+          40%, 60% { transform: translate3d(6px, 0, 0) translateX(-50%); }
         }
         .rocket-badge {
           position: absolute;
-          top: 26px;
+          top: 28px;
           left: 50%;
           transform: translateX(-50%);
           font-size: 1.3rem;
@@ -112,23 +136,28 @@ const RocketGame = {
         }
         .rocket-flame {
           position: absolute;
-          bottom: -12px;
+          bottom: -14px;
           left: 50%;
           transform: translateX(-50%);
-          width: 14px;
-          height: 22px;
+          width: 16px;
+          height: 24px;
           background: linear-gradient(to bottom, #f59e0b, #ef4444, transparent);
           border-radius: 50%;
           animation: flamePulse 0.12s infinite alternate;
         }
+        .rocket-flame.super-boost {
+          height: 45px;
+          bottom: -32px;
+          background: linear-gradient(to bottom, #38bdf8, #6366f1, transparent);
+        }
         @keyframes flamePulse {
-          0% { height: 18px; opacity: 0.8; }
-          100% { height: 26px; opacity: 1; filter: drop-shadow(0 0 8px #f59e0b); }
+          0% { opacity: 0.8; transform: translateX(-50%) scaleX(0.9); }
+          100% { opacity: 1; transform: translateX(-50%) scaleX(1.1); filter: drop-shadow(0 0 10px #f59e0b); }
         }
         .rocket-modal-overlay {
           position: absolute;
           inset: 0;
-          background: rgba(2, 6, 23, 0.85);
+          background: rgba(2, 6, 23, 0.88);
           display: flex;
           justify-content: center;
           align-items: center;
@@ -138,10 +167,10 @@ const RocketGame = {
           background: #1e293b;
           border: 2px solid #38bdf8;
           border-radius: 12px;
-          padding: 24px 32px;
+          padding: 28px 36px;
           text-align: center;
-          max-width: 400px;
-          box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+          max-width: 420px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
         .rocket-modal-card h2 {
           color: #f8fafc;
@@ -151,13 +180,13 @@ const RocketGame = {
           color: #cbd5e1;
           font-size: 1.1rem;
           line-height: 1.4;
-          margin-bottom: 20px;
+          margin-bottom: 22px;
         }
         .rocket-start-btn {
           background: #0284c7;
           color: #ffffff;
           border: none;
-          padding: 10px 24px;
+          padding: 12px 28px;
           font-size: 1rem;
           font-weight: bold;
           border-radius: 6px;
@@ -174,6 +203,8 @@ const RocketGame = {
         }
       </style>
       <div class="rocket-arena" id="rocketArena">
+        <canvas id="spaceBgCanvas" class="star-canvas"></canvas>
+
         <div class="rocket-tracker">
           <span>ROCKETS DESTROYED: <strong id="launchedCount" style="color:#38bdf8;">0</strong> / <span id="targetGoal">${this.goalCount}</span></span>
         </div>
@@ -186,7 +217,7 @@ const RocketGame = {
             <circle cx="30" cy="36" r="14" fill="#ffffff" stroke="#020617" stroke-width="2"/>
           </svg>
           <div id="rocketLetter" class="rocket-badge">F</div>
-          <div class="rocket-flame"></div>
+          <div id="rocketFlame" class="rocket-flame"></div>
         </div>
 
         <div id="rocketOverlay" class="rocket-modal-overlay">
@@ -198,6 +229,88 @@ const RocketGame = {
         </div>
       </div>
     `;
+  },
+
+  setupSpaceBackground() {
+    const canvas = document.getElementById('spaceBgCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const resizeCanvas = () => {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+    };
+    resizeCanvas();
+
+    // Create stars
+    const stars = Array.from({ length: 90 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      radius: Math.random() * 1.5 + 0.5,
+      alpha: Math.random(),
+      twinkleSpeed: (Math.random() * 0.02 + 0.005) * (Math.random() < 0.5 ? 1 : -1)
+    }));
+
+    // Shooting star state
+    let shootingStar = null;
+
+    const spawnShootingStar = () => {
+      shootingStar = {
+        x: Math.random() * canvas.width,
+        y: Math.random() * (canvas.height * 0.4),
+        length: Math.random() * 80 + 40,
+        speed: Math.random() * 10 + 12,
+        dx: Math.random() * 4 + 6,
+        dy: Math.random() * 2 + 3,
+        alpha: 1
+      };
+    };
+
+    const render = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Render stars with twinkling
+      stars.forEach(star => {
+        star.alpha += star.twinkleSpeed;
+        if (star.alpha <= 0.1 || star.alpha >= 1) star.twinkleSpeed *= -1;
+
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.1, Math.min(1, star.alpha))})`;
+        ctx.fill();
+      });
+
+      // Handle shooting stars
+      if (!shootingStar && Math.random() < 0.015) {
+        spawnShootingStar();
+      }
+
+      if (shootingStar) {
+        ctx.beginPath();
+        const grad = ctx.createLinearGradient(
+          shootingStar.x, shootingStar.y,
+          shootingStar.x - shootingStar.dx * 8, shootingStar.y - shootingStar.dy * 8
+        );
+        grad.addColorStop(0, `rgba(56, 189, 248, ${shootingStar.alpha})`);
+        grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 2;
+        ctx.moveTo(shootingStar.x, shootingStar.y);
+        ctx.lineTo(shootingStar.x - shootingStar.dx * 8, shootingStar.y - shootingStar.dy * 8);
+        ctx.stroke();
+
+        shootingStar.x += shootingStar.dx;
+        shootingStar.y += shootingStar.dy;
+        shootingStar.alpha -= 0.02;
+
+        if (shootingStar.alpha <= 0) shootingStar = null;
+      }
+
+      this.starAnimFrame = requestAnimationFrame(render);
+    };
+
+    render();
   },
 
   showInstructionsPopup() {
@@ -238,15 +351,18 @@ const RocketGame = {
     const rocket = document.getElementById('targetRocket');
     const body = document.getElementById('rocketBody');
     const letterEl = document.getElementById('rocketLetter');
+    const flame = document.getElementById('rocketFlame');
 
     if (!rocket || !body || !letterEl) return;
 
-    // Determine X placement and color matching finger/keyboard layout
+    if (flame) flame.classList.remove('super-boost');
+
+    // X position matching keyboard column and color setup
     const xPos = this.keyPositions[currentChar] || 50;
     const themeColor = this.keyColors[currentChar] || '#0284c7';
 
     rocket.style.display = 'block';
-    rocket.style.left = `calc(${xPos}% - 27px)`;
+    rocket.style.left = `${xPos}%`;
     this.currentBottom = this.minBottom;
     rocket.style.bottom = `${this.currentBottom}%`;
 
@@ -268,7 +384,7 @@ const RocketGame = {
         rocket.style.bottom = `${this.currentBottom}%`;
       }
 
-      // If rocket hits top limit, reset position to try again
+      // If rocket hits top, shake and drop to bottom for retry
       if (this.currentBottom >= this.maxBottom) {
         this.totalAttempts++;
         this.shakeRocket();
@@ -298,13 +414,15 @@ const RocketGame = {
     this.clearIntervals();
 
     const rocket = document.getElementById('targetRocket');
+    const flame = document.getElementById('rocketFlame');
+    if (flame) flame.classList.add('super-boost');
 
-    // Quick launch animation to destroy the rocket
+    // Shoot rocket upwards off screen
     this.launchInterval = setInterval(() => {
-      this.currentBottom += 4.0;
+      this.currentBottom += 4.5;
       if (rocket) rocket.style.bottom = `${this.currentBottom}%`;
 
-      if (this.currentBottom > 110) {
+      if (this.currentBottom > 115) {
         this.clearIntervals();
         this.currentIndex++;
 
@@ -344,6 +462,9 @@ const RocketGame = {
 
   reset() {
     this.clearIntervals();
+    if (this.starAnimFrame) cancelAnimationFrame(this.starAnimFrame);
+    if (this._keyListener) window.removeEventListener('keydown', this._keyListener);
+
     this.gameActive = false;
     this.isAnimating = false;
     this.currentIndex = 0;
