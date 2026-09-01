@@ -12,7 +12,7 @@ const RocketGame = {
   starAnimFrame: null,
   isAnimating: false,
   onCompleteCallback: null,
-  _keyHandler: null,
+  _boundKeyHandler: null,
 
   minBottom: 5,
   maxBottom: 85,
@@ -25,16 +25,9 @@ const RocketGame = {
   },
 
   keyColors: {
-    'a': 'var(--col-pinky, #ec4899)',
-    's': 'var(--col-ring, #a855f7)',
-    'd': 'var(--col-middle, #3b82f6)',
-    'f': 'var(--col-index-l, #22c55e)',
-    'g': 'var(--col-index-l, #22c55e)',
-    'h': 'var(--col-index-r, #eab308)',
-    'j': 'var(--col-index-r, #eab308)',
-    'k': 'var(--col-middle, #3b82f6)',
-    'l': 'var(--col-ring, #a855f7)',
-    ';': 'var(--col-pinky, #ec4899)'
+    'a': '#ec4899', 's': '#a855f7', 'd': '#3b82f6',
+    'f': '#16a34a', 'g': '#16a34a', 'h': '#ca8a04',
+    'j': '#ca8a04', 'k': '#3b82f6', 'l': '#a855f7', ';': '#ec4899'
   },
 
   init(sequenceText, onComplete) {
@@ -45,7 +38,7 @@ const RocketGame = {
     let validChars = rawSeq.toLowerCase().replace(/[^a-z;]/g, '');
 
     if (validChars.length < 20) {
-      const fallback = "fjfdkslakjdgh;fjdklsam";
+      const fallback = "fjfdkslakjdghfjdklsam";
       validChars = (validChars + fallback).slice(0, 20);
     } else {
       validChars = validChars.slice(0, 20);
@@ -56,12 +49,11 @@ const RocketGame = {
 
     this.renderGameContainer();
     this.setupSpaceBackground();
-    this.attachFailSafeListeners();
+    this.attachListeners();
     this.showInstructionsPopup();
   },
 
   renderGameContainer() {
-    // Target skyGameDisplay specifically if present, fallback to raceCarGameDisplay or body
     const container = document.getElementById('skyGameDisplay') || document.getElementById('raceCarGameDisplay') || document.body;
 
     container.innerHTML = `
@@ -150,14 +142,14 @@ const RocketGame = {
         .rocket-modal-overlay {
           position: absolute;
           inset: 0;
-          background: rgba(2, 6, 23, 0.88);
+          background: rgba(2, 6, 23, 0.92);
           display: flex;
           justify-content: center;
           align-items: center;
           z-index: 50;
         }
         .rocket-modal-card {
-          background: #1e293b;
+          background: #0f172a;
           border: 2px solid #38bdf8;
           border-radius: 12px;
           padding: 28px 36px;
@@ -165,18 +157,10 @@ const RocketGame = {
           max-width: 420px;
           box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
-        .rocket-modal-card h2 {
-          color: #f8fafc;
-          margin: 0 0 12px 0;
-        }
-        .rocket-modal-card p {
-          color: #cbd5e1;
-          font-size: 1.1rem;
-          line-height: 1.4;
-          margin-bottom: 22px;
-        }
+        .rocket-modal-card h2 { color: #f8fafc; margin: 0 0 12px 0; }
+        .rocket-modal-card p { color: #cbd5e1; font-size: 1.1rem; line-height: 1.4; margin-bottom: 22px; }
         .rocket-start-btn {
-          background: #0284c7;
+          background: #16a34a;
           color: #ffffff;
           border: none;
           padding: 12px 28px;
@@ -185,9 +169,7 @@ const RocketGame = {
           border-radius: 6px;
           cursor: pointer;
         }
-        .rocket-start-btn:hover {
-          background: #0369a1;
-        }
+        .rocket-start-btn:hover { background: #15803d; }
         .rocket-countdown {
           font-size: 6rem;
           font-weight: 900;
@@ -204,7 +186,7 @@ const RocketGame = {
 
         <div id="targetRocket" class="rocket-entity">
           <svg viewBox="0 0 60 90" width="100%" height="100%">
-            <path d="M30 2 C42 20, 48 45, 48 70 L12 70 C12 45, 18 20, 30 2 Z" id="rocketBody" fill="#22c55e" stroke="#ffffff" stroke-width="2"/>
+            <path d="M30 2 C42 20, 48 45, 48 70 L12 70 C12 45, 18 20, 30 2 Z" id="rocketBody" fill="#16a34a" stroke="#ffffff" stroke-width="2"/>
             <path d="M12 50 C2 55, 0 75, 4 82 L12 70 Z" id="rocketFinLeft" fill="#0f172a"/>
             <path d="M48 50 C58 55, 60 75, 56 82 L48 70 Z" id="rocketFinRight" fill="#0f172a"/>
             <circle cx="30" cy="36" r="14" fill="#ffffff" stroke="#020617" stroke-width="2"/>
@@ -224,12 +206,10 @@ const RocketGame = {
     `;
   },
 
-  attachFailSafeListeners() {
-    if (this._keyHandler) {
-      document.removeEventListener('keydown', this._keyHandler, true);
-    }
+  attachListeners() {
+    this.detachListeners();
 
-    this._keyHandler = (e) => {
+    this._boundKeyHandler = (e) => {
       if (!this.gameActive || this.isAnimating) return;
 
       let key = e.key ? e.key.toLowerCase() : "";
@@ -237,11 +217,20 @@ const RocketGame = {
       if (e.code && e.code.startsWith('Key')) key = e.code.replace('Key', '').toLowerCase();
 
       if (key) {
+        e.preventDefault();
+        e.stopPropagation();
         this.handleInput(key);
       }
     };
 
-    document.addEventListener('keydown', this._keyHandler, true);
+    window.addEventListener('keydown', this._boundKeyHandler, true);
+  },
+
+  detachListeners() {
+    if (this._boundKeyHandler) {
+      window.removeEventListener('keydown', this._boundKeyHandler, true);
+      this._boundKeyHandler = null;
+    }
   },
 
   setupSpaceBackground() {
@@ -367,7 +356,7 @@ const RocketGame = {
     if (flame) flame.classList.remove('super-boost');
 
     const xPos = this.keyPositions[currentChar] || 50;
-    const themeColor = this.keyColors[currentChar] || '#0284c7';
+    const themeColor = this.keyColors[currentChar] || '#16a34a';
 
     rocket.style.display = 'block';
     rocket.style.left = `${xPos}%`;
@@ -471,7 +460,7 @@ const RocketGame = {
   reset() {
     this.clearIntervals();
     if (this.starAnimFrame) cancelAnimationFrame(this.starAnimFrame);
-    if (this._keyHandler) document.removeEventListener('keydown', this._keyHandler, true);
+    this.detachListeners();
 
     this.gameActive = false;
     this.isAnimating = false;
