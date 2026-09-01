@@ -41,7 +41,6 @@
       overflow-x: hidden;
     }
 
-    /* Fireworks Canvas Overlay */
     #fireworksCanvas {
       position: fixed;
       top: 0;
@@ -346,6 +345,8 @@
   </style>
 
   <script src="https://www.youtube.com/iframe_api"></script>
+  <!-- External Rocket Game Logic -->
+  <script src="rocket-game.js"></script>
 </head>
 <body onload="init()">
 
@@ -449,94 +450,14 @@
 </div>
 
 <script>
-  // Rocket Game Module
-  const RocketGame = (() => {
-    let active = false;
-    let targetLetter = 'F';
-    let destroyed = 0;
-    const totalGoal = 20;
-    let totalTyped = 0;
-    let correctTyped = 0;
-    let onCompleteCallback = null;
-
-    const letters = ['F', 'J', 'D', 'K'];
-
-    function init(onComplete) {
-      active = true;
-      destroyed = 0;
-      totalTyped = 0;
-      correctTyped = 0;
-      onCompleteCallback = onComplete;
-      updateUI();
-      spawnNext();
-    }
-
-    function reset() {
-      active = false;
-      destroyed = 0;
-    }
-
-    function spawnNext() {
-      targetLetter = letters[Math.floor(Math.random() * letters.length)];
-      const rocketLetterEl = document.getElementById('rocketLetter');
-      const targetRocketEl = document.getElementById('targetRocket');
-      if (rocketLetterEl) rocketLetterEl.innerText = targetLetter;
-      
-      if (targetRocketEl) {
-        const randomX = Math.floor(Math.random() * 70) + 15;
-        targetRocketEl.style.left = `${randomX}%`;
-      }
-    }
-
-    function handleInput(key) {
-      if (!active) return undefined;
-
-      totalTyped++;
-      const pressedChar = key.toUpperCase();
-
-      if (pressedChar === targetLetter) {
-        correctTyped++;
-        destroyed++;
-        updateUI();
-
-        if (destroyed >= totalGoal) {
-          active = false;
-          const finalAccuracy = Math.round((correctTyped / totalTyped) * 100);
-          if (onCompleteCallback) onCompleteCallback(finalAccuracy);
-        } else {
-          spawnNext();
-        }
-      } else {
-        const targetRocketEl = document.getElementById('targetRocket');
-        if (targetRocketEl) {
-          targetRocketEl.classList.add('shake');
-          setTimeout(() => targetRocketEl.classList.remove('shake'), 200);
-        }
-      }
-
-      return Math.round((correctTyped / totalTyped) * 100);
-    }
-
-    function updateUI() {
-      const launchedEl = document.getElementById('launchedCount');
-      const targetEl = document.getElementById('targetGoal');
-      if (launchedEl) launchedEl.innerText = destroyed;
-      if (targetEl) targetEl.innerText = totalGoal;
-    }
-
-    return { init, reset, handleInput };
-  })();
-</script>
-
-<script>
   const TEACHER_PASSCODE = "8760";
   const lessons = [
-    { title: "Lesson 1: F & J", text: "jjj fff jj ff fjj jjf fjf ffj jff jfj ffjfjjfjjffj", type: "typing" },
-    { title: "Lesson 2: D & K", text: "kkk ddd kk dd kkd ddk dkd kdd dkk kdk dddkdkddkdkk", type: "typing" },
-    { title: "Lesson 3: DFJK", text: "ff jj fj fj dd kk kd kd jk jk df df jd jd fk fk kj fd jf", type: "typing" },
-    { title: "Lesson 4: Game", text: "", type: "game" },
-    { title: "Lesson 5: Video", text: "", type: "video" },
-    { title: "Lesson 6: Shift", text: "jJ kK J K fF dD D F jfdk J F D K", type: "typing" }
+    { title: "1: F & J Keys", text: "jjj fff jj ff fjj jjf fjf ffj jff jfj ffjfjjfjjffj", type: "typing" },
+    { title: "2: D & K Keys", text: "kkk ddd kk dd kkd ddk dkd kdd dkk kdk dddkdkddkdkk", type: "typing" },
+    { title: "3: FJDK Review", text: "ff jj fj fj dd kk kd kd jk jk df df jd jd fk fk kj fd jf", type: "typing" },
+    { title: "4: FJDK Game", text: "", type: "game" },
+    { title: "5: Video", text: "", type: "video" },
+    { title: "6: Shift Key", text: "jJ kK J K fF dD D F jfdk J F D K", type: "typing" }
   ];
 
   let currentLessonIdx = 0;
@@ -1024,7 +945,6 @@
       starsContainer.style.display = 'flex';
       titleEl.style.color = "var(--class-theme-color)";
       
-      // Set lesson star display
       for (let i = 1; i <= 5; i++) {
         const starEl = document.getElementById(`star${i}`);
         if (starEl) {
