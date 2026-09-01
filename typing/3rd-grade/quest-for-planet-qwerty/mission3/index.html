@@ -109,8 +109,14 @@
     }
 
     .title-group { display: flex; align-items: center; gap: 12px; }
-    .header-rocket-icon { font-size: 2.2rem; filter: drop-shadow(0 0 8px var(--class-theme-color)); }
+    .header-sun-icon { font-size: 2.2rem; filter: drop-shadow(0 0 8px var(--neon-amber)); }
     .app-title { font-family: var(--font-header); color: var(--class-theme-color); font-size: 1.4rem; font-weight: 800; }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
     .star-badge {
       background: rgba(245, 158, 11, 0.15);
@@ -121,6 +127,8 @@
       font-family: var(--font-tech);
       font-size: 1.1rem;
       font-weight: bold;
+      display: flex;
+      align-items: center;
     }
 
     .lesson-nav-bar {
@@ -237,7 +245,7 @@
       border: 1px solid #475569;
       height: 36px;
       padding: 0 14px;
-      border-radius: 8px;
+      border-radius: 20px;
       font-size: 0.85rem;
       font-weight: 900;
       cursor: pointer;
@@ -397,10 +405,15 @@
 
   <div class="console-header">
     <div class="title-group">
-      <span class="header-rocket-icon">🚀</span>
+      <span class="header-sun-icon">☀️</span>
       <span class="app-title">Mission 3: G & H Keys</span>
     </div>
-    <div class="star-badge">⭐ STARS: <span id="totalStarsCount">0</span></div>
+    <div class="header-actions">
+      <button class="btn-levelup" id="btnLevelUp" onclick="handleLevelUpClick()">
+        <span>🎖️ LEVEL-UP</span>
+      </button>
+      <div class="star-badge">⭐ STARS: <span id="totalStarsCount">0</span></div>
+    </div>
   </div>
 
   <div class="lesson-nav-bar" id="lessonNavBar"></div>
@@ -411,9 +424,6 @@
       <div class="meter-track"><div id="accuracyMeterFill" class="meter-fill"></div></div>
       <span id="accuracyVal" class="accuracy-text" style="color: var(--neon-green);">100%</span>
     </div>
-    <button class="btn-levelup" id="btnLevelUp" onclick="handleLevelUpClick()">
-      <span>🎖️ LEVEL-UP</span>
-    </button>
     <button class="btn-control" onclick="toggleKeyboardVisibility()">KEYBOARD: <span id="kbToggleText">OFF</span></button>
     <button class="btn-control btn-reset-teacher" onclick="openTeacherResetModal()">RESET LESSON 🔒</button>
   </div>
@@ -884,7 +894,6 @@
   function startLevelUpChallenge() {
     isLevelUpActive = true;
     const baseLetters = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';'];
-    let shuffled = [...baseLetters].sort(() => Math.random() - 0.5);
     let sequence = [];
     for (let i = 0; i < 3; i++) {
       sequence.push(...[...baseLetters].sort(() => Math.random() - 0.5));
