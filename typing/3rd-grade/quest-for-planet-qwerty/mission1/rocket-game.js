@@ -17,7 +17,7 @@ const RocketGame = {
   minBottom: 5,
   maxBottom: 85,
   currentBottom: 5,
-  riseSpeed: 0.18, // Speed of rising rocket
+  riseSpeed: 0.18,
 
   // Key X-positions (percentage matching keyboard columns)
   keyPositions: {
@@ -46,12 +46,16 @@ const RocketGame = {
     let rawSeq = typeof sequenceText === 'string' ? sequenceText : "";
     let validChars = rawSeq.toLowerCase().replace(/[^a-z;]/g, '');
 
-    if (!validChars.length) {
-      validChars = "fjfdkslakjdgh;";
+    // Ensure sequence length reaches at least 20 rockets
+    if (validChars.length < 20) {
+      const fallback = "fjfdkslakjdgh;fjdklsam";
+      validChars = (validChars + fallback).slice(0, 20);
+    } else {
+      validChars = validChars.slice(0, 20);
     }
 
     this.targetSequence = validChars;
-    this.goalCount = this.targetSequence.length;
+    this.goalCount = 20;
 
     this.renderGameContainer();
     this.setupSpaceBackground();
@@ -61,7 +65,7 @@ const RocketGame = {
 
   bindGlobalKeyboard() {
     if (this._keyListener) {
-      window.removeEventListener('keydown', this._keyListener);
+      window.removeEventListener('keydown', this._keyListener, true);
     }
 
     this._keyListener = (e) => {
@@ -69,7 +73,6 @@ const RocketGame = {
 
       let pressedKey = e.key ? e.key.toLowerCase() : "";
 
-      // Fallback detection for physical layout keys
       if (e.code === 'Semicolon') pressedKey = ';';
       if (e.code && e.code.startsWith('Key')) {
         pressedKey = e.code.replace('Key', '').toLowerCase();
@@ -82,7 +85,8 @@ const RocketGame = {
       }
     };
 
-    window.addEventListener('keydown', this._keyListener);
+    // Use capture phase to intercept input before host app absorbs it
+    window.addEventListener('keydown', this._keyListener, true);
   },
 
   renderGameContainer() {
@@ -93,7 +97,7 @@ const RocketGame = {
         .rocket-arena {
           position: relative;
           width: 100%;
-          height: 580px;
+          height: 600px;
           background: #020617;
           overflow: hidden;
           font-family: system-ui, -apple-system, sans-serif;
@@ -146,7 +150,7 @@ const RocketGame = {
           color: #020617;
           text-shadow: 0 0 3px rgba(255,255,255,0.9);
           pointer-events: none;
-          text-transform: lowercase; /* Lowercase letters */
+          text-transform: lowercase !important;
         }
         .rocket-flame {
           position: absolute;
@@ -220,7 +224,7 @@ const RocketGame = {
         <canvas id="spaceBgCanvas" class="star-canvas"></canvas>
 
         <div class="rocket-tracker">
-          <span>ROCKETS DESTROYED: <strong id="launchedCount" style="color:#38bdf8;">0</strong> / <span id="targetGoal">${this.goalCount}</span></span>
+          <span>ROCKETS DESTROYED: <strong id="launchedCount" style="color:#38bdf8;">0</strong> / <span id="targetGoal">20</span></span>
         </div>
 
         <div id="targetRocket" class="rocket-entity">
@@ -352,12 +356,12 @@ const RocketGame = {
   spawnNextRocket() {
     this.clearIntervals();
 
-    if (this.currentIndex >= this.targetSequence.length) {
+    if (this.currentIndex >= 20 || this.currentIndex >= this.targetSequence.length) {
       this.finishGame();
       return;
     }
 
-    const currentChar = this.targetSequence[this.currentIndex].toLowerCase();
+    const currentChar = (this.targetSequence[this.currentIndex] || 'f').toLowerCase();
     const rocket = document.getElementById('targetRocket');
     const body = document.getElementById('rocketBody');
     const letterEl = document.getElementById('rocketLetter');
@@ -376,7 +380,7 @@ const RocketGame = {
     rocket.style.bottom = `${this.currentBottom}%`;
 
     body.setAttribute('fill', themeColor);
-    letterEl.innerText = currentChar; // Displays lowercase letter
+    letterEl.textContent = currentChar.toLowerCase();
 
     this.isAnimating = false;
     this.startRising();
@@ -401,11 +405,12 @@ const RocketGame = {
     }, 20);
   },
 
+  // Called directly via application wrapper or internal keyboard listener
   handleInput(key) {
     if (!this.gameActive || this.isAnimating) return;
 
-    const expectedChar = this.targetSequence[this.currentIndex].toLowerCase();
-    const inputChar = key.toLowerCase();
+    const expectedChar = (this.targetSequence[this.currentIndex] || '').toLowerCase();
+    const inputChar = (key || '').toLowerCase();
 
     this.totalAttempts++;
 
@@ -472,7 +477,7 @@ const RocketGame = {
   reset() {
     this.clearIntervals();
     if (this.starAnimFrame) cancelAnimationFrame(this.starAnimFrame);
-    if (this._keyListener) window.removeEventListener('keydown', this._keyListener);
+    if (this._keyListener) window.removeEventListener('keydown', this._keyListener, true);
 
     this.gameActive = false;
     this.isAnimating = false;
