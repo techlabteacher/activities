@@ -335,6 +335,7 @@
     </div>
     <button class="btn-control" onclick="toggleKeyboardVisibility()">KEYBOARD: <span id="kbToggleText">OFF</span></button>
     <button class="btn-control btn-reset-teacher" onclick="openTeacherResetModal()">RESET LESSON 🔒</button>
+    <button class="btn-control" style="border-color: #38bdf8; color: #38bdf8;" onclick="openTeacherBypassModal()">BYPASS ⚡</button>
   </div>
 
   <div id="standardTextDisplay" class="terminal-display"><div id="textNodesContainer"></div></div>
@@ -776,6 +777,10 @@
     openPasscodeModal('reset');
   }
 
+  function openTeacherBypassModal() {
+    openPasscodeModal('bypass');
+  }
+
   function openPasscodeModal(mode) {
     currentPasscodeMode = mode;
     document.getElementById('passcodeInput').value = '';
@@ -787,6 +792,9 @@
     if (mode === 'reset') {
       titleEl.innerText = "TEACHER RESET";
       subtextEl.innerText = `Enter passcode to reset ${lessons[currentLessonIdx].title}:`;
+    } else if (mode === 'bypass') {
+      titleEl.innerText = "TESTING BYPASS";
+      subtextEl.innerText = `Enter passcode to bypass ${lessons[currentLessonIdx].title}:`;
     } else {
       titleEl.innerText = "TEACHER VERIFICATION";
       subtextEl.innerText = "Enter passcode to enable on-screen keyboard:";
@@ -816,6 +824,8 @@
         saveProgress();
         renderLessonButtons();
         resetLessonStateOnly();
+      } else if (currentPasscodeMode === 'bypass') {
+        showCompletionModal(100);
       }
     } else {
       document.getElementById('passcodeError').innerText = 'Incorrect Passcode';
