@@ -12,6 +12,7 @@ const RocketGame = {
   starAnimFrame: null,
   isAnimating: false,
   onCompleteCallback: null,
+  _keyHandler: null,
 
   minBottom: 5,
   maxBottom: 85,
@@ -60,19 +61,22 @@ const RocketGame = {
   },
 
   renderGameContainer() {
-    const container = document.getElementById('raceCarGameDisplay') || document.body;
+    // Target skyGameDisplay specifically if present, fallback to raceCarGameDisplay or body
+    const container = document.getElementById('skyGameDisplay') || document.getElementById('raceCarGameDisplay') || document.body;
 
     container.innerHTML = `
       <style>
         .rocket-arena {
           position: relative;
           width: 100%;
-          height: 600px;
+          height: 100%;
+          min-height: 360px;
           background: #020617;
           overflow: hidden;
           font-family: system-ui, -apple-system, sans-serif;
           user-select: none;
           outline: none;
+          border-radius: 12px;
         }
         .star-canvas {
           position: absolute;
@@ -246,14 +250,15 @@ const RocketGame = {
     const ctx = canvas.getContext('2d');
 
     const resizeCanvas = () => {
+      if (!canvas.parentElement) return;
       canvas.width = canvas.parentElement.clientWidth;
       canvas.height = canvas.parentElement.clientHeight;
     };
     resizeCanvas();
 
     const stars = Array.from({ length: 90 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
+      x: Math.random() * (canvas.width || 800),
+      y: Math.random() * (canvas.height || 400),
       radius: Math.random() * 1.5 + 0.5,
       alpha: Math.random(),
       twinkleSpeed: (Math.random() * 0.02 + 0.005) * (Math.random() < 0.5 ? 1 : -1)
@@ -262,6 +267,7 @@ const RocketGame = {
     let shootingStar = null;
 
     const render = () => {
+      if (!document.getElementById('spaceBgCanvas')) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       stars.forEach(star => {
@@ -475,5 +481,4 @@ const RocketGame = {
   }
 };
 
-// Global export
 window.RocketGame = RocketGame;
