@@ -141,6 +141,18 @@
       box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
     }
 
+    .btn-video.watched {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--neon-green);
+      border-color: var(--neon-green);
+    }
+
+    .btn-video.watched:hover {
+      background: var(--neon-green);
+      color: #020617;
+      box-shadow: 0 0 10px var(--neon-green);
+    }
+
     .star-badge {
       background: rgba(245, 158, 11, 0.15);
       border: 1.5px solid var(--neon-amber);
@@ -481,7 +493,7 @@
       padding: 15px;
       font-family: var(--font-tech);
       font-size: 2.2rem;
-      letter-spacing: 4px;
+      letter-spacing: 0px;
       margin-bottom: 15px;
       min-height: 75px;
       display: flex;
@@ -489,10 +501,15 @@
       justify-content: center;
     }
 
+    .levelup-typing-target .char-node {
+      min-width: unset;
+      padding: 0 1px;
+    }
+
     .video-frame-container {
       position: relative;
       width: 100%;
-      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      padding-bottom: 56.25%;
       height: 0;
       background: #000000;
       border-radius: 12px;
@@ -531,8 +548,8 @@
       <span class="app-title">Mission 3: G & H Keys</span>
     </div>
     <div class="header-actions">
-      <button class="btn-video" onclick="openVideoModal()">
-        <span>📹 WATCH VIDEO</span>
+      <button class="btn-video" id="btnVideo" onclick="openVideoModal()">
+        <span>📹 FINAL VIDEO</span>
       </button>
       <button class="btn-levelup" id="btnLevelUp" onclick="handleLevelUpClick()">
         <span>🎖️ LEVEL-UP</span>
@@ -591,23 +608,23 @@
       <div class="levelup-checklist">
         <div class="checklist-item">
           <span class="checklist-icon">✅</span>
-          <span>How many stars do your lessons have? Redo lessons if needed.</span>
+          <span><strong>LESSON STARS:</strong> How many stars do your lessons have? Redo lessons if needed.</span>
         </div>
         <div class="checklist-item">
           <span class="checklist-icon">✅</span>
-          <span>Make sure you can type all the letters below with good technique. Practice.</span>
+          <span><strong>LETTERS:</strong> Can you type all the letters below with good technique? Practice.</span>
         </div>
         <div class="checklist-item">
           <span class="checklist-icon">✅</span>
-          <span>Fill out the Home Row keyboard in your logbook. (white paper)</span>
+          <span><strong>KEYBOARD:</strong> Fill out the Home Row keyboard in your logbook. (white paper)</span>
         </div>
         <div class="checklist-item">
           <span class="checklist-icon">✅</span>
-          <span>Grab a black cover and work on a project Mrs. Miller is ready to watch you.</span>
+          <span><strong>COVER:</strong> Grab a black cover. Work on a project while waiting for Mrs. Miller to watch you.</span>
         </div>
         <div class="checklist-item">
           <span class="checklist-icon">✅</span>
-          <span>When she's ready, type the letters with good technique.</span>
+          <span><strong>READY:</strong> When Mrs. Miller is ready, type the letters with good technique.</span>
         </div>
       </div>
     </div>
@@ -615,7 +632,7 @@
     <div class="levelup-typing-target" id="levelUpNodesContainer"></div>
 
     <div id="levelUpAccuracyDisplay" style="font-family: var(--font-tech); font-size: 1.1rem; color: #cbd5e1; margin-bottom: 10px;">
-      Accuracy: <strong id="levelUpAccVal" style="color: var(--neon-green);">100%</strong>
+      Accuracy: <strong id="levelUpAccVal" style="color: var(--neon-green);">--%</strong>
     </div>
 
     <div class="modal-btn-group">
@@ -648,9 +665,8 @@
   <!-- Video Modal -->
   <div id="videoModal" class="modal-overlay">
     <div class="modal-card video-card">
-      <h2 class="modal-title" style="color: #38bdf8;">📹 LEVEL-UP BRIEFING VIDEO</h2>
+      <h2 class="modal-title" style="color: #38bdf8;">📹 FINAL VIDEO BRIEFING</h2>
       <div class="video-frame-container">
-        <!-- Replace src with your preferred video embed URL -->
         <iframe id="videoPlayerFrame" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Level-Up Video" allowfullscreen></iframe>
       </div>
       <div class="modal-btn-group">
@@ -829,6 +845,8 @@
 
   function openVideoModal() {
     document.getElementById('videoModal').classList.add('active');
+    document.getElementById('btnVideo').classList.add('watched');
+    localStorage.setItem(getHubKey(3, 'video_watched'), 'true');
   }
 
   function closeVideoModal() {
@@ -836,7 +854,7 @@
     const iframe = document.getElementById('videoPlayerFrame');
     if (iframe) {
       const src = iframe.src;
-      iframe.src = src; // Pause video playback on close
+      iframe.src = src;
     }
   }
 
@@ -878,6 +896,10 @@
           lessonStars = parsed;
         }
       } catch (e) {}
+    }
+
+    if (localStorage.getItem(getHubKey(3, 'video_watched')) === 'true') {
+      document.getElementById('btnVideo').classList.add('watched');
     }
 
     const totalStars = lessonStars.reduce((a, b) => a + b, 0);
@@ -1045,7 +1067,6 @@
     }
   }
 
-  /* Level-Up Console Display Interactivity */
   function handleLevelUpClick() {
     const m1Done = isMissionComplete(1);
     const m2Done = isMissionComplete(2);
@@ -1071,7 +1092,6 @@
     startLevelUpChallenge();
   }
 
-  /* Scrambles the requested "asdfghjkl;" letters without spaces */
   function startLevelUpChallenge() {
     isLevelUpActive = true;
     
@@ -1085,7 +1105,8 @@
     levelUpErrors = [];
 
     renderLevelUpNodes();
-    updateLevelUpAccuracy(100);
+    document.getElementById('levelUpAccVal').innerText = "--%";
+    document.getElementById('levelUpAccVal').style.color = "var(--neon-green)";
   }
 
   function renderLevelUpNodes() {
@@ -1131,14 +1152,13 @@
       }
 
       levelUpIndex++;
-      const acc = Math.round((levelUpCorrectTyped / levelUpTotalTyped) * 100);
-      updateLevelUpAccuracy(acc);
       renderLevelUpNodes();
 
       if (levelUpIndex >= levelUpTargetText.length) {
         isLevelUpActive = false;
+        const acc = Math.round((levelUpCorrectTyped / levelUpTotalTyped) * 100);
+        updateLevelUpAccuracy(acc);
         launchFireworks();
-        alert(`Congratulations Cadet! Level-Up Verification Complete!\nFinal Accuracy: ${acc}%`);
       }
       return;
     }
