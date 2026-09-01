@@ -115,7 +115,30 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+    }
+
+    .btn-video {
+      font-family: var(--font-header);
+      background: #1e293b;
+      color: #38bdf8;
+      border: 1px solid #38bdf8;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-video:hover {
+      background: rgba(56, 189, 248, 0.2);
+      transform: scale(1.03);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
     }
 
     .star-badge {
@@ -288,7 +311,6 @@
       100% { box-shadow: 0 0 18px rgba(245, 158, 11, 0.9); }
     }
 
-    /* Regular Typing Lessons Display Style - White Background & Black Text */
     .terminal-display {
       background: #ffffff;
       color: #000000;
@@ -330,7 +352,7 @@
       display: none;
     }
 
-    /* Level-Up Frame Container inside Mission Console */
+    /* Embedded Level-Up Frame */
     .levelup-console-area {
       background: #0f172a;
       border: 2px solid var(--neon-amber);
@@ -346,7 +368,25 @@
       font-family: var(--font-header);
       color: var(--neon-amber);
       font-size: 1.5rem;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
+    }
+
+    .levelup-top-text {
+      color: #f1f5f9;
+      font-size: 1.05rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .levelup-subtitle-text {
+      font-family: var(--font-header);
+      color: var(--neon-amber);
+      font-size: 1.15rem;
+      font-weight: bold;
+      margin: 12px 0;
+      text-align: center;
+      letter-spacing: 1px;
     }
 
     .keyboard-wrapper { width: 100%; max-width: 820px; margin: 0 auto; padding: 12px; background: #030712; border-radius: 14px; border: 1px solid #1e293b; display: none; }
@@ -364,6 +404,7 @@
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(3, 7, 18, 0.92); display: flex; justify-content: center; align-items: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     .modal-card { background: #0f172a; border: 2px solid var(--class-theme-color); border-radius: 20px; padding: 30px; max-width: 520px; width: 92%; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+    .modal-card.video-card { max-width: 760px; border-color: #38bdf8; }
     .modal-title { font-family: var(--font-header); color: var(--class-theme-color); font-size: 1.5rem; margin-bottom: 10px; }
     
     .stars-container { font-size: 2.5rem; margin: 15px 0; display: flex; justify-content: center; gap: 6px; }
@@ -381,7 +422,6 @@
     .modal-btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
     .btn-secondary { font-family: var(--font-tech); background: #334155; color: #f8fafc; padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
 
-    /* Sector Level-Up Specifics */
     .mission-stars-summary {
       display: flex;
       justify-content: space-around;
@@ -389,7 +429,7 @@
       border: 1px solid #1e293b;
       padding: 12px;
       border-radius: 12px;
-      margin: 15px 0;
+      margin: 10px 0;
       font-family: var(--font-tech);
       font-size: 0.95rem;
     }
@@ -397,15 +437,40 @@
     .mission-score-box { display: flex; flex-direction: column; gap: 4px; }
     .mission-score-val { color: var(--neon-amber); font-weight: bold; font-size: 1.1rem; }
 
-    .levelup-instructions {
-      background: rgba(245, 158, 11, 0.1);
-      border-left: 4px solid var(--neon-amber);
-      padding: 12px 16px;
+    /* Centered Left-Aligned Checklist Container */
+    .levelup-checklist-wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 15px 0;
+    }
+
+    .levelup-checklist {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 12px;
+      padding: 16px 20px;
       text-align: left;
-      font-size: 0.9rem;
-      line-height: 1.5;
+      max-width: 680px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.95rem;
+      line-height: 1.4;
       color: #f1f5f9;
-      margin-bottom: 15px;
+    }
+
+    .checklist-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 2px;
     }
 
     .levelup-typing-target {
@@ -415,13 +480,33 @@
       border-radius: 10px;
       padding: 15px;
       font-family: var(--font-tech);
-      font-size: 1.6rem;
-      letter-spacing: 2px;
+      font-size: 2.2rem;
+      letter-spacing: 4px;
       margin-bottom: 15px;
-      min-height: 70px;
+      min-height: 75px;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .video-frame-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      height: 0;
+      background: #000000;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+
+    .video-frame-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
     }
   </style>
 
@@ -446,6 +531,9 @@
       <span class="app-title">Mission 3: G & H Keys</span>
     </div>
     <div class="header-actions">
+      <button class="btn-video" onclick="openVideoModal()">
+        <span>📹 WATCH VIDEO</span>
+      </button>
       <button class="btn-levelup" id="btnLevelUp" onclick="handleLevelUpClick()">
         <span>🎖️ LEVEL-UP</span>
       </button>
@@ -480,7 +568,8 @@
   <!-- Embedded Level-Up Frame Container -->
   <div id="levelUpConsoleDisplay" class="levelup-console-area">
     <h2 class="levelup-console-title">🏅 CADET LEVEL-UP CHALLENGE</h2>
-    
+    <div class="levelup-top-text">Let's level up to the Bronze level and become a Cadet!</div>
+
     <div class="mission-stars-summary">
       <div class="mission-score-box">
         <span>Mission 1</span>
@@ -496,20 +585,40 @@
       </div>
     </div>
 
-    <div class="levelup-instructions">
-      You’re ready to level up to the Bronze level and become a Cadet!<br>
-      Grab a black cover and wait for Mrs. Miller to watch you.<br>
-      When she’s ready, type the letters with good technique!
+    <div class="levelup-subtitle-text">PREPARE TO LEVEL-UP</div>
+
+    <div class="levelup-checklist-wrapper">
+      <div class="levelup-checklist">
+        <div class="checklist-item">
+          <span class="checklist-icon">✅</span>
+          <span>How many stars do your lessons have? Redo lessons if needed.</span>
+        </div>
+        <div class="checklist-item">
+          <span class="checklist-icon">✅</span>
+          <span>Make sure you can type all the letters below with good technique. Practice.</span>
+        </div>
+        <div class="checklist-item">
+          <span class="checklist-icon">✅</span>
+          <span>Fill out the Home Row keyboard in your logbook. (white paper)</span>
+        </div>
+        <div class="checklist-item">
+          <span class="checklist-icon">✅</span>
+          <span>Grab a black cover and work on a project Mrs. Miller is ready to watch you.</span>
+        </div>
+        <div class="checklist-item">
+          <span class="checklist-icon">✅</span>
+          <span>When she's ready, type the letters with good technique.</span>
+        </div>
+      </div>
     </div>
 
     <div class="levelup-typing-target" id="levelUpNodesContainer"></div>
 
-    <div id="levelUpAccuracyDisplay" style="font-family: var(--font-tech); font-size: 1rem; color: #cbd5e1; margin-bottom: 10px;">
+    <div id="levelUpAccuracyDisplay" style="font-family: var(--font-tech); font-size: 1.1rem; color: #cbd5e1; margin-bottom: 10px;">
       Accuracy: <strong id="levelUpAccVal" style="color: var(--neon-green);">100%</strong>
     </div>
 
     <div class="modal-btn-group">
-      <button class="btn-secondary" onclick="closeLevelUpView()">Return to Lessons</button>
       <button class="btn-primary" style="background: var(--neon-amber);" onclick="startLevelUpChallenge()">Retry 🔄</button>
     </div>
   </div>
@@ -532,6 +641,20 @@
       </div>
       <div id="spacebarRow" class="kb-row">
         <div class="k k-space" id="key-space">SPACE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Video Modal -->
+  <div id="videoModal" class="modal-overlay">
+    <div class="modal-card video-card">
+      <h2 class="modal-title" style="color: #38bdf8;">📹 LEVEL-UP BRIEFING VIDEO</h2>
+      <div class="video-frame-container">
+        <!-- Replace src with your preferred video embed URL -->
+        <iframe id="videoPlayerFrame" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Level-Up Video" allowfullscreen></iframe>
+      </div>
+      <div class="modal-btn-group">
+        <button class="btn-secondary" onclick="closeVideoModal()">Close Video</button>
       </div>
     </div>
   </div>
@@ -702,6 +825,19 @@
 
   function goToHub() {
     window.location.href = "../index.html";
+  }
+
+  function openVideoModal() {
+    document.getElementById('videoModal').classList.add('active');
+  }
+
+  function closeVideoModal() {
+    document.getElementById('videoModal').classList.remove('active');
+    const iframe = document.getElementById('videoPlayerFrame');
+    if (iframe) {
+      const src = iframe.src;
+      iframe.src = src; // Pause video playback on close
+    }
   }
 
   function getHubKey(missionNum, field) {
@@ -924,7 +1060,6 @@
     document.getElementById('m2Stars').innerText = `${getStarsForMission(2)}⭐`;
     document.getElementById('m3Stars').innerText = `${lessonStars.reduce((a, b) => a + b, 0)}⭐`;
 
-    // Hide lesson views and reveal the level-up console frame view
     document.getElementById('standardTextDisplay').style.display = 'none';
     document.getElementById('raceCarGameDisplay').style.display = 'none';
     document.getElementById('mysteryPictureGameDisplay').style.display = 'none';
@@ -936,19 +1071,14 @@
     startLevelUpChallenge();
   }
 
-  function closeLevelUpView() {
-    loadLesson(currentLessonIdx);
-  }
-
+  /* Scrambles the requested "asdfghjkl;" letters without spaces */
   function startLevelUpChallenge() {
     isLevelUpActive = true;
-    const baseLetters = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';'];
-    let sequence = [];
-    for (let i = 0; i < 3; i++) {
-      sequence.push(...[...baseLetters].sort(() => Math.random() - 0.5));
-    }
     
-    levelUpTargetText = sequence.join(' ');
+    const baseChars = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';'];
+    const shuffled = [...baseChars].sort(() => Math.random() - 0.5);
+    
+    levelUpTargetText = shuffled.join('');
     levelUpIndex = 0;
     levelUpTotalTyped = 0;
     levelUpCorrectTyped = 0;
@@ -964,12 +1094,7 @@
     for (let i = 0; i < levelUpTargetText.length; i++) {
       const span = document.createElement('span');
       span.className = 'char-node';
-      if (levelUpTargetText[i] === ' ') {
-        span.classList.add('space-node');
-        span.innerHTML = '&nbsp;';
-      } else {
-        span.innerText = levelUpTargetText[i];
-      }
+      span.innerText = levelUpTargetText[i];
 
       if (i < levelUpIndex) {
         span.classList.add(levelUpErrors.includes(i) ? 'char-error' : 'char-done');
@@ -988,6 +1113,7 @@
 
   function handleKeyPress(e) {
     if (document.getElementById('passcodeModal').classList.contains('active')) return;
+    if (document.getElementById('videoModal').classList.contains('active')) return;
 
     if (isLevelUpActive) {
       if (e.key === 'Shift') return;
@@ -1132,6 +1258,7 @@
 
   function handleBackdropClick(e) {
     if (e.target.id === 'passcodeModal') closePasscodeModal();
+    if (e.target.id === 'videoModal') closeVideoModal();
   }
 
   function submitPasscodeAction() {
