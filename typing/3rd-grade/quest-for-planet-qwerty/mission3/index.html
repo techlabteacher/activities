@@ -48,7 +48,7 @@
       width: 100vw;
       height: 100vh;
       pointer-events: none;
-      z-index: 150;
+      z-index: 200;
     }
 
     .rocket-console { 
@@ -428,7 +428,7 @@
       width: 180px; padding: 8px; margin: 15px auto; border-radius: 8px; border: 2px solid var(--class-theme-color);
       background: #030712; color: #ffffff; outline: none; display: block;
     }
-    .modal-btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+    .modal-btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap; }
     .btn-secondary { font-family: var(--font-tech); background: #334155; color: #f8fafc; padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
 
     .mission-stars-summary {
@@ -522,6 +522,7 @@
       border: 0;
     }
 
+    /* Modal Button specifically styled to match class cover color initially, then solid green when watched */
     .modal-video-btn {
       display: inline-flex;
       align-items: center;
@@ -533,8 +534,8 @@
       font-family: var(--font-header);
       font-size: 0.9rem;
       font-weight: bold;
-      background: rgba(3, 7, 18, 0.8);
-      color: var(--class-theme-color);
+      background: var(--class-theme-color);
+      color: #020617;
       border: 2px solid var(--class-theme-color);
       cursor: pointer;
       transition: all 0.2s ease;
@@ -542,7 +543,7 @@
     }
 
     .modal-video-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
+      filter: brightness(1.15);
       transform: scale(1.03);
     }
 
@@ -551,9 +552,6 @@
       color: #000000 !important;
       border-color: var(--neon-green) !important;
       font-weight: 900;
-    }
-
-    .modal-video-btn.watched:hover {
       box-shadow: 0 0 10px var(--neon-green);
     }
   </style>
@@ -695,7 +693,7 @@
         <iframe id="videoPlayerFrame" src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1" title="Level-Up Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
       <div class="modal-btn-group">
-        <button class="btn-secondary" onclick="closeVideoModal()">Close Video</button>
+        <button class="btn-secondary" onclick="closeVideoModal()">Close Video & Mark Watched</button>
       </div>
     </div>
   </div>
@@ -725,7 +723,9 @@
       </div>
       <p style="margin-bottom: 15px; color: #cbd5e1; font-size: 1.1rem;" id="modalBodyText">Accuracy: <strong id="finalAccuracy">100%</strong></p>
       <div id="videoModalLinkContainer"></div>
-      <button id="nextLessonBtn" class="btn-primary" onclick="handleModalAction()">Next Lesson ➔</button>
+      <div class="modal-btn-group">
+        <button id="nextLessonBtn" class="btn-primary" onclick="handleModalAction()">Next Lesson ➔</button>
+      </div>
     </div>
   </div>
 </div>
@@ -887,6 +887,7 @@
   }
 
   function closeVideoModal() {
+    markVideoWatched();
     document.getElementById('videoModal').classList.remove('active');
     const iframe = document.getElementById('videoPlayerFrame');
     if (iframe) {
@@ -1392,9 +1393,9 @@
         bodyTextEl.innerHTML = `Congratulations! You've finished the lessons for Sector: Home Row! You're ready to level up to the Bronze level and become a Cadet. Watch the final video first and then head to the Level-up Zone.`;
         
         const isWatched = localStorage.getItem(getHubKey(3, 'video_watched')) === 'true';
-        videoLinkContainer.innerHTML = `<button id="modalVideoBtn" class="modal-video-btn ${isWatched ? 'watched' : ''}" onclick="openVideoModal()">📹 WATCH FINAL VIDEO</button>`;
+        videoLinkContainer.innerHTML = `<button id="modalVideoBtn" class="modal-video-btn ${isWatched ? 'watched' : ''}" onclick="openVideoModal()">📹 FINAL VIDEO</button>`;
         
-        nextBtn.innerText = "Level-Up Zone 🎖️";
+        nextBtn.innerText = "Head to Level-Up Zone 🎖️";
         launchFireworks();
       } else {
         titleEl.innerText = "LESSON ACCOMPLISHED";
