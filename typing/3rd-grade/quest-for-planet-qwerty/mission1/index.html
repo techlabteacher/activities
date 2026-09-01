@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -698,7 +699,7 @@
       lessonStars[4] = Math.max(lessonStars[4], 3);
     }
 
-    const totalStars = Math.min(3, Math.floor(lessonStars.reduce((a, b) => a + b, 0) / 6));
+    const totalStars = lessonStars.reduce((a, b) => a + b, 0);
     document.getElementById('totalStarsCount').innerText = totalStars;
   }
 
@@ -706,10 +707,9 @@
     localStorage.setItem(getHubKey('lesson_stars'), JSON.stringify(lessonStars));
     
     const totalAccumulated = lessonStars.reduce((a, b) => a + b, 0);
-    const avgStars = Math.min(3, Math.ceil(totalAccumulated / 6));
     
-    localStorage.setItem(getHubKey('stars'), avgStars);
-    document.getElementById('totalStarsCount').innerText = avgStars;
+    localStorage.setItem(getHubKey('stars'), totalAccumulated);
+    document.getElementById('totalStarsCount').innerText = totalAccumulated;
   }
 
   function checkAllLessonsCompleted() {
