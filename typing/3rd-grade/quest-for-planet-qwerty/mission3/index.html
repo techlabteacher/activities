@@ -206,7 +206,7 @@
       border-radius: 12px;
       margin-bottom: 18px;
       border: 1px solid rgba(255, 255, 255, 0.08);
-      gap: 12px;
+      gap: 10px;
     }
 
     .accuracy-meter-container { display: flex; align-items: center; gap: 12px; flex: 1; }
@@ -215,18 +215,25 @@
     .meter-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--neon-red), var(--neon-amber), var(--neon-green)); transition: width 0.3s; }
     .accuracy-text { font-family: var(--font-tech); font-weight: bold; font-size: 1rem; }
 
+    .telemetry-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .btn-control {
       font-family: var(--font-tech);
       background: #1e293b;
       color: var(--class-theme-color);
       border: 1px solid var(--class-theme-color);
       height: 36px;
-      padding: 0 12px;
+      padding: 0 10px;
       border-radius: 8px;
       font-size: 0.8rem;
       font-weight: bold;
       cursor: pointer;
       transition: all 0.2s;
+      white-space: nowrap;
     }
 
     .btn-control:hover { background: rgba(34, 197, 94, 0.2); }
@@ -236,6 +243,14 @@
     }
     .btn-control.btn-reset-teacher:hover {
       background: rgba(245, 158, 11, 0.2);
+    }
+
+    .btn-control.btn-bypass-teacher {
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+    .btn-control.btn-bypass-teacher:hover {
+      background: rgba(56, 189, 248, 0.2);
     }
 
     .btn-levelup {
@@ -424,8 +439,11 @@
       <div class="meter-track"><div id="accuracyMeterFill" class="meter-fill"></div></div>
       <span id="accuracyVal" class="accuracy-text" style="color: var(--neon-green);">100%</span>
     </div>
-    <button class="btn-control" onclick="toggleKeyboardVisibility()">KEYBOARD: <span id="kbToggleText">OFF</span></button>
-    <button class="btn-control btn-reset-teacher" onclick="openTeacherResetModal()">RESET LESSON 🔒</button>
+    <div class="telemetry-actions">
+      <button class="btn-control" onclick="toggleKeyboardVisibility()">KEYBOARD: <span id="kbToggleText">OFF</span></button>
+      <button class="btn-control btn-bypass-teacher" onclick="openTeacherBypassModal()">⏩ BYPASS 🔒</button>
+      <button class="btn-control btn-reset-teacher" onclick="openTeacherResetModal()">RESET 🔒</button>
+    </div>
   </div>
 
   <div id="standardTextDisplay" class="terminal-display"><div id="textNodesContainer"></div></div>
@@ -1050,6 +1068,10 @@
     openPasscodeModal('reset');
   }
 
+  function openTeacherBypassModal() {
+    openPasscodeModal('bypass');
+  }
+
   function openPasscodeModal(mode) {
     currentPasscodeMode = mode;
     document.getElementById('passcodeInput').value = '';
@@ -1061,6 +1083,9 @@
     if (mode === 'reset') {
       titleEl.innerText = "TEACHER RESET";
       subtextEl.innerText = `Enter passcode to reset ${lessons[currentLessonIdx].title}:`;
+    } else if (mode === 'bypass') {
+      titleEl.innerText = "TEACHER BYPASS";
+      subtextEl.innerText = `Enter passcode to instantly bypass ${lessons[currentLessonIdx].title}:`;
     } else {
       titleEl.innerText = "TEACHER VERIFICATION";
       subtextEl.innerText = "Enter passcode to enable on-screen keyboard:";
@@ -1090,6 +1115,8 @@
         saveProgress();
         renderLessonButtons();
         resetLessonStateOnly();
+      } else if (currentPasscodeMode === 'bypass') {
+        showCompletionModal(100);
       }
     } else {
       document.getElementById('passcodeError').innerText = 'Incorrect Passcode';
