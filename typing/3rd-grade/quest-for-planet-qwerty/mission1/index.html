@@ -269,33 +269,6 @@
       overflow: hidden;
     }
 
-    .rocket-counter-center {
-      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.85); padding: 6px 20px; border-radius: 20px;
-      font-family: var(--font-tech); border: 1px solid var(--class-theme-color); z-index: 10;
-    }
-
-    .target-rocket {
-      width: 50px; height: 80px;
-      position: absolute; bottom: 20px;
-      display: flex; flex-direction: column; align-items: center;
-      transition: left 0.3s ease-out;
-    }
-
-    .target-rocket.shake { animation: shake 0.2s ease-in-out; }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-8px); }
-      75% { transform: translateX(8px); }
-    }
-
-    .rocket-structure { position: relative; width: 36px; height: 60px; display: flex; align-items: center; justify-content: center; }
-    .rocket-nose { position: absolute; top: 0; width: 18px; height: 18px; background: #cbd5e1; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
-    .rocket-body-main { position: absolute; top: 14px; width: 22px; height: 40px; background: var(--neon-green); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-    .rocket-letter { font-family: var(--font-playful); font-size: 1.1rem; color: #1e293b; font-weight: bold; }
-    .rocket-thruster-flame { width: 10px; height: 14px; background: linear-gradient(180deg, var(--neon-amber), var(--neon-red)); border-radius: 0 0 6px 6px; }
-
     .video-display-area {
       background: #030712;
       border: 2px solid var(--class-theme-color);
@@ -345,7 +318,6 @@
   </style>
 
   <script src="https://www.youtube.com/iframe_api"></script>
-  <!-- External Rocket Game Logic -->
   <script src="rocket-game.js"></script>
 </head>
 <body onload="init()">
@@ -381,16 +353,7 @@
 
   <div id="standardTextDisplay" class="terminal-display"><div id="textNodesContainer"></div></div>
 
-  <div id="skyGameDisplay" class="sky-game-area" style="display: none;">
-    <div class="rocket-counter-center">Rockets Destroyed: <span id="launchedCount">0</span> / <span id="targetGoal">20</span></div>
-    <div id="targetRocket" class="target-rocket">
-      <div class="rocket-structure">
-        <div class="rocket-nose"></div>
-        <div class="rocket-body-main"><span id="rocketLetter" class="rocket-letter">F</span></div>
-      </div>
-      <div class="rocket-thruster-flame"></div>
-    </div>
-  </div>
+  <div id="skyGameDisplay" class="sky-game-area" style="display: none;"></div>
 
   <div id="videoDisplay" class="video-display-area">
     <div class="video-container">
@@ -455,7 +418,7 @@
     { title: "1: F & J Keys", text: "jjj fff jj ff fjj jjf fjf ffj jff jfj ffjfjjfjjffj", type: "typing" },
     { title: "2: D & K Keys", text: "kkk ddd kk dd kkd ddk dkd kdd dkk kdk dddkdkddkdkk", type: "typing" },
     { title: "3: FJDK Review", text: "ff jj fj fj dd kk kd kd jk jk df df jd jd fk fk kj fd jf", type: "typing" },
-    { title: "4: FJDK Game", text: "", type: "game" },
+    { title: "4: FJDK Game", text: "fjfdkslakjdghfjdklsa", type: "game" },
     { title: "5: Video", text: "", type: "video" },
     { title: "6: Shift Key", text: "jJ kK J K fF dD D F jfdk J F D K", type: "typing" }
   ];
@@ -615,17 +578,17 @@
     const savedClass = sessionStorage.getItem('qwerty_class_name') || 'UNASSIGNED';
     const savedComp = sessionStorage.getItem('qwerty_computer_num') || '--';
     
-    let activeColor = '#22c55e'; // Default to Green
+    let activeColor = '#22c55e';
     const formattedClassName = savedClass.trim().toLowerCase();
 
     if (formattedClassName.includes('blue group')) {
-      activeColor = '#38bdf8'; // Blue
+      activeColor = '#38bdf8';
     } else if (formattedClassName.includes('red group')) {
-      activeColor = '#ec4899'; // Pink
+      activeColor = '#ec4899';
     } else if (formattedClassName.includes('bottita')) {
-      activeColor = '#f97316'; // Orange
+      activeColor = '#f97316';
     } else if (formattedClassName.includes('raddatz')) {
-      activeColor = '#eab308'; // Yellow
+      activeColor = '#eab308';
     }
     
     document.documentElement.style.setProperty('--class-theme-color', activeColor);
@@ -654,9 +617,7 @@
 
   function saveProgress() {
     localStorage.setItem(getHubKey('lesson_stars'), JSON.stringify(lessonStars));
-    
     const totalAccumulated = lessonStars.reduce((a, b) => a + b, 0);
-    
     localStorage.setItem(getHubKey('stars'), totalAccumulated);
     document.getElementById('totalStarsCount').innerText = totalAccumulated;
   }
@@ -693,7 +654,7 @@
 
     if (lesson.type === "game") {
       document.getElementById('skyGameDisplay').style.display = 'block';
-      RocketGame.init((acc) => showCompletionModal(acc));
+      RocketGame.init(lesson.text || "fjfdkslakjdghfjdklsa", (acc) => showCompletionModal(acc));
     } else if (lesson.type === "video") {
       document.getElementById('videoDisplay').style.display = 'flex';
       setupVideoState();
@@ -730,7 +691,7 @@
     document.getElementById('completionModal').classList.remove('active');
     
     if (lessons[currentLessonIdx].type === 'game') {
-      RocketGame.init((acc) => showCompletionModal(acc));
+      RocketGame.init(lessons[currentLessonIdx].text || "fjfdkslakjdghfjdklsa", (acc) => showCompletionModal(acc));
     } else if (lessons[currentLessonIdx].type === 'video') {
       setupVideoState();
     } else {
@@ -784,6 +745,10 @@
 
   function handleKeyPress(e) {
     if (document.getElementById('passcodeModal').classList.contains('active')) return;
+    
+    // Ignore key processing for Mission 1 when in game mode (handled inside rocket-game.js)
+    if (lessons[currentLessonIdx].type === 'game') return;
+
     if (e.key === ' ') e.preventDefault();
     
     let keyId = e.key === ' ' ? 'key-space' : `key-${e.key.toLowerCase()}`;
@@ -792,12 +757,6 @@
 
     if (e.key === 'Enter' && document.getElementById('completionModal').classList.contains('active')) {
       handleModalAction(); return;
-    }
-
-    if (lessons[currentLessonIdx].type === 'game') {
-      const accuracy = RocketGame.handleInput(e.key);
-      if (accuracy !== undefined) updateAccuracyMeter(accuracy);
-      return;
     }
 
     if (lessons[currentLessonIdx].type === 'video' || e.key.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
