@@ -138,23 +138,38 @@
       flex: 1 1 0;
       min-width: 0;
       font-family: var(--font-tech);
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       font-weight: 800;
-      height: 38px;
-      padding: 0 2px;
+      padding: 6px 2px;
       border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.15);
       background: #0f172a;
       color: #94a3b8;
       cursor: pointer;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 3px;
+      gap: 2px;
       transition: all 0.2s ease;
       white-space: nowrap;
       overflow: hidden;
+    }
+
+    .btn-lesson-title {
       text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+      text-align: center;
+    }
+
+    .btn-lesson-stars {
+      font-size: 0.75rem;
+      line-height: 1;
+      color: #facc15;
+      text-shadow: 0 0 4px rgba(0,0,0,0.6);
+      min-height: 12px;
     }
 
     .btn-lesson:hover {
@@ -315,7 +330,7 @@
     .modal-card { background: #0f172a; border: 2px solid var(--class-theme-color); border-radius: 20px; padding: 30px; max-width: 460px; width: 90%; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
     .modal-title { font-family: var(--font-header); color: var(--class-theme-color); font-size: 1.5rem; margin-bottom: 10px; }
     
-    .stars-container { font-size: 3rem; margin: 15px 0; display: flex; justify-content: center; gap: 10px; }
+    .stars-container { font-size: 2.5rem; margin: 15px 0; display: flex; justify-content: center; gap: 6px; }
     .star { color: #334155; transition: color 0.3s ease, transform 0.3s ease; }
     .star.filled { color: var(--neon-amber); text-shadow: 0 0 12px var(--neon-amber); transform: scale(1.1); }
     
@@ -425,6 +440,8 @@
         <span class="star" id="star1">★</span>
         <span class="star" id="star2">★</span>
         <span class="star" id="star3">★</span>
+        <span class="star" id="star4">★</span>
+        <span class="star" id="star5">★</span>
       </div>
       <p style="margin-bottom: 15px; color: #cbd5e1; font-size: 1.1rem;" id="modalBodyText">Accuracy: <strong id="finalAccuracy">100%</strong></p>
       <button id="nextLessonBtn" class="btn-primary" onclick="handleModalAction()">Next Lesson ➔</button>
@@ -696,7 +713,7 @@
     }
 
     if (localStorage.getItem(getHubKey('video_completed')) === 'true') {
-      lessonStars[4] = Math.max(lessonStars[4], 3);
+      lessonStars[4] = Math.max(lessonStars[4], 5);
     }
 
     const totalStars = lessonStars.reduce((a, b) => a + b, 0);
@@ -721,8 +738,15 @@
     navBar.innerHTML = '';
     lessons.forEach((l, idx) => {
       const btn = document.createElement('button');
-      btn.className = `btn-lesson ${idx === currentLessonIdx ? 'active' : ''} ${lessonStars[idx] > 0 ? 'completed' : ''}`;
-      btn.innerHTML = `${lessonStars[idx] > 0 ? '✔ ' : ''}${l.title}`;
+      const isCompleted = lessonStars[idx] > 0;
+      btn.className = `btn-lesson ${idx === currentLessonIdx ? 'active' : ''} ${isCompleted ? 'completed' : ''}`;
+      
+      const starsDisplay = isCompleted ? '★'.repeat(lessonStars[idx]) : '';
+
+      btn.innerHTML = `
+        <span class="btn-lesson-title">${isCompleted ? '✔ ' : ''}${l.title}</span>
+        <span class="btn-lesson-stars">${starsDisplay}</span>
+      `;
       btn.onclick = () => loadLesson(idx);
       navBar.appendChild(btn);
     });
@@ -972,9 +996,11 @@
 
   function showCompletionModal(accuracy) {
     let starsEarned = 0;
-    if (accuracy >= 80 && accuracy <= 84) starsEarned = 1;
-    else if (accuracy >= 85 && accuracy <= 89) starsEarned = 2;
-    else if (accuracy >= 90) starsEarned = 3;
+    if (accuracy >= 80 && accuracy <= 83) starsEarned = 1;
+    else if (accuracy >= 84 && accuracy <= 87) starsEarned = 2;
+    else if (accuracy >= 88 && accuracy <= 91) starsEarned = 3;
+    else if (accuracy >= 92 && accuracy <= 95) starsEarned = 4;
+    else if (accuracy >= 96) starsEarned = 5;
 
     if (accuracy >= 80) {
       lessonStars[currentLessonIdx] = Math.max(lessonStars[currentLessonIdx], starsEarned);
@@ -983,13 +1009,12 @@
     }
 
     // Set lesson star display
-    const star1 = document.getElementById('star1');
-    const star2 = document.getElementById('star2');
-    const star3 = document.getElementById('star3');
-
-    if (star1) star1.className = `star ${starsEarned >= 1 ? 'filled' : ''}`;
-    if (star2) star2.className = `star ${starsEarned >= 2 ? 'filled' : ''}`;
-    if (star3) star3.className = `star ${starsEarned >= 3 ? 'filled' : ''}`;
+    for (let i = 1; i <= 5; i++) {
+      const starEl = document.getElementById(`star${i}`);
+      if (starEl) {
+        starEl.className = `star ${starsEarned >= i ? 'filled' : ''}`;
+      }
+    }
 
     const titleEl = document.getElementById('modalTitle');
     const bodyTextEl = document.getElementById('modalBodyText');
@@ -1000,7 +1025,7 @@
 
     if (isLastLesson) {
       titleEl.innerText = "🎉 MISSION 1 COMPLETE! 🎉";
-      bodyTextEl.innerHTML = `Lesson Accuracy: <strong>${accuracy}%</strong><br>Total Mission Stars Earned: <strong style="color:var(--neon-amber);">${totalAccumulatedStars} / 18</strong>`;
+      bodyTextEl.innerHTML = `Lesson Accuracy: <strong>${accuracy}%</strong><br>Total Mission Stars Earned: <strong style="color:var(--neon-amber);">${totalAccumulatedStars} / 30</strong>`;
       nextBtn.innerText = "Return to Hub 🚀";
       launchFireworks();
     } else {
