@@ -8,7 +8,7 @@
   
   <style>
     :root {
-      --class-theme-color: #38bdf8;
+      --class-theme-color: #22c55e;
       --neon-green: #22c55e;
       --neon-amber: #f59e0b;
       --neon-red: #ef4444;
@@ -79,7 +79,7 @@
 
     .btn-hub-nav {
       font-family: var(--font-tech);
-      background: rgba(56, 189, 248, 0.15);
+      background: rgba(34, 197, 94, 0.15);
       color: #ffffff;
       border: 1px solid var(--class-theme-color);
       padding: 4px 12px;
@@ -179,7 +179,7 @@
       border-color: var(--class-theme-color);
       color: var(--class-theme-color);
       box-shadow: 0 0 10px var(--class-theme-color);
-      background: rgba(56, 189, 248, 0.1);
+      background: rgba(34, 197, 94, 0.1);
     }
 
     .btn-lesson.completed {
@@ -221,7 +221,7 @@
       transition: background 0.2s;
     }
 
-    .btn-control:hover { background: rgba(56, 189, 248, 0.2); }
+    .btn-control:hover { background: rgba(34, 197, 94, 0.2); }
     .btn-control.btn-reset-teacher {
       border-color: var(--neon-amber);
       color: var(--neon-amber);
@@ -477,7 +477,6 @@
   let leftShiftDown = false;
   let rightShiftDown = false;
 
-  // Fireworks Animation System
   let fireworksActive = false;
   let particles = [];
 
@@ -614,10 +613,22 @@
 
   function loadClassProfile() {
     const savedClass = sessionStorage.getItem('qwerty_class_name') || 'UNASSIGNED';
-    const savedColor = sessionStorage.getItem('qwerty_class_color') || '#38bdf8';
     const savedComp = sessionStorage.getItem('qwerty_computer_num') || '--';
     
-    document.documentElement.style.setProperty('--class-theme-color', savedColor);
+    let activeColor = '#22c55e'; // Default to Green
+    const formattedClassName = savedClass.trim().toLowerCase();
+
+    if (formattedClassName.includes('blue group')) {
+      activeColor = '#38bdf8'; // Blue
+    } else if (formattedClassName.includes('red group')) {
+      activeColor = '#ec4899'; // Pink
+    } else if (formattedClassName.includes('bottita')) {
+      activeColor = '#f97316'; // Orange
+    } else if (formattedClassName.includes('raddatz')) {
+      activeColor = '#eab308'; // Yellow
+    }
+    
+    document.documentElement.style.setProperty('--class-theme-color', activeColor);
     document.getElementById('activeClassBadge').innerText = `CLASS: ${savedClass.toUpperCase()}`;
     document.getElementById('activeCompBadge').innerText = `COMPUTER: #${savedComp}`;
   }
