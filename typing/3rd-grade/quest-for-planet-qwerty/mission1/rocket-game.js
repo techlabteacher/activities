@@ -19,15 +19,19 @@ const RocketGame = {
   currentBottom: 5,
   riseSpeed: 0.18,
 
+  // Tightened horizontal positions to line up with home-row keyboard span
   keyPositions: {
-    'a': 12, 's': 20, 'd': 28, 'f': 36, 'g': 44,
-    'h': 52, 'j': 60, 'k': 68, 'l': 76, ';': 84
+    'a': 24, 's': 29, 'd': 35, 'f': 41, 'g': 47,
+    'h': 53, 'j': 59, 'k': 65, 'l': 71, ';': 76
   },
 
+  // Exact color mapping matching keyboard scheme
   keyColors: {
-    'a': '#ec4899', 's': '#a855f7', 'd': '#3b82f6',
-    'f': '#16a34a', 'g': '#16a34a', 'h': '#ca8a04',
-    'j': '#ca8a04', 'k': '#3b82f6', 'l': '#a855f7', ';': '#ec4899'
+    'a': '#ec4899', ';': '#ec4899', // Pink
+    's': '#f97316', 'l': '#f97316', // Orange
+    'd': '#eab308', 'k': '#eab308', // Yellow
+    'f': '#22c55e', 'g': '#22c55e', // Green
+    'j': '#3b82f6', 'h': '#3b82f6'  // Medium Blue
   },
 
   init(sequenceText, onComplete) {
@@ -109,15 +113,20 @@ const RocketGame = {
         }
         .rocket-badge {
           position: absolute;
-          top: 28px;
+          top: 22px;
           left: 50%;
           transform: translateX(-50%);
-          font-size: 1.3rem;
+          width: 28px;
+          height: 28px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.2rem;
           font-weight: 900;
           color: #020617;
-          text-shadow: 0 0 3px rgba(255,255,255,0.9);
           pointer-events: none;
           text-transform: lowercase !important;
+          line-height: 1;
         }
         .rocket-flame {
           position: absolute;
@@ -356,7 +365,7 @@ const RocketGame = {
     if (flame) flame.classList.remove('super-boost');
 
     const xPos = this.keyPositions[currentChar] || 50;
-    const themeColor = this.keyColors[currentChar] || '#16a34a';
+    const themeColor = this.keyColors[currentChar] || '#22c55e';
 
     rocket.style.display = 'block';
     rocket.style.left = `${xPos}%`;
