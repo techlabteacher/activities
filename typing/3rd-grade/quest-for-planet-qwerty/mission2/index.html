@@ -607,7 +607,6 @@
     if (lesson.type === "external_link") {
       const cls = sessionStorage.getItem('qwerty_class_name') || '';
       const comp = sessionStorage.getItem('qwerty_computer_num') || '';
-      // Direct navigation to racecar-game.html without difficulty levels
       window.location.href = `${lesson.url}?class=${encodeURIComponent(cls)}&comp=${encodeURIComponent(comp)}`;
       return;
     }

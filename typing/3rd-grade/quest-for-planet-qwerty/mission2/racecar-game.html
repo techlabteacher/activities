@@ -47,56 +47,6 @@
       gap: 8px;
     }
 
-    #racecar-game label {
-      font-size: 0.8rem;
-      color: #94a3b8;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-right: 4px;
-    }
-
-    #racecar-game .btn-level {
-      border: 2px solid transparent;
-      color: white;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-weight: bold;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      opacity: 0.65;
-    }
-
-    #racecar-game .btn-level:hover {
-      opacity: 0.9;
-      transform: translateY(-2px);
-    }
-
-    #racecar-game .btn-level.active {
-      opacity: 1;
-      box-shadow: 0 0 12px currentColor;
-      transform: scale(1.05);
-    }
-
-    #racecar-game .btn-easy {
-      background: linear-gradient(135deg, #10b981, #047857);
-      color: #a7f3d0;
-      border-color: #34d399;
-    }
-
-    #racecar-game .btn-medium {
-      background: linear-gradient(135deg, #f59e0b, #b45309);
-      color: #fde68a;
-      border-color: #fbbf24;
-    }
-
-    #racecar-game .btn-hard {
-      background: linear-gradient(135deg, #ef4444, #b91c1c);
-      color: #fca5a5;
-      border-color: #f87171;
-    }
-
     #racecar-game .btn-action {
       background: linear-gradient(135deg, #0284c7, #0369a1);
       color: white;
@@ -377,20 +327,6 @@
       position: relative;
     }
 
-    #racecar-game .finish-btn-group {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 15px;
-    }
-
-    #racecar-game .finish-btn-group .btn-level {
-      flex: 1;
-      padding: 12px 8px;
-      font-size: 0.95rem;
-      opacity: 1;
-    }
-
     #racecar-game .star-rating-display {
       font-size: 2.2rem;
       margin: 8px 0;
@@ -466,15 +402,11 @@
 
     <div class="control-panel">
       <div class="control-group">
-        <label>Level:</label>
-        <button class="btn-level btn-easy active" data-difficulty="easy">Easy</button>
-        <button class="btn-level btn-medium" data-difficulty="medium">Medium</button>
-        <button class="btn-level btn-hard" data-difficulty="hard">Hard</button>
+        <button class="btn-action btn-restart" id="restartBtn">Restart Race</button>
+        <button class="btn-action" id="openGarageBtn">Change Car</button>
       </div>
 
       <div class="control-group">
-        <button class="btn-action btn-restart" id="restartBtn">Restart Race</button>
-        <button class="btn-action" id="openGarageBtn">Change Car</button>
         <button class="btn-action btn-exit" id="returnConsoleBtn">⬅ Return to mission lessons</button>
       </div>
     </div>
@@ -663,17 +595,12 @@
         <div style="background:#0f172a; padding:15px; border-radius:12px; display:flex; justify-content:space-around; margin:15px 0; border:1px solid #334155;">
           <div><div id="finalAcc" style="font-size:1.5rem; font-weight:bold; color:#4ade80;">100%</div><div style="font-size:0.75rem; color:#94a3b8;">ACCURACY</div></div>
           <div><div id="finalWpm" style="font-size:1.5rem; font-weight:bold; color:#38bdf8;">0</div><div style="font-size:0.75rem; color:#94a3b8;">WPM</div></div>
-          <div><div id="finalStars" style="font-size:1.5rem; font-weight:bold; color:#facc15;">3/3</div><div style="font-size:0.75rem; color:#94a3b8;">STARS</div></div>
+          <div><div id="finalStars" style="font-size:1.5rem; font-weight:bold; color:#facc15;">5/5</div><div style="font-size:0.75rem; color:#94a3b8;">STARS</div></div>
         </div>
 
         <div style="margin-top: 15px;">
-          <p style="color:#94a3b8; font-size:0.85rem; font-weight:bold; margin-bottom:8px; text-transform:uppercase;">Try Again - Choose Level:</p>
-          <div class="finish-btn-group">
-            <button class="btn-level btn-easy finish-level-btn" data-difficulty="easy">Easy</button>
-            <button class="btn-level btn-medium finish-level-btn" data-difficulty="medium">Medium</button>
-            <button class="btn-level btn-hard finish-level-btn" data-difficulty="hard">Hard</button>
-          </div>
-          <button class="btn-action btn-exit modal-exit-btn" style="width:100%; margin-top:12px; padding:10px;">Return to mission lessons</button>
+          <button class="btn-action btn-restart" id="modalPlayAgainBtn" style="width:100%; padding:12px; font-size:1rem;">Play Again</button>
+          <button class="btn-action btn-exit modal-exit-btn" style="width:100%; margin-top:8px; padding:10px;">Return to mission lessons</button>
         </div>
       </div>
     </div>
@@ -691,7 +618,6 @@
       let countdownActive = false;
       let countdownTimer = null;
       let idleTimer = null;
-      let currentDifficulty = "easy";
       
       const START_X = 300;
       let playerVisualPos = START_X;
@@ -738,9 +664,11 @@
       let confettiParticles = [];
 
       function calculateStars(acc) {
-        if (acc >= 95) return 3;
-        if (acc >= 85) return 2;
-        if (acc >= 70) return 1;
+        if (acc >= 95) return 5;
+        if (acc >= 90) return 4;
+        if (acc >= 86) return 3;
+        if (acc >= 83) return 2;
+        if (acc >= 80) return 1;
         return 0;
       }
 
@@ -774,31 +702,6 @@
         }
       }
 
-      function setDifficulty(diff) {
-        currentDifficulty = diff;
-        container.querySelectorAll('.control-panel .btn-level').forEach(btn => {
-          if (btn.getAttribute('data-difficulty') === diff) {
-            btn.classList.add('active');
-          } else {
-            btn.classList.remove('active');
-          }
-        });
-      }
-
-      container.querySelectorAll('.control-panel .btn-level').forEach(btn => {
-        btn.addEventListener('click', () => {
-          setDifficulty(btn.getAttribute('data-difficulty'));
-          startCountdown();
-        });
-      });
-
-      container.querySelectorAll('.finish-level-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          setDifficulty(btn.getAttribute('data-difficulty'));
-          startCountdown();
-        });
-      });
-
       function resetIdleTimer() {
         if (idleTimer) clearTimeout(idleTimer);
         if (!isRacing) return;
@@ -812,7 +715,7 @@
 
       function renderStarsUI(starCount) {
         let html = '';
-        for (let i = 1; i <= 3; i++) {
+        for (let i = 1; i <= 5; i++) {
           if (i <= starCount) {
             html += '<span class="star-filled">★</span>';
           } else {
@@ -820,7 +723,7 @@
           }
         }
         starContainer.innerHTML = html;
-        container.querySelector('#finalStars').textContent = `${starCount}/3`;
+        container.querySelector('#finalStars').textContent = `${starCount}/5`;
       }
 
       function stopGameDueToInactivity() {
@@ -910,6 +813,7 @@
       });
 
       container.querySelector('#restartBtn').addEventListener('click', () => startCountdown());
+      container.querySelector('#modalPlayAgainBtn').addEventListener('click', () => startCountdown());
 
       container.querySelector('#startRaceBtn').addEventListener('click', () => {
         carModal.style.display = 'none';
@@ -1042,9 +946,7 @@
         if (!isRacing) return;
 
         raceTicks++;
-        
-        const elapsedMinutes = (Date.now() - startTime) / 60000;
-        const currentWpm = elapsedMinutes > 0 ? Math.round((currentIndex / 5) / elapsedMinutes) : 0;
+
         const currentAcc = keystrokes > 0 ? Math.max(0, Math.round(((keystrokes - errors) / keystrokes) * 100)) : 100;
 
         let basePlacement = 1;
@@ -1052,12 +954,6 @@
           basePlacement = 3;
         } else if (currentAcc < 90) {
           basePlacement = 2;
-        }
-
-        if (currentDifficulty === 'medium' && currentWpm < 6) {
-          basePlacement = Math.min(3, basePlacement + 1);
-        } else if (currentDifficulty === 'hard' && currentWpm < 12) {
-          basePlacement = Math.min(3, basePlacement + 1);
         }
 
         let targetPlayerPos = 380;
@@ -1139,13 +1035,13 @@
           rankVal.textContent = '2ND';
           winnerTitle.textContent = '2nd Place!';
           winnerTitle.style.color = '#e2e8f0';
-          winnerSubtitle.textContent = `Solid driving! Reach 95%+ accuracy to earn 3 Stars!`;
+          winnerSubtitle.textContent = `Solid driving! Reach 95%+ accuracy to earn 5 Stars!`;
         } else {
           rankString = '3RD';
           rankVal.textContent = '3RD';
           winnerTitle.textContent = '3rd Place!';
           winnerTitle.style.color = '#f97316';
-          winnerSubtitle.textContent = `Keep accuracy above 85% for more stars and speed!`;
+          winnerSubtitle.textContent = `Keep accuracy above 80% for more stars and speed!`;
         }
 
         renderStarsUI(stars);
