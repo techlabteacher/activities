@@ -1,162 +1,110 @@
-window.RaceCarGame = (function() {
-  let canvas, ctx;
-  let targetText = "";
-  let currentIndex = 0;
-  let totalTyped = 0;
-  let correctTyped = 0;
-  let onCompleteCallback = null;
-  let animationId = null;
+window.RaceCarGame = {
+  targetText: "",
+  currentIndex: 0,
+  totalTyped: 0,
+  correctTyped: 0,
+  errorIndices: [],
+  onComplete: null,
+  canvas: null,
+  ctx: null,
+  animFrame: null,
 
-  function init(text, onComplete) {
-    targetText = text || "";
-    currentIndex = 0;
-    totalTyped = 0;
-    correctTyped = 0;
-    onCompleteCallback = onComplete;
+  init(text, completeCallback) {
+    this.targetText = text;
+    this.onComplete = completeCallback;
+    this.canvas = document.getElementById('raceCarCanvas');
+    if (this.canvas) {
+      this.canvas.width = this.canvas.parentElement.clientWidth;
+      this.canvas.height = 260;
+      this.ctx = this.canvas.getContext('2d');
+    }
+    this.reset();
+  },
 
-    const container = document.getElementById('raceCarGameDisplay');
+  reset() {
+    this.currentIndex = 0;
+    this.totalTyped = 0;
+    this.correctTyped = 0;
+    this.errorIndices = [];
+    this.renderText();
+    this.startAnimation();
+  },
+
+  renderText() {
+    const container = document.getElementById('raceTextNodesContainer');
     if (!container) return;
-
-    container.innerHTML = '<canvas id="raceCarCanvas"></canvas>';
-    canvas = document.getElementById('raceCarCanvas');
-    ctx = canvas.getContext('2d');
-
-    resizeCanvas();
-    window.removeEventListener('resize', resizeCanvas);
-    window.addEventListener('resize', resizeCanvas);
-
-    if (animationId) cancelAnimationFrame(animationId);
-    loop();
-  }
-
-  function resizeCanvas() {
-    const container = document.getElementById('raceCarGameDisplay');
-    if (container && canvas) {
-      canvas.width = container.clientWidth;
-      canvas.height = container.clientHeight;
-    }
-  }
-
-  function reset() {
-    currentIndex = 0;
-    totalTyped = 0;
-    correctTyped = 0;
-  }
-
-  function handleInput(key) {
-    if (currentIndex >= targetText.length) return;
-
-    totalTyped++;
-    const expectedChar = targetText[currentIndex];
-
-    if (key === expectedChar) {
-      correctTyped++;
-      currentIndex++;
-    }
-
-    const accuracy = Math.round((correctTyped / totalTyped) * 100);
-
-    if (currentIndex >= targetText.length && typeof onCompleteCallback === 'function') {
-      setTimeout(() => onCompleteCallback(accuracy), 300);
-    }
-
-    return accuracy;
-  }
-
-  function loop() {
-    draw();
-    animationId = requestAnimationFrame(loop);
-  }
-
-  function draw() {
-    if (!ctx || !canvas) return;
-
-    const w = canvas.width;
-    const h = canvas.height;
-
-    // Background
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(0, 0, w, h);
-
-    // Racetrack background
-    const trackY = h * 0.4;
-    const trackHeight = h * 0.35;
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(0, trackY, w, trackHeight);
-
-    // Track Borders
-    ctx.strokeStyle = '#22c55e';
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(0, trackY);
-    ctx.lineTo(w, trackY);
-    ctx.moveTo(0, trackY + trackHeight);
-    ctx.lineTo(w, trackY + trackHeight);
-    ctx.stroke();
-
-    // Center Dashed Line
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([15, 15]);
-    ctx.beginPath();
-    ctx.moveTo(0, trackY + trackHeight / 2);
-    ctx.lineTo(w, trackY + trackHeight / 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Finish Line
-    const finishX = w - 60;
-    const squareSize = 10;
-    for (let r = 0; r < Math.floor(trackHeight / squareSize); r++) {
-      for (let c = 0; c < 2; c++) {
-        ctx.fillStyle = (r + c) % 2 === 0 ? '#ffffff' : '#000000';
-        ctx.fillRect(finishX + c * squareSize, trackY + r * squareSize, squareSize, squareSize);
+    container.innerHTML = '';
+    for (let i = 0; i < this.targetText.length; i++) {
+      const span = document.createElement('span');
+      span.className = 'char-node';
+      if (this.targetText[i] === ' ') {
+        span.classList.add('space-node');
+        span.innerHTML = '&nbsp;';
+      } else {
+        span.innerText = this.targetText[i];
       }
+      if (i < this.currentIndex) {
+        span.classList.add(this.errorIndices.includes(i) ? 'char-error' : 'char-done');
+      } else if (i === this.currentIndex) {
+        span.classList.add('char-current');
+      }
+      container.appendChild(span);
     }
+  },
 
-    // Car position calculation
-    const progress = targetText.length > 0 ? currentIndex / targetText.length : 0;
-    const startX = 40;
-    const maxCarX = finishX - 50;
-    const carX = startX + progress * (maxCarX - startX);
-    const carY = trackY + trackHeight / 2 - 12;
+  handleInput(key) {
+    if (this.currentIndex >= this.targetText.length) return;
+    const expectedChar = this.targetText[this.currentIndex];
+    this.totalTyped++;
+    if (key === expectedChar) {
+      this.correctTyped++;
+    } else {
+      this.errorIndices.push(this.currentIndex);
+    }
+    this.currentIndex++;
+    this.renderText();
 
-    // Draw Race Car Body
-    ctx.fillStyle = '#ef4444';
-    ctx.shadowColor = '#ef4444';
-    ctx.shadowBlur = 10;
-    ctx.fillRect(carX, carY, 40, 24);
-    ctx.shadowBlur = 0;
+    const acc = Math.round((this.correctTyped / this.totalTyped) * 100);
+    if (this.currentIndex >= this.targetText.length) {
+      cancelAnimationFrame(this.animFrame);
+      if (this.onComplete) this.onComplete(acc);
+    }
+    return acc;
+  },
 
-    // Cabin
-    ctx.fillStyle = '#38bdf8';
-    ctx.fillRect(carX + 10, carY + 4, 18, 16);
+  startAnimation() {
+    const draw = () => {
+      if (!this.ctx) return;
+      const w = this.canvas.width;
+      const h = this.canvas.height;
+      this.ctx.clearRect(0, 0, w, h);
 
-    // Wheels
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(carX + 4, carY - 4, 8, 6);
-    ctx.fillRect(carX + 28, carY - 4, 8, 6);
-    ctx.fillRect(carX + 4, carY + 22, 8, 6);
-    ctx.fillRect(carX + 28, carY + 22, 8, 6);
+      // Track Background
+      this.ctx.fillStyle = '#0f172a';
+      this.ctx.fillRect(0, 0, w, h);
 
-    // On-screen Prompts / Text HUD
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '20px "Share Tech Mono", monospace';
-    ctx.textAlign = 'center';
+      // Outer Track Border
+      this.ctx.strokeStyle = '#334155';
+      this.ctx.lineWidth = 4;
+      this.ctx.strokeRect(20, 20, w - 40, h - 40);
 
-    const charToShow = targetText[currentIndex] || 'FINISHED!';
-    ctx.fillText(`TYPE THIS KEY: [ ${charToShow === ' ' ? 'SPACE' : charToShow} ]`, w / 2, h * 0.2);
+      // Finish Line
+      this.ctx.fillStyle = '#22c55e';
+      this.ctx.fillRect(w - 60, 30, 10, h - 60);
 
-    // Remaining text preview
-    ctx.font = '16px "Share Tech Mono", monospace';
-    ctx.fillStyle = '#94a3b8';
-    const remaining = targetText.substring(currentIndex, currentIndex + 15);
-    ctx.fillText(`NEXT: ${remaining}`, w / 2, h * 0.88);
+      // Progress Calculation
+      const progress = this.targetText.length > 0 ? (this.currentIndex / this.targetText.length) : 0;
+      const carX = 40 + progress * (w - 120);
+      const carY = h / 2 - 15;
+
+      // Draw Race Car Body
+      this.ctx.fillStyle = '#ef4444';
+      this.ctx.fillRect(carX, carY, 40, 30);
+      this.ctx.fillStyle = '#38bdf8';
+      this.ctx.fillRect(carX + 25, carY + 5, 10, 20);
+
+      this.animFrame = requestAnimationFrame(draw);
+    };
+    draw();
   }
-
-  return {
-    init: init,
-    reset: reset,
-    handleInput: handleInput
-  };
-})();
+};
