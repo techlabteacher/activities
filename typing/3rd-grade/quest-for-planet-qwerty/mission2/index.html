@@ -230,9 +230,11 @@
       background: rgba(245, 158, 11, 0.2);
     }
 
+    /* Updated Terminal Display for White Background with Black Letters */
     .terminal-display {
-      background: #030712;
-      border: 2px solid #1e293b;
+      background: #ffffff;
+      color: #000000;
+      border: 3px solid var(--class-theme-color);
       border-radius: 14px;
       padding: 20px 15px;
       margin-bottom: 15px;
@@ -253,11 +255,20 @@
       row-gap: 8px;
     }
 
-    .char-node { display: inline-block; padding: 1px 2px; margin: 0; border-radius: 3px; min-width: 0.6em; text-align: center; }
+    .char-node { 
+      display: inline-block; 
+      padding: 1px 2px; 
+      margin: 0; 
+      border-radius: 3px; 
+      min-width: 0.6em; 
+      text-align: center;
+      color: #000000;
+    }
+    
     .char-node.space-node { min-width: 0.5em; }
-    .char-done { color: #475569; }
-    .char-current { background-color: var(--class-theme-color); color: #020617 !important; font-weight: bold; }
-    .char-error { background-color: var(--neon-red) !important; color: white !important; }
+    .char-done { color: #94a3b8; }
+    .char-current { background-color: var(--class-theme-color); color: #ffffff !important; font-weight: bold; }
+    .char-error { background-color: var(--neon-red) !important; color: #ffffff !important; }
 
     .keyboard-wrapper { width: 100%; max-width: 820px; margin: 0 auto; padding: 12px; background: #030712; border-radius: 14px; border: 1px solid #1e293b; display: none; }
     .homerow-keyboard { display: flex; flex-direction: column; gap: 8px; align-items: center; }
@@ -406,6 +417,15 @@
     const data = event.data;
     if (data && data.type === 'RACE_GAME_COMPLETE') {
       const accuracy = typeof data.accuracy === 'number' ? data.accuracy : 0;
+      const stars = typeof data.stars === 'number' ? data.stars : 0;
+      
+      // Update stars for Lesson 6 (Index 5)
+      if (accuracy >= 80) {
+        lessonStars[5] = Math.max(lessonStars[5], stars);
+        saveProgress();
+        renderLessonButtons();
+      }
+
       showCompletionModal(accuracy);
     }
   });
@@ -516,6 +536,13 @@
       const result = JSON.parse(lastResult);
       sessionStorage.removeItem("last_lesson_result");
       currentLessonIdx = result.lessonId - 1;
+      
+      const starsEarned = typeof result.stars === 'number' ? result.stars : 0;
+      if (result.accuracy >= 80) {
+        lessonStars[currentLessonIdx] = Math.max(lessonStars[currentLessonIdx], starsEarned);
+        saveProgress();
+      }
+      
       renderLessonButtons();
       showCompletionModal(result.accuracy);
     } else {
@@ -808,7 +835,7 @@
 
     lastAttemptPassed = (accuracy >= 80);
 
-    if (lastAttemptPassed) {
+    if (lastAttemptPassed && lessons[currentLessonIdx].type !== "external_link") {
       lessonStars[currentLessonIdx] = Math.max(lessonStars[currentLessonIdx], starsEarned);
       saveProgress();
       renderLessonButtons();
@@ -839,10 +866,11 @@
       starsContainer.style.display = 'flex';
       titleEl.style.color = "var(--class-theme-color)";
       
+      const currentStarsEarned = lessonStars[currentLessonIdx] || starsEarned;
       for (let i = 1; i <= 5; i++) {
         const starEl = document.getElementById(`star${i}`);
         if (starEl) {
-          starEl.className = `star ${starsEarned >= i ? 'filled' : ''}`;
+          starEl.className = `star ${currentStarsEarned >= i ? 'filled' : ''}`;
         }
       }
 
