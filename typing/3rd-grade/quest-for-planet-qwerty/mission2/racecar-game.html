@@ -687,7 +687,7 @@
       const modalExit = container.querySelector('.modal-exit-btn');
       if (modalExit) modalExit.addEventListener('click', sendReturnSignal);
 
-      // ADDED: Transmits race metrics and star calculation back to Mission 2 Console via postMessage
+      // Communicates performance metrics & earned stars to Mission 2
       function sendDataToMission2(accValue, wpmValue, rankValue, starsValue) {
         const payload = {
           type: 'RACE_GAME_COMPLETE',
@@ -758,7 +758,6 @@
         container.querySelector('#finalAcc').textContent = accuracyVal.textContent;
         container.querySelector('#finalWpm').textContent = wpmVal.textContent;
 
-        // Dispatch data on DNF/timeout
         sendDataToMission2(finalAccNum, finalWpmNum, 'DNF', stars);
 
         victoryModal.style.display = 'flex';
@@ -1060,7 +1059,6 @@
         container.querySelector('#finalAcc').textContent = accuracyVal.textContent;
         container.querySelector('#finalWpm').textContent = wpmVal.textContent;
 
-        // Dispatches final completion metrics to Mission 2
         sendDataToMission2(finalAccNum, finalWpmNum, rankString, stars);
 
         setTimeout(() => {
