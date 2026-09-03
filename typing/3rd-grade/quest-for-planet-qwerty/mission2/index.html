@@ -607,6 +607,7 @@
     if (lesson.type === "external_link") {
       const cls = sessionStorage.getItem('qwerty_class_name') || '';
       const comp = sessionStorage.getItem('qwerty_computer_num') || '';
+      // Direct navigation to racecar-game.html without difficulty levels
       window.location.href = `${lesson.url}?class=${encodeURIComponent(cls)}&comp=${encodeURIComponent(comp)}`;
       return;
     }
@@ -822,11 +823,18 @@
     const isLastLesson = (currentLessonIdx === lessons.length - 1);
     const totalAccumulatedStars = lessonStars.reduce((a, b) => a + b, 0);
 
+    const starGuideHtml = `
+      <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
+        <strong>Star Rating System:</strong><br>
+        5★: 95%+ | 4★: 90-94% | 3★: 86-89% | 2★: 83-85% | 1★: 80-82%
+      </div>
+    `;
+
     if (!lastAttemptPassed) {
       starsContainer.style.display = 'none';
       titleEl.innerText = "TRY AGAIN!";
       titleEl.style.color = "var(--neon-red)";
-      bodyTextEl.innerHTML = `Accuracy: <strong style="color: var(--neon-red);">${accuracy}%</strong><br><br>You need at least <strong>80%</strong> accuracy to earn stars and pass this lesson. Give it another try!`;
+      bodyTextEl.innerHTML = `Accuracy: <strong style="color: var(--neon-red);">${accuracy}%</strong><br><br>You need at least <strong>80%</strong> accuracy to earn stars and pass this lesson. Give it another try!${starGuideHtml}`;
       nextBtn.innerText = "Try Lesson Again 🔄";
     } else {
       starsContainer.style.display = 'flex';
@@ -841,12 +849,12 @@
 
       if (isLastLesson) {
         titleEl.innerText = "🎉 MISSION 2 COMPLETE! 🎉";
-        bodyTextEl.innerHTML = `Lesson Accuracy: <strong>${accuracy}%</strong><br>Total Mission Stars Earned: <strong style="color:var(--neon-amber);">${totalAccumulatedStars} / 30</strong>`;
+        bodyTextEl.innerHTML = `Lesson Accuracy: <strong>${accuracy}%</strong><br>Total Mission Stars Earned: <strong style="color:var(--neon-amber);">${totalAccumulatedStars} / 30</strong>${starGuideHtml}`;
         nextBtn.innerText = "Check your mission score 🚀";
         launchFireworks();
       } else {
         titleEl.innerText = "LESSON ACCOMPLISHED";
-        bodyTextEl.innerHTML = `Accuracy: <strong>${accuracy}%</strong>`;
+        bodyTextEl.innerHTML = `Accuracy: <strong>${accuracy}%</strong>${starGuideHtml}`;
         nextBtn.innerText = "Next Lesson ➔";
       }
     }
