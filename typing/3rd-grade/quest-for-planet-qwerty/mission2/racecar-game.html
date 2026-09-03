@@ -1,1071 +1,319 @@
-<div id="racecar-game" style="width:100%; max-width:940px; margin:0 auto; box-sizing:border-box;">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Racecar Game</title>
   <style>
-    #racecar-game * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-    
-    #racecar-game .game-card {
-      background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
-      color: #f8fafc;
-      border-radius: 20px;
-      overflow: hidden;
-      border: 1px solid #334155;
-      position: relative;
-      box-shadow: 0 25px 40px rgba(0,0,0,0.8);
-      outline: none;
+    :root {
+      --primary: #4f46e5;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --accent: #22c55e;
+      --accent-red: #ef4444;
+      --track: #334155;
     }
 
-    #racecar-game .game-header {
-      background: #090d16;
-      padding: 12px 22px;
-      text-align: center;
-      border-bottom: 1px solid #1e293b;
-    }
-
-    #racecar-game .game-title {
-      color: #38bdf8;
-      font-size: 1.4rem;
-      font-weight: 900;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+    body {
       margin: 0;
-      text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
-    }
-
-    #racecar-game .control-panel {
-      padding: 14px 22px;
-      background: #1e293b;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 2px solid #334155;
-    }
-
-    #racecar-game .control-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    #racecar-game .btn-action {
-      background: linear-gradient(135deg, #0284c7, #0369a1);
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 10px;
-      font-weight: bold;
-      font-size: 0.9rem;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
-      transition: all 0.2s ease;
-    }
-
-    #racecar-game .btn-action:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.5);
-    }
-
-    #racecar-game .btn-restart {
-      background: linear-gradient(135deg, #0ea5e9, #0369a1);
-      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
-    }
-
-    #racecar-game .btn-exit {
-      background: linear-gradient(135deg, #475569, #334155);
-      box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
-      border: 1px solid #64748b;
-    }
-
-    #racecar-game .track-wrapper {
-      position: relative;
-      height: 340px;
-      background: #0f172a;
-      overflow: hidden;
-    }
-
-    #racecar-game .speedway {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: #18181b;
-      border-top: 6px solid #f59e0b;
-      border-bottom: 6px solid #f59e0b;
-    }
-
-    #racecar-game .lane {
-      position: relative;
-      height: 33.33%;
-      border-bottom: 2px dashed rgba(255,255,255,0.25);
-    }
-    #racecar-game .lane:last-child { border-bottom: none; }
-
-    #racecar-game .bridge-sign {
-      position: absolute;
-      top: 0; bottom: 0; width: 40px; left: 120%;
-      background: linear-gradient(90deg, #334155, #0f172a, #334155);
-      border-left: 3px solid #fbbf24; border-right: 3px solid #fbbf24;
-      box-shadow: -10px 0 20px rgba(0,0,0,0.8), 10px 0 20px rgba(0,0,0,0.8);
-      z-index: 20; display: flex; align-items: center; justify-content: center;
-      pointer-events: none;
-    }
-
-    #racecar-game .bridge-text {
-      writing-mode: vertical-rl; color: #fbbf24;
-      font-weight: 900; font-size: 0.75rem;
-      letter-spacing: 4px; text-transform: uppercase;
-    }
-
-    #racecar-game .finish-line {
-      position: absolute; right: -100px; top: 0; bottom: 0; width: 32px;
-      background: repeating-linear-gradient(0deg, #fff, #fff 16px, #000 16px, #000 32px);
-      box-shadow: 0 0 20px rgba(255,255,255,0.8); z-index: 10;
-    }
-
-    #racecar-game .pothole {
-      position: absolute; width: 45px; height: 24px;
-      background: #090d16; border-radius: 50%; border: 2px solid #27272a;
-      pointer-events: none;
-    }
-
-    #racecar-game .rock {
-      position: absolute; width: 20px; height: 16px;
-      background: #52525b; border-radius: 4px; box-shadow: 2px 2px 0px #000;
-      pointer-events: none;
-    }
-
-    #racecar-game .car-container {
-      position: absolute; left: 300px; top: 12px; width: 140px; height: 75px;
-      will-change: left; z-index: 15;
-    }
-
-    #racecar-game .car-label {
-      position: absolute; top: -16px; left: 10px;
-      background: rgba(0,0,0,0.85); color: #fff;
-      padding: 1px 8px; border-radius: 4px;
-      font-size: 0.7rem; font-weight: bold; border: 1px solid #334155; z-index: 25;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-
-    #racecar-game .typing-display {
-      background: #030712; padding: 18px 20px; text-align: center;
-      font-family: 'Consolas', 'Courier New', monospace;
-      font-size: 1.8rem; font-weight: 800; white-space: normal;
-      word-break: break-word; user-select: none; min-height: 85px;
-      display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
-      border-top: 3px solid #1e293b; border-bottom: 3px solid #1e293b;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.8); line-height: 1.4;
-      transition: border-color 0.3s ease;
-      letter-spacing: -0.5px;
-    }
-
-    #racecar-game .game-card:focus .typing-display {
-      border-top-color: #38bdf8;
-      border-bottom-color: #38bdf8;
-    }
-
-    #racecar-game .char {
-      color: #475569; padding: 1px 2px; border-radius: 3px;
-      transition: all 0.15s ease; display: inline-block;
-      margin: 0; border: 1px solid transparent;
-    }
-
-    #racecar-game .char-space { width: 12px; }
-    #racecar-game .char.correct { color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.6); }
-    
-    #racecar-game .char.incorrect { 
-      color: #ffffff; 
-      background: #dc2626; 
-      border: 1px solid #ef4444;
-      border-radius: 3px; 
-      box-shadow: 0 0 8px rgba(220, 38, 38, 0.6);
-    }
-    
-    #racecar-game .char.active { 
-      color: #facc15; 
-      background: rgba(250, 204, 21, 0.2); 
-      border-bottom: 2px solid #facc15;
-      transform: scale(1.08); 
-    }
-
-    #racecar-game .dashboard-panel {
-      background: linear-gradient(180deg, #090d16 0%, #020617 100%);
       padding: 20px;
-      border-top: 2px solid #334155;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      box-shadow: inset 0 10px 20px rgba(0,0,0,0.9);
-    }
-
-    #racecar-game .gauge-cluster {
-      display: flex;
-      align-items: center;
-      gap: 30px;
-      width: 100%;
-      max-width: 780px;
-      justify-content: space-around;
-    }
-
-    #racecar-game .gauge {
-      position: relative;
-      width: 130px;
-      height: 130px;
-      background: radial-gradient(circle, #1e293b 0%, #090d16 70%);
-      border-radius: 50%;
-      border: 4px solid #334155;
-      box-shadow: 0 0 15px rgba(0,0,0,0.9), inset 0 0 10px rgba(0,0,0,0.8);
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      min-height: 100vh;
+      box-sizing: border-box;
     }
 
-    #racecar-game .gauge-svg {
-      position: absolute;
-      inset: 0;
+    .game-container {
       width: 100%;
-      height: 100%;
-      transform: rotate(-90deg);
+      max-width: 800px;
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
     }
 
-    #racecar-game .gauge-bg {
-      fill: none;
-      stroke: #1e293b;
-      stroke-width: 8;
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
     }
 
-    #racecar-game .gauge-value {
-      fill: none;
-      stroke: #38bdf8;
-      stroke-width: 8;
-      stroke-dasharray: 283;
-      stroke-dashoffset: 283;
-      stroke-linecap: round;
-      transition: stroke-dashoffset 0.3s ease;
+    .stats {
+      display: flex;
+      gap: 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
     }
 
-    #racecar-game .gauge-needle {
-      position: absolute;
-      width: 2px;
-      height: 48px;
-      background: #f43f5e;
-      bottom: 50%;
-      left: calc(50% - 1px);
-      transform-origin: bottom center;
-      transform: rotate(-120deg);
-      transition: transform 0.3s ease-out;
-      box-shadow: 0 0 6px #f43f5e;
-      z-index: 5;
+    .stat-box {
+      background: rgba(255,255,255,0.05);
+      padding: 8px 16px;
+      border-radius: 8px;
     }
 
-    #racecar-game .gauge-cap {
-      position: absolute;
-      width: 14px;
-      height: 14px;
-      background: #f8fafc;
-      border-radius: 50%;
-      border: 3px solid #0f172a;
-      z-index: 6;
-    }
-
-    #racecar-game .gauge-title {
-      position: absolute;
-      bottom: 18px;
-      font-size: 0.65rem;
-      font-weight: 900;
-      color: #64748b;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    #racecar-game .gauge-readout {
-      position: absolute;
-      top: 25px;
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: #38bdf8;
-      font-family: 'Consolas', monospace;
-    }
-
-    #racecar-game .digital-hud {
-      background: #000;
-      border: 2px solid #334155;
-      border-radius: 14px;
-      padding: 12px 24px;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
-      min-width: 180px;
-    }
-
-    #racecar-game .digital-rank {
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: #facc15;
-      text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
-      margin-bottom: 2px;
-    }
-
-    #racecar-game .digital-lbl {
-      font-size: 0.65rem;
-      color: #64748b;
-      font-weight: 800;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    #racecar-game .modal-overlay {
-      position: absolute; inset: 0;
-      background: rgba(2, 6, 23, 0.92);
-      display: flex; justify-content: center; align-items: center;
-      z-index: 50;
-    }
-
-    #racecar-game .modal {
-      background: #1e293b; padding: 30px; border-radius: 20px;
-      width: 90%; max-width: 580px; text-align: center;
-      border: 1px solid #475569; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+    .track-container {
       position: relative;
+      background: var(--track);
+      height: 120px;
+      border-radius: 12px;
+      margin: 20px 0;
+      overflow: hidden;
+      border: 2px dashed rgba(255,255,255,0.2);
     }
 
-    #racecar-game .star-rating-display {
-      font-size: 2.2rem;
-      margin: 8px 0;
-      color: #334155;
-      letter-spacing: 4px;
+    .finish-line {
+      position: absolute;
+      right: 20px;
+      top: 0;
+      bottom: 0;
+      width: 10px;
+      background: repeating-linear-gradient(
+        0deg,
+        #fff,
+        #fff 10px,
+        #000 10px,
+        #000 20px
+      );
     }
 
-    #racecar-game .star-rating-display .star-filled {
-      color: #facc15;
-      text-shadow: 0 0 12px rgba(250, 204, 21, 0.8);
+    .car {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2.5rem;
+      transition: left 0.2s ease-out;
     }
 
-    #racecar-game .countdown-overlay {
-      position: absolute; inset: 0;
-      background: rgba(2, 6, 23, 0.75);
-      display: none; justify-content: center; align-items: center;
-      z-index: 40;
+    .text-display {
+      font-size: 1.4rem;
+      line-height: 1.6;
+      background: rgba(0,0,0,0.2);
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      user-select: none;
+      word-break: break-word;
     }
 
-    #racecar-game .countdown-number {
-      font-size: 6rem; font-weight: 900; color: #38bdf8;
-      text-shadow: 0 0 30px rgba(56, 189, 248, 0.8);
-      animation: popIn 0.8s ease infinite;
+    .correct { color: #4ade80; }
+    .incorrect { color: #f87171; background: rgba(239, 68, 68, 0.2); }
+    .current { border-bottom: 2px solid var(--primary); }
+
+    .input-area {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.2rem;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid transparent;
+      border-radius: 8px;
+      color: white;
+      box-sizing: border-box;
+      outline: none;
     }
 
-    @keyframes popIn {
-      0% { transform: scale(0.5); opacity: 0; }
-      50% { transform: scale(1.2); opacity: 1; }
-      100% { transform: scale(1); opacity: 0; }
+    .input-area:focus {
+      border-color: var(--primary);
     }
 
-    #racecar-game .car-options {
-      display: flex; gap: 14px; justify-content: center; margin: 20px 0;
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
     }
 
-    #racecar-game .car-card {
-      flex: 1; background: #0f172a; border: 2px solid #334155;
-      border-radius: 12px; padding: 12px; cursor: pointer; transition: all 0.2s ease;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    .modal {
+      background: var(--card-bg);
+      padding: 32px;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
     }
 
-    #racecar-game .car-card:hover {
-      transform: translateY(-4px);
-      border-color: #64748b;
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 16px;
+      transition: opacity 0.2s;
     }
 
-    #racecar-game .car-card.selected {
-      border-color: #38bdf8; background: #1e293b;
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    .btn:hover {
+      opacity: 0.9;
     }
-
-    #racecar-game .car-preview-svg {
-      width: 100px; height: 50px; margin-bottom: 8px;
-    }
-
-    #racecar-game .winner-car-preview {
-      position: relative; width: 140px; height: 75px; margin: 15px auto; transform: scale(1.1);
-    }
-
-    #racecar-game #confettiCanvas {
-      position: absolute; inset: 0; pointer-events: none; z-index: 60;
-    }
-
-    .trophy-icon { width: 64px; height: 64px; margin: 0 auto 10px auto; display: block; }
   </style>
+</head>
+<body>
 
-  <canvas id="confettiCanvas"></canvas>
-
-  <div class="game-card" id="gameArea" tabindex="0">
-    <div class="game-header">
-      <h1 class="game-title">🏎️ SPEEDWAY TYPE RACER 🏎️</h1>
-    </div>
-
-    <div class="control-panel">
-      <div class="control-group">
-        <button class="btn-action btn-restart" id="restartBtn">Restart Race</button>
-        <button class="btn-action" id="openGarageBtn">Change Car</button>
-      </div>
-
-      <div class="control-group">
-        <button class="btn-action btn-exit" id="returnConsoleBtn">⬅ Return to mission lessons</button>
+  <div class="game-container">
+    <div class="header">
+      <h2>🏎️ Typing Racecar Game</h2>
+      <div class="stats">
+        <div class="stat-box">WPM: <span id="wpm">0</span></div>
+        <div class="stat-box">Accuracy: <span id="accuracy">100</span>%</div>
       </div>
     </div>
 
-    <div class="track-wrapper">
-      <div class="speedway" id="speedway">
-        <div class="finish-line" id="finishLine"></div>
-
-        <div class="bridge-sign" id="bridgeSign">
-          <div class="bridge-text">SPEEDWAY</div>
-        </div>
-        
-        <div class="pothole" style="top: 30px; left: 400px;"></div>
-        <div class="rock" style="top: 150px; left: 700px;"></div>
-        <div class="pothole" style="top: 250px; left: 200px;"></div>
-
-        <div class="lane" id="lane1">
-          <div class="car-container" id="ai1Car">
-            <div class="car-label">Phantom</div>
-            <svg viewBox="0 0 140 70" width="100%" height="100%">
-              <path d="M 12 18 L 8 12 L 20 12 L 18 18 Z" fill="#020617"/>
-              <path d="M 12 52 L 8 58 L 20 58 L 18 52 Z" fill="#020617"/>
-              <rect x="5" y="10" width="8" height="50" rx="3" fill="#020617"/>
-              <path d="M 15 22 C 15 14, 30 10, 55 10 L 95 12 C 120 14, 134 22, 138 35 C 134 48, 120 56, 95 58 L 55 60 C 30 60, 15 56, 15 48 Z" fill="#7e22ce"/>
-              <path d="M 22 31 L 128 31 L 128 39 L 22 39 Z" fill="#f3e8ff"/>
-              <path d="M 25 28 L 120 28 L 120 30 L 25 30 Z" fill="#ffffff" opacity="0.6"/>
-              <path d="M 58 18 C 72 18, 92 20, 98 35 C 92 50, 72 52, 58 52 Z" fill="#090d16"/>
-              <path d="M 62 21 C 72 21, 88 23, 92 35 C 88 47, 72 49, 62 49 Z" fill="#c084fc" opacity="0.75"/>
-              <rect x="80" y="4" width="22" height="7" rx="3" fill="#020617"/>
-              <rect x="80" y="59" width="22" height="7" rx="3" fill="#020617"/>
-              <rect x="25" y="5" width="20" height="7" rx="3" fill="#020617"/>
-              <rect x="25" y="58" width="20" height="7" rx="3" fill="#020617"/>
-              <path d="M 132 20 C 136 22, 138 26, 138 28 L 128 25 Z" fill="#fef08a"/>
-              <path d="M 132 50 C 136 48, 138 44, 138 42 L 128 45 Z" fill="#fef08a"/>
-            </svg>
-          </div>
-        </div>
-
-        <div class="lane" id="lane2">
-          <div class="car-container" id="ai2Car">
-            <div class="car-label">Blaze</div>
-            <svg viewBox="0 0 140 70" width="100%" height="100%">
-              <path d="M 12 18 L 8 12 L 20 12 L 18 18 Z" fill="#020617"/>
-              <path d="M 12 52 L 8 58 L 20 58 L 18 52 Z" fill="#020617"/>
-              <rect x="5" y="10" width="8" height="50" rx="3" fill="#020617"/>
-              <path d="M 15 22 C 15 14, 30 10, 55 10 L 95 12 C 120 14, 134 22, 138 35 C 134 48, 120 56, 95 58 L 55 60 C 30 60, 15 56, 15 48 Z" fill="#ea580c"/>
-              <path d="M 22 31 L 128 31 L 128 39 L 22 39 Z" fill="#ffedd5"/>
-              <path d="M 25 28 L 120 28 L 120 30 L 25 30 Z" fill="#ffffff" opacity="0.6"/>
-              <path d="M 58 18 C 72 18, 92 20, 98 35 C 92 50, 72 52, 58 52 Z" fill="#090d16"/>
-              <path d="M 62 21 C 72 21, 88 23, 92 35 C 88 47, 72 49, 62 49 Z" fill="#fb923c" opacity="0.75"/>
-              <rect x="80" y="4" width="22" height="7" rx="3" fill="#020617"/>
-              <rect x="80" y="59" width="22" height="7" rx="3" fill="#020617"/>
-              <rect x="25" y="5" width="20" height="7" rx="3" fill="#020617"/>
-              <rect x="25" y="58" width="20" height="7" rx="3" fill="#020617"/>
-              <path d="M 132 20 C 136 22, 138 26, 138 28 L 128 25 Z" fill="#fef08a"/>
-              <path d="M 132 50 C 136 48, 138 44, 138 42 L 128 45 Z" fill="#fef08a"/>
-            </svg>
-          </div>
-        </div>
-
-        <div class="lane" id="lane3">
-          <div class="car-container" id="playerCar">
-            <div class="car-label" id="playerCarLabel">Flare</div>
-            <svg viewBox="0 0 140 70" width="100%" height="100%">
-              <path d="M 12 18 L 8 12 L 20 12 L 18 18 Z" fill="#020617"/>
-              <path d="M 12 52 L 8 58 L 20 58 L 18 52 Z" fill="#020617"/>
-              <rect x="5" y="10" width="8" height="50" rx="3" fill="#020617"/>
-              <path d="M 15 22 C 15 14, 30 10, 55 10 L 95 12 C 120 14, 134 22, 138 35 C 134 48, 120 56, 95 58 L 55 60 C 30 60, 15 56, 15 48 Z" fill="#dc2626" id="playerBodyMain"/>
-              <path d="M 22 31 L 128 31 L 128 39 L 22 39 Z" fill="#ffffff" id="playerStripe"/>
-              <path d="M 25 28 L 120 28 L 120 30 L 25 30 Z" fill="#ffffff" opacity="0.6"/>
-              <path d="M 58 18 C 72 18, 92 20, 98 35 C 92 50, 72 52, 58 52 Z" fill="#090d16"/>
-              <path d="M 62 21 C 72 21, 88 23, 92 35 C 88 47, 72 49, 62 49 Z" fill="#38bdf8" opacity="0.75"/>
-              <rect x="80" y="4" width="22" height="7" rx="3" fill="#020617"/>
-              <rect x="80" y="59" width="22" height="7" rx="3" fill="#020617"/>
-              <rect x="25" y="5" width="20" height="7" rx="3" fill="#020617"/>
-              <rect x="25" y="58" width="20" height="7" rx="3" fill="#020617"/>
-              <path d="M 132 20 C 136 22, 138 26, 138 28 L 128 25 Z" fill="#fef08a"/>
-              <path d="M 132 50 C 136 48, 138 44, 138 42 L 128 45 Z" fill="#fef08a"/>
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      <div class="countdown-overlay" id="countdownOverlay">
-        <div class="countdown-number" id="countdownVal">3</div>
-      </div>
+    <div class="track-container">
+      <div class="finish-line"></div>
+      <div class="car" id="car">🏎️</div>
     </div>
 
-    <div class="typing-display" id="typingDisplay"></div>
+    <div class="text-display" id="textDisplay"></div>
 
-    <div class="dashboard-panel">
-      <div class="gauge-cluster">
-        <div class="gauge">
-          <svg class="gauge-svg" viewBox="0 0 100 100">
-            <circle class="gauge-bg" cx="50" cy="50" r="45"></circle>
-            <circle class="gauge-value" id="accGaugeCircle" cx="50" cy="50" r="45" style="stroke: #4ade80;"></circle>
-          </svg>
-          <div class="gauge-needle" id="accNeedle"></div>
-          <div class="gauge-cap"></div>
-          <div class="gauge-readout" id="accuracyVal" style="color: #4ade80;">100%</div>
-          <div class="gauge-title">ACCURACY</div>
-        </div>
+    <input type="text" class="input-area" id="inputArea" placeholder="Start typing here..." autocomplete="off" autofocus>
+  </div>
 
-        <div class="digital-hud">
-          <div class="digital-rank" id="rankVal">1ST</div>
-          <div class="digital-lbl">RACE POSITION</div>
-        </div>
-
-        <div class="gauge">
-          <svg class="gauge-svg" viewBox="0 0 100 100">
-            <circle class="gauge-bg" cx="50" cy="50" r="45"></circle>
-            <circle class="gauge-value" id="wpmGaugeCircle" cx="50" cy="50" r="45"></circle>
-          </svg>
-          <div class="gauge-needle" id="wpmNeedle"></div>
-          <div class="gauge-cap"></div>
-          <div class="gauge-readout" id="wpmVal">0</div>
-          <div class="gauge-title">SPEED (WPM)</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-overlay" id="carModal">
-      <div class="modal">
-        <h2 style="color:#fff; font-size:1.8rem; margin-bottom: 5px;">Choose Your Car</h2>
-        <p style="color:#94a3b8; font-size:0.85rem;">Select your racing supercar!</p>
-        <div class="car-options">
-          <div class="car-card selected" data-racename="Flare" data-main="#dc2626" data-stripe="#ffffff">
-            <svg class="car-preview-svg" viewBox="0 0 140 70">
-              <path d="M 12 18 L 8 12 L 20 12 L 18 18 Z" fill="#020617"/>
-              <path d="M 12 52 L 8 58 L 20 58 L 18 52 Z" fill="#020617"/>
-              <rect x="5" y="10" width="8" height="50" rx="3" fill="#020617"/>
-              <path d="M 15 22 C 15 14, 30 10, 55 10 L 95 12 C 120 14, 134 22, 138 35 C 134 48, 120 56, 95 58 L 55 60 C 30 60, 15 56, 15 48 Z" fill="#dc2626"/>
-              <path d="M 22 31 L 128 31 L 128 39 L 22 39 Z" fill="#ffffff"/>
-              <path d="M 58 18 C 72 18, 92 20, 98 35 C 92 50, 72 52, 58 52 Z" fill="#090d16"/>
-              <path d="M 62 21 C 72 21, 88 23, 92 35 C 88 47, 72 49, 62 49 Z" fill="#38bdf8" opacity="0.75"/>
-            </svg>
-            <strong style="font-size:0.8rem; color:#fff;">Red Flare</strong>
-          </div>
-
-          <div class="car-card" data-racename="Volt" data-main="#0284c7" data-stripe="#f0f9ff">
-            <svg class="car-preview-svg" viewBox="0 0 140 70">
-              <path d="M 12 18 L 8 12 L 20 12 L 18 18 Z" fill="#020617"/>
-              <path d="M 12 52 L 8 58 L 20 58 L 18 52 Z" fill="#020617"/>
-              <rect x="5" y="10" width="8" height="50" rx="3" fill="#020617"/>
-              <path d="M 15 22 C 15 14, 30 10, 55 10 L 95 12 C 120 14, 134 22, 138 35 C 134 48, 120 56, 95 58 L 55 60 C 30 60, 15 56, 15 48 Z" fill="#0284c7"/>
-              <path d="M 22 31 L 128 31 L 128 39 L 22 39 Z" fill="#f0f9ff"/>
-              <path d="M 58 18 C 72 18, 92 20, 98 35 C 92 50, 72 52, 58 52 Z" fill="#090d16"/>
-              <path d="M 62 21 C 72 21, 88 23, 92 35 C 88 47, 72 49, 62 49 Z" fill="#38bdf8" opacity="0.75"/>
-            </svg>
-            <strong style="font-size:0.8rem; color:#fff;">Blue Volt</strong>
-          </div>
-
-          <div class="car-card" data-racename="Nitro" data-main="#ca8a04" data-stripe="#fef08a">
-            <svg class="car-preview-svg" viewBox="0 0 140 70">
-              <path d="M 12 18 L 8 12 L 20 12 L 18 18 Z" fill="#020617"/>
-              <path d="M 12 52 L 8 58 L 20 58 L 18 52 Z" fill="#020617"/>
-              <rect x="5" y="10" width="8" height="50" rx="3" fill="#020617"/>
-              <path d="M 15 22 C 15 14, 30 10, 55 10 L 95 12 C 120 14, 134 22, 138 35 C 134 48, 120 56, 95 58 L 55 60 C 30 60, 15 56, 15 48 Z" fill="#ca8a04"/>
-              <path d="M 22 31 L 128 31 L 128 39 L 22 39 Z" fill="#fef08a"/>
-              <path d="M 58 18 C 72 18, 92 20, 98 35 C 92 50, 72 52, 58 52 Z" fill="#090d16"/>
-              <path d="M 62 21 C 72 21, 88 23, 92 35 C 88 47, 72 49, 62 49 Z" fill="#fde047" opacity="0.75"/>
-            </svg>
-            <strong style="font-size:0.8rem; color:#fff;">Gold Nitro</strong>
-          </div>
-        </div>
-        <button class="btn-action" id="startRaceBtn" style="width:100%; font-size:1.1rem; padding:12px;">Start Race</button>
-      </div>
-    </div>
-
-    <div class="modal-overlay" id="victoryModal" style="display: none;">
-      <div class="modal">
-        <div id="modalIconContainer">
-          <svg class="trophy-icon" id="trophyIcon" viewBox="0 0 24 24" fill="none">
-            <path d="M5 3H19V5C19 7.76142 16.7614 10 14 10H10C7.23858 10 5 7.76142 5 5V3Z" fill="#FACC15" stroke="#EAB308" stroke-width="1.5"/>
-            <path d="M12 10V17M8 21H16M8 17H16" stroke="#EAB308" stroke-width="2" stroke-linecap="round"/>
-            <path d="M5 4H3V6C3 7.65685 4.34315 9 6 9H17M19 4H21V6C21 7.65685 19.6569 9 18 9H17" stroke="#FACC15" stroke-width="2"/>
-          </svg>
-        </div>
-
-        <h1 id="winnerTitle" style="color:#facc15; font-size:2rem; margin-bottom: 5px;">1st Place!</h1>
-        <div class="star-rating-display" id="starContainer"></div>
-        <p id="winnerSubtitle" style="color:#f8fafc; font-size:1rem; margin-bottom: 10px;">You crossed the finish line!</p>
-
-        <div id="winnerCarContainer" class="winner-car-preview"></div>
-
-        <div style="background:#0f172a; padding:15px; border-radius:12px; display:flex; justify-content:space-around; margin:15px 0; border:1px solid #334155;">
-          <div><div id="finalAcc" style="font-size:1.5rem; font-weight:bold; color:#4ade80;">100%</div><div style="font-size:0.75rem; color:#94a3b8;">ACCURACY</div></div>
-          <div><div id="finalWpm" style="font-size:1.5rem; font-weight:bold; color:#38bdf8;">0</div><div style="font-size:0.75rem; color:#94a3b8;">WPM</div></div>
-          <div><div id="finalStars" style="font-size:1.5rem; font-weight:bold; color:#facc15;">5/5</div><div style="font-size:0.75rem; color:#94a3b8;">STARS</div></div>
-        </div>
-
-        <div style="margin-top: 15px;">
-          <button class="btn-action btn-restart" id="modalPlayAgainBtn" style="width:100%; padding:12px; font-size:1rem;">Play Again</button>
-          <button class="btn-action btn-exit modal-exit-btn" style="width:100%; margin-top:8px; padding:10px;">Return to mission lessons</button>
-        </div>
-      </div>
+  <div class="modal-overlay" id="victoryModal">
+    <div class="modal">
+      <h2>🏆 Race Finished!</h2>
+      <p id="modalStats">WPM: 0 | Accuracy: 100%</p>
+      <p id="modalStars">Stars Earned: ⭐⭐⭐⭐⭐</p>
+      <button class="btn" onclick="returnToMission()">Return to Mission Lessons</button>
     </div>
   </div>
 
   <script>
-    (function() {
-      const targetText = "Dad fall lass ask; sad jaff kad; jas salad";
+    const sampleText = "The quick brown fox jumps over the lazy dog to win the high speed race across the finish line.";
+    const textDisplay = document.getElementById('textDisplay');
+    const inputArea = document.getElementById('inputArea');
+    const car = document.getElementById('car');
+    const wpmDisplay = document.getElementById('wpm');
+    const accuracyDisplay = document.getElementById('accuracy');
+    const victoryModal = document.getElementById('victoryModal');
+    const modalStats = document.getElementById('modalStats');
+    const modalStars = document.getElementById('modalStars');
 
-      let currentIndex = 0;
-      let keystrokes = 0;
+    let startTime = null;
+    let totalErrors = 0;
+    let gameEnded = false;
+    let finalAccuracy = 100;
+    let finalWPM = 0;
+    let finalStars = 0;
+
+    function initGame() {
+      textDisplay.innerHTML = sampleText.split('').map((char, index) => {
+        return `<span class="${index === 0 ? 'current' : ''}">${char}</span>`;
+      }).join('');
+    }
+
+    inputArea.addEventListener('input', () => {
+      if (gameEnded) return;
+
+      const characters = textDisplay.querySelectorAll('span');
+      const typed = inputArea.value.split('');
+
+      if (!startTime && typed.length > 0) {
+        startTime = new Date();
+      }
+
       let errors = 0;
-      let startTime = null;
-      let isRacing = false;
-      let countdownActive = false;
-      let countdownTimer = null;
-      let idleTimer = null;
-      
-      const START_X = 300;
-      let playerVisualPos = START_X;
-      let ai1VisualPos = START_X;
-      let ai2VisualPos = START_X;
+      let correctChars = 0;
 
-      let raceTicks = 0;
-      
-      let bridgePos = 900;
-      let finishLinePos = -150;
-      let isCrossingFinish = false;
-      
-      let animFrame = null;
-      let selectedRaceName = "Flare";
-      let selectedMain = "#dc2626";
-      let selectedStripe = "#ffffff";
+      characters.forEach((charSpan, index) => {
+        const typedChar = typed[index];
 
-      const container = document.getElementById('racecar-game');
-      const gameArea = container.querySelector('#gameArea');
-      const typingDisplay = container.querySelector('#typingDisplay');
-      const carModal = container.querySelector('#carModal');
-      const victoryModal = container.querySelector('#victoryModal');
-      const countdownOverlay = container.querySelector('#countdownOverlay');
-      const countdownVal = container.querySelector('#countdownVal');
-      const playerCar = container.querySelector('#playerCar');
-      const playerCarLabel = container.querySelector('#playerCarLabel');
-      const ai1Car = container.querySelector('#ai1Car');
-      const ai2Car = container.querySelector('#ai2Car');
-      const finishLine = container.querySelector('#finishLine');
-      const bridgeSign = container.querySelector('#bridgeSign');
-      const accuracyVal = container.querySelector('#accuracyVal');
-      const wpmVal = container.querySelector('#wpmVal');
-      const rankVal = container.querySelector('#rankVal');
-      const winnerCarContainer = container.querySelector('#winnerCarContainer');
-      const starContainer = container.querySelector('#starContainer');
-
-      const wpmNeedle = container.querySelector('#wpmNeedle');
-      const accNeedle = container.querySelector('#accNeedle');
-      const wpmGaugeCircle = container.querySelector('#wpmGaugeCircle');
-      const accGaugeCircle = container.querySelector('#accGaugeCircle');
-
-      const confettiCanvas = document.getElementById('confettiCanvas');
-      const ctx = confettiCanvas.getContext('2d');
-      let confettiParticles = [];
-
-      function calculateStars(acc) {
-        if (acc >= 95) return 5;
-        if (acc >= 90) return 4;
-        if (acc >= 86) return 3;
-        if (acc >= 83) return 2;
-        if (acc >= 80) return 1;
-        return 0;
-      }
-
-      function sendReturnSignal() {
-        const payload = { type: 'RETURN_TO_CONSOLE' };
-        window.postMessage(payload, '*');
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage(payload, '*');
-        }
-        if (window.history.length > 1) {
-          window.history.back();
-        }
-      }
-
-      container.querySelector('#returnConsoleBtn').addEventListener('click', sendReturnSignal);
-      const modalExit = container.querySelector('.modal-exit-btn');
-      if (modalExit) modalExit.addEventListener('click', sendReturnSignal);
-
-      function sendDataToMission2(accValue, wpmValue, rankValue, starsValue) {
-        const payload = {
-          type: 'RACE_GAME_COMPLETE',
-          accuracy: accValue,
-          wpm: wpmValue,
-          rank: rankValue,
-          stars: starsValue
-        };
-        
-        window.postMessage(payload, '*');
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage(payload, '*');
-        }
-      }
-
-      function resetIdleTimer() {
-        if (idleTimer) clearTimeout(idleTimer);
-        if (!isRacing) return;
-        
-        idleTimer = setTimeout(() => {
-          if (isRacing) {
-            stopGameDueToInactivity();
-          }
-        }, 10000);
-      }
-
-      function renderStarsUI(starCount) {
-        let html = '';
-        for (let i = 1; i <= 5; i++) {
-          if (i <= starCount) {
-            html += '<span class="star-filled">★</span>';
-          } else {
-            html += '<span>☆</span>';
-          }
-        }
-        starContainer.innerHTML = html;
-        container.querySelector('#finalStars').textContent = `${starCount}/5`;
-      }
-
-      function stopGameDueToInactivity() {
-        isRacing = false;
-        cancelAnimationFrame(animFrame);
-        if (idleTimer) clearTimeout(idleTimer);
-
-        const winnerTitle = container.querySelector('#winnerTitle');
-        const winnerSubtitle = container.querySelector('#winnerSubtitle');
-
-        rankVal.textContent = '---';
-        winnerTitle.textContent = "Time's Up!";
-        winnerTitle.style.color = '#ef4444';
-        winnerSubtitle.textContent = "The race stopped due to 10 seconds of inactivity.";
-
-        winnerCarContainer.innerHTML = playerCar.outerHTML;
-        const modalCar = winnerCarContainer.querySelector('.car-container');
-        if (modalCar) {
-          modalCar.style.left = '0'; 
-          modalCar.style.top = '0';
-          const modalCarLabel = modalCar.querySelector('.car-label');
-          if (modalCarLabel) modalCarLabel.remove();
-        }
-
-        const finalAccNum = keystrokes > 0 ? Math.max(0, Math.round(((keystrokes - errors) / keystrokes) * 100)) : 100;
-        const finalWpmNum = parseInt(wpmVal.textContent, 10) || 0;
-        const stars = calculateStars(finalAccNum);
-
-        renderStarsUI(stars);
-
-        container.querySelector('#finalAcc').textContent = accuracyVal.textContent;
-        container.querySelector('#finalWpm').textContent = wpmVal.textContent;
-
-        sendDataToMission2(finalAccNum, finalWpmNum, 'DNF', stars);
-
-        victoryModal.style.display = 'flex';
-      }
-
-      function launchConfetti() {
-        confettiCanvas.width = container.clientWidth;
-        confettiCanvas.height = container.clientHeight;
-        confettiParticles = [];
-        for (let i = 0; i < 80; i++) {
-          confettiParticles.push({
-            x: confettiCanvas.width / 2,
-            y: confettiCanvas.height / 2,
-            vx: (Math.random() - 0.5) * 12,
-            vy: (Math.random() - 0.5) * 12 - 4,
-            size: Math.random() * 8 + 4,
-            color: ['#facc15', '#4ade80', '#38bdf8', '#f43f5e', '#a855f7'][Math.floor(Math.random() * 5)]
-          });
-        }
-        animateConfetti();
-      }
-
-      function animateConfetti() {
-        ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-        confettiParticles.forEach((p) => {
-          p.x += p.vx; p.y += p.vy; p.vy += 0.2;
-          ctx.fillStyle = p.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fill();
-        });
-        confettiParticles = confettiParticles.filter(p => p.y < confettiCanvas.height);
-        if (confettiParticles.length > 0) requestAnimationFrame(animateConfetti);
-      }
-
-      container.querySelectorAll('.car-card').forEach(card => {
-        card.addEventListener('click', () => {
-          container.querySelectorAll('.car-card').forEach(c => c.classList.remove('selected'));
-          card.classList.add('selected');
-          selectedRaceName = card.getAttribute('data-racename');
-          selectedMain = card.getAttribute('data-main');
-          selectedStripe = card.getAttribute('data-stripe');
-        });
-      });
-
-      container.querySelector('#openGarageBtn').addEventListener('click', () => {
-        isRacing = false;
-        cancelAnimationFrame(animFrame);
-        if (countdownTimer) clearInterval(countdownTimer);
-        if (idleTimer) clearTimeout(idleTimer);
-        countdownOverlay.style.display = 'none';
-        victoryModal.style.display = 'none';
-        carModal.style.display = 'flex';
-      });
-
-      container.querySelector('#restartBtn').addEventListener('click', () => startCountdown());
-      container.querySelector('#modalPlayAgainBtn').addEventListener('click', () => startCountdown());
-
-      container.querySelector('#startRaceBtn').addEventListener('click', () => {
-        carModal.style.display = 'none';
-        playerCarLabel.textContent = selectedRaceName;
-        container.querySelector('#playerBodyMain').setAttribute('fill', selectedMain);
-        container.querySelector('#playerStripe').setAttribute('fill', selectedStripe);
-        startCountdown();
-      });
-
-      function startCountdown() {
-        isRacing = false;
-        cancelAnimationFrame(animFrame);
-        if (countdownTimer) clearInterval(countdownTimer);
-        if (idleTimer) clearTimeout(idleTimer);
-        
-        countdownActive = true;
-        victoryModal.style.display = 'none';
-        countdownOverlay.style.display = 'flex';
-        let count = 3;
-        countdownVal.textContent = count;
-
-        resetPositions();
-
-        countdownTimer = setInterval(() => {
-          count--;
-          if (count > 0) {
-            countdownVal.textContent = count;
-          } else if (count === 0) {
-            countdownVal.textContent = "GO!";
-          } else {
-            clearInterval(countdownTimer);
-            countdownOverlay.style.display = 'none';
-            countdownActive = false;
-            isRacing = true;
-            startTime = Date.now();
-            gameArea.focus();
-            resetIdleTimer();
-            gameLoop();
-          }
-        }, 800);
-      }
-
-      function renderText() {
-        typingDisplay.innerHTML = "";
-        for (let i = 0; i < targetText.length; i++) {
-          const span = document.createElement('span');
-          span.className = 'char';
-          if (targetText[i] === ' ') {
-            span.classList.add('char-space');
-            span.innerHTML = '&nbsp;';
-          } else {
-            span.textContent = targetText[i];
-          }
-          if (i === currentIndex) span.classList.add('active');
-          typingDisplay.appendChild(span);
-        }
-      }
-
-      function updateDashboard(wpm, accuracy) {
-        accuracyVal.textContent = `${accuracy}%`;
-        wpmVal.textContent = wpm;
-
-        const clampedWPM = Math.min(120, Math.max(0, wpm));
-        const wpmDeg = -120 + (clampedWPM / 120) * 240;
-        wpmNeedle.style.transform = `rotate(${wpmDeg}deg)`;
-        
-        const wpmDash = 283 - (clampedWPM / 120) * 212;
-        wpmGaugeCircle.style.strokeDashoffset = wpmDash;
-
-        const clampedAcc = Math.min(100, Math.max(0, accuracy));
-        const accDeg = -120 + (clampedAcc / 100) * 240;
-        accNeedle.style.transform = `rotate(${accDeg}deg)`;
-        
-        const accDash = 283 - (clampedAcc / 100) * 212;
-        accGaugeCircle.style.strokeDashoffset = accDash;
-        accGaugeCircle.style.stroke = clampedAcc < 80 ? '#f87171' : clampedAcc < 90 ? '#facc15' : '#4ade80';
-        accuracyVal.style.color = clampedAcc < 80 ? '#f87171' : clampedAcc < 90 ? '#facc15' : '#4ade80';
-      }
-
-      function resetPositions() {
-        currentIndex = 0; keystrokes = 0; errors = 0; raceTicks = 0;
-        playerVisualPos = START_X; ai1VisualPos = START_X; ai2VisualPos = START_X;
-        bridgePos = 900; finishLinePos = -150;
-        isCrossingFinish = false;
-
-        renderText();
-        playerCar.style.left = `${START_X}px`;
-        ai1Car.style.left = `${START_X}px`;
-        ai2Car.style.left = `${START_X}px`;
-        finishLine.style.right = '-150px';
-
-        rankVal.textContent = '1ST';
-        updateDashboard(0, 100);
-      }
-
-      window.addEventListener('keydown', (e) => {
-        if (!isRacing || countdownActive) return;
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
-        if (e.key === "Shift" || e.key === "Control" || e.key === "Alt") return;
-
-        resetIdleTimer();
-
-        keystrokes++;
-        const spans = typingDisplay.children;
-        const expected = targetText[currentIndex];
-
-        if (e.key === expected) {
-          spans[currentIndex].className = 'char correct' + (expected === ' ' ? ' char-space' : '');
+        if (typedChar == null) {
+          charSpan.className = index === typed.length ? 'current' : '';
+        } else if (typedChar === charSpan.innerText) {
+          charSpan.className = 'correct';
+          correctChars++;
         } else {
+          charSpan.className = 'incorrect';
           errors++;
-          spans[currentIndex].className = 'char incorrect' + (expected === ' ' ? ' char-space' : '');
         }
-
-        currentIndex++;
-
-        if (currentIndex < targetText.length) {
-          spans[currentIndex].classList.add('active');
-        } else {
-          isCrossingFinish = true;
-        }
-
-        const acc = keystrokes > 0 ? Math.max(0, Math.round(((keystrokes - errors) / keystrokes) * 100)) : 100;
-        const elapsed = (Date.now() - startTime) / 60000;
-        const currentWpm = elapsed > 0 ? Math.round((currentIndex / 5) / elapsed) : 0;
-
-        updateDashboard(currentWpm, acc);
       });
 
-      function gameLoop() {
-        if (!isRacing) return;
+      // Update Car Position
+      const progress = (typed.length / sampleText.length) * 85; 
+      car.style.left = `calc(${Math.min(progress, 85)}% + 10px)`;
 
-        raceTicks++;
+      // Calculate Stats
+      if (startTime) {
+        const timeElapsed = (new Date() - startTime) / 1000 / 60; // minutes
+        const words = typed.length / 5;
+        const wpm = Math.round(words / timeElapsed) || 0;
+        const accuracy = Math.max(0, Math.round(((typed.length - errors) / (typed.length || 1)) * 100));
 
-        const currentAcc = keystrokes > 0 ? Math.max(0, Math.round(((keystrokes - errors) / keystrokes) * 100)) : 100;
-
-        let basePlacement = 1;
-        if (currentAcc < 80) {
-          basePlacement = 3;
-        } else if (currentAcc < 90) {
-          basePlacement = 2;
-        }
-
-        let targetPlayerPos = 380;
-        if (basePlacement === 3) {
-          targetPlayerPos = 70;
-        } else if (basePlacement === 2) {
-          targetPlayerPos = 220;
-        } else {
-          targetPlayerPos = 380;
-        }
-
-        const bot1Oscillation = Math.sin(raceTicks * 0.08) * 60 + Math.cos(raceTicks * 0.03) * 35;
-        const bot2Oscillation = Math.cos(raceTicks * 0.07) * 65 + Math.sin(raceTicks * 0.04) * 40;
-
-        let targetAi1Pos = 240 + bot1Oscillation;
-        let targetAi2Pos = 210 + bot2Oscillation;
-
-        if (basePlacement === 1) rankVal.textContent = '1ST';
-        else if (basePlacement === 2) rankVal.textContent = '2ND';
-        else rankVal.textContent = '3RD';
-
-        playerVisualPos += (targetPlayerPos - playerVisualPos) * 0.05;
-        ai1VisualPos += (targetAi1Pos - ai1VisualPos) * 0.06;
-        ai2VisualPos += (targetAi2Pos - ai2VisualPos) * 0.06;
-
-        playerCar.style.left = `${Math.max(20, Math.min(650, playerVisualPos))}px`;
-        ai1Car.style.left = `${Math.max(20, Math.min(650, ai1VisualPos))}px`;
-        ai2Car.style.left = `${Math.max(20, Math.min(650, ai2VisualPos))}px`;
-
-        bridgePos -= 3;
-        if (bridgePos < -100) bridgePos = 1200;
-        bridgeSign.style.left = `${bridgePos}px`;
-
-        const potholes = container.querySelectorAll('.pothole, .rock');
-        potholes.forEach((obs, idx) => {
-          let currentLeft = parseFloat(obs.dataset.left || (idx + 1) * 300);
-          currentLeft -= 3;
-          if (currentLeft < -60) currentLeft = 950;
-          obs.dataset.left = currentLeft;
-          obs.style.left = `${currentLeft}px`;
-        });
-
-        if (isCrossingFinish) {
-          finishLinePos += 12;
-          finishLine.style.right = `${finishLinePos}px`;
-
-          if (finishLinePos > (container.querySelector('.track-wrapper').clientWidth - playerVisualPos)) {
-            finishRace(basePlacement);
-            return;
-          }
-        }
-
-        animFrame = requestAnimationFrame(gameLoop);
-      }
-
-      function finishRace(finalPlacement) {
-        isRacing = false;
-        cancelAnimationFrame(animFrame);
-        if (idleTimer) clearTimeout(idleTimer);
-
-        const finalAccNum = keystrokes > 0 ? Math.max(0, Math.round(((keystrokes - errors) / keystrokes) * 100)) : 100;
-        const elapsedMinutes = (Date.now() - startTime) / 60000;
-        const finalWpmNum = elapsedMinutes > 0 ? Math.round((currentIndex / 5) / elapsedMinutes) : 0;
-        const stars = calculateStars(finalAccNum);
+        wpmDisplay.innerText = wpm;
+        accuracyDisplay.innerText = accuracy;
         
-        const winnerTitle = container.querySelector('#winnerTitle');
-        const winnerSubtitle = container.querySelector('#winnerSubtitle');
-
-        let rankString = '1ST';
-        if (finalPlacement === 1) {
-          rankString = '1ST';
-          rankVal.textContent = '1ST';
-          winnerTitle.textContent = '1st Place!';
-          winnerTitle.style.color = '#facc15';
-          winnerSubtitle.textContent = `Outstanding ${finalAccNum}% accuracy! You mastered the race!`;
-          launchConfetti();
-        } else if (finalPlacement === 2) {
-          rankString = '2ND';
-          rankVal.textContent = '2ND';
-          winnerTitle.textContent = '2nd Place!';
-          winnerTitle.style.color = '#e2e8f0';
-          winnerSubtitle.textContent = `Solid driving! Reach 95%+ accuracy to earn 5 Stars!`;
-        } else {
-          rankString = '3RD';
-          rankVal.textContent = '3RD';
-          winnerTitle.textContent = '3rd Place!';
-          winnerTitle.style.color = '#f97316';
-          winnerSubtitle.textContent = `Keep accuracy above 80% for more stars and speed!`;
-        }
-
-        renderStarsUI(stars);
-
-        winnerCarContainer.innerHTML = playerCar.outerHTML;
-        const modalCar = winnerCarContainer.querySelector('.car-container');
-        if (modalCar) {
-          modalCar.style.left = '0'; 
-          modalCar.style.top = '0';
-          const modalCarLabel = modalCar.querySelector('.car-label');
-          if (modalCarLabel) modalCarLabel.remove();
-        }
-
-        container.querySelector('#finalAcc').textContent = accuracyVal.textContent;
-        container.querySelector('#finalWpm').textContent = wpmVal.textContent;
-
-        sendDataToMission2(finalAccNum, finalWpmNum, rankString, stars);
-
-        setTimeout(() => {
-          victoryModal.style.display = 'flex';
-        }, 300);
+        finalWPM = wpm;
+        finalAccuracy = accuracy;
       }
 
-      renderText();
-    })();
+      // Check Completion
+      if (typed.length >= sampleText.length && errors === 0) {
+        endGame();
+      }
+    });
+
+    function calculateStars(acc) {
+      if (acc >= 95) return 5;
+      if (acc >= 90) return 4;
+      if (acc >= 86) return 3;
+      if (acc >= 83) return 2;
+      if (acc >= 80) return 1;
+      return 0;
+    }
+
+    function endGame() {
+      gameEnded = true;
+      inputArea.disabled = true;
+
+      finalStars = calculateStars(finalAccuracy);
+
+      // 1. Post message to parent frame (if running inside an iframe)
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'RACE_GAME_COMPLETE',
+          accuracy: finalAccuracy,
+          stars: finalStars,
+          wpm: finalWPM
+        }, '*');
+      }
+
+      // 2. Set result in sessionStorage (for redirection)
+      sessionStorage.setItem("last_lesson_result", JSON.stringify({
+        lessonId: 6,
+        accuracy: finalAccuracy,
+        stars: finalStars,
+        wpm: finalWPM
+      }));
+
+      // Display Modal
+      modalStats.innerText = `WPM: ${finalWPM} | Accuracy: ${finalAccuracy}%`;
+      modalStars.innerText = `Stars Earned: ${'⭐'.repeat(finalStars)}`;
+      victoryModal.style.display = 'flex';
+    }
+
+    function returnToMission() {
+      if (window.parent && window.parent !== window) {
+        // If framed, close or signal parent
+        window.parent.postMessage({ type: 'CLOSE_RACECAR_GAME' }, '*');
+      } else {
+        // Redirect back to Mission 2
+        window.location.href = "index.html";
+      }
+    }
+
+    initGame();
   </script>
-</div>
+</body>
+</html>
