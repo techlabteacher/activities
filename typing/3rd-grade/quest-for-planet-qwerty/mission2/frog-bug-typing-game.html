@@ -1,171 +1,346 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Frog Bug Typing Game</title>
-  <style>
-    body {
-      margin: 0;
-      background: #81c784; /* Pond grass green */
-      font-family: Arial, sans-serif;
-      overflow: hidden;
-      color: white;
-      user-select: none;
-    }
-    #game-bar {
-      display: flex;
-      justify-content: space-around;
-      padding: 15px;
-      background: rgba(0, 0, 0, 0.5);
-      font-size: 22px;
-      font-weight: bold;
-    }
-    #game-container {
-      position: relative;
-      width: 100vw;
-      height: calc(100vh - 140px);
-    }
-    .bug {
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      background: #e57373; /* Bug body color */
-      border: 3px solid #b71c1c;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      font-weight: bold;
-      color: #fff;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-    #frog {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80px;
-      height: 60px;
-      background: #388e3c;
-      border-radius: 40px 40px 10px 10px;
-      text-align: center;
-      line-height: 60px;
-      font-size: 35px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frog Tongue Typing</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #a3d9a5; /* Light pond green backup */
+            background-image: url('pond_background.png'); /* OPTIONAL: Add a background image */
+            background-size: cover;
+            font-family: 'Courier New', Courier, monospace; /* Typist font */
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #ui-bar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-sizing: border-box;
+            z-index: 100;
+            font-size: 20px;
+        }
+
+        #game-area {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* --- THE FROG --- */
+        #frog-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            z-index: 10;
+        }
+
+        #frog-body {
+            width: 100%;
+            height: 100%;
+            background-image: url('frog.png'); /* NEEDS IMAGE: Place holder */
+            background-color: green; /* Backup color */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 50%; /* Makes the green circle look like a body backup */
+        }
+
+        /* --- THE TONGUE --- */
+        #tongue {
+            position: absolute;
+            top: 50px; /* Adjust based on where frog's mouth is on your image */
+            left: 75px; /* Middle of the 150px container */
+            width: 4px;
+            height: 0px; /* Starts hidden */
+            background-color: #ff6b6b; /* Pinkish tongue color */
+            transform-origin: top center; /* Rotates from the frog's mouth */
+            border-radius: 2px;
+            z-index: 9;
+            transition: height 0.15s ease-out, transform 0.15s ease-out; /* The slap animation */
+        }
+
+        #tongue-tip {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 50%);
+            width: 12px;
+            height: 12px;
+            background-color: #ff6b6b;
+            border-radius: 50%;
+        }
+
+        /* --- THE FLIES --- */
+        .fly {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            transition: opacity 0.3s ease-out, transform 0.2s ease-out; /* Appearance/hit animation */
+            
+            /* Initial state for pop-in */
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .fly.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .fly-graphic {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: url('fly.png'); /* NEEDS IMAGE: Placeholder */
+            background-color: #333; /* Backup color */
+            background-size: contain;
+            background-repeat: no-repeat;
+            border-radius: 50%; /* Backup circle */
+        }
+
+        .fly-letter {
+            position: relative;
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+            z-index: 6;
+        }
+
+        /* Hit animation */
+        .fly.hit {
+            transform: scale(1.5);
+            opacity: 0;
+        }
+
+    </style>
 </head>
 <body>
 
-  <div id="game-bar">
-    <div>Score: <span id="score">0</span></div>
-    <div>Lives: <span id="lives">3</span></div>
-    <div>Queue Left: <span id="remaining">0</span></div>
-  </div>
+    <div id="ui-bar">
+        <div>Lesson: <span id="target-string">sjslklf...</span></div>
+        <div>Letters Caught: <span id="score">0</span></div>
+    </div>
 
-  <div id="game-container"></div>
-  <div id="frog">🐸</div>
+    <div id="game-area">
+        <!-- The Frog (Center Screen) -->
+        <div id="frog-container">
+            <div id="tongue">
+                <div id="tongue-tip"></div>
+            </div>
+            <div id="frog-body"></div>
+        </div>
+    </div>
 
-  <script>
-    const container = document.getElementById('game-container');
-    const scoreEl = document.getElementById('score');
-    const livesEl = document.getElementById('lives');
-    const remainingEl = document.getElementById('remaining');
+    <script>
+        const gameArea = document.getElementById('game-area');
+        const frogContainer = document.getElementById('frog-container');
+        const tongue = document.getElementById('tongue');
+        const scoreEl = document.getElementById('score');
+        const targetStringEl = document.getElementById('target-string');
 
-    // Custom letter sequence setup
-    const letterSequence = "sjslklfsldlsjdflskjfkjlsdsSlL".split('');
-    let sequenceIndex = 0;
+        // The user's requested string
+        const masterSequence = "sjslklfsldlsjdflskjfkjlsdsSlL".split('');
+        targetStringEl.innerText = masterSequence.join('');
 
-    let score = 0;
-    let lives = 3;
-    let bugs = [];
+        let currentSequenceIndex = 0;
+        let activeFlies = [];
+        let score = 0;
+        let isTongueSlapping = false;
 
-    remainingEl.innerText = letterSequence.length;
+        // --- Core Mechanics ---
 
-    function createBug() {
-      if (lives <= 0 || sequenceIndex >= letterSequence.length) return;
+        function spawnNextFly() {
+            // Stop if we hit the end of the string
+            if (currentSequenceIndex >= masterSequence.length) return;
 
-      const char = letterSequence[sequenceIndex++];
-      remainingEl.innerText = letterSequence.length - sequenceIndex;
+            const char = masterSequence[currentSequenceIndex];
+            currentSequenceIndex++;
 
-      const bugEl = document.createElement('div');
-      bugEl.className = 'bug';
-      bugEl.innerText = char;
+            const flyEl = document.createElement('div');
+            flyEl.className = 'fly';
+            flyEl.id = 'fly-' + Date.now(); // Unique ID
 
-      const startX = Math.random() * (window.innerWidth - 70);
-      let posY = 0; // Bugs crawl down from the top toward the frog
+            // Add graphic and letter
+            const graphic = document.createElement('div');
+            graphic.className = 'fly-graphic';
+            flyEl.appendChild(graphic);
 
-      bugEl.style.left = startX + 'px';
-      bugEl.style.top = posY + 'px';
-      container.appendChild(bugEl);
+            const letter = document.createElement('div');
+            letter.className = 'fly-letter';
+            letter.innerText = char;
+            flyEl.appendChild(letter);
 
-      bugs.push({
-        element: bugEl,
-        char: char,
-        x: startX,
-        y: posY,
-        speed: 1 + Math.random() * 1.2
-      });
-    }
+            // Positioning (Random, but not overlapping the center frog)
+            const padding = 100;
+            const frogZone = 250; // Area around center to avoid
+            const width = window.innerWidth;
+            const height = window.innerHeight;
 
-    function updateGame() {
-      const maxY = container.clientHeight - 50;
+            let randomX, randomY;
+            let tries = 0;
 
-      for (let i = bugs.length - 1; i >= 0; i--) {
-        const bug = bugs[i];
-        bug.y += bug.speed;
-        bug.element.style.top = bug.y + 'px';
+            do {
+                randomX = padding + Math.random() * (width - (padding * 2) - 60);
+                randomY = (padding + 50) + Math.random() * (height - (padding * 2) - 110);
+                tries++;
+                // Simple check: is it inside the central "frog zone"?
+            } while (
+                tries < 10 &&
+                randomX > (width/2 - frogZone/2) && randomX < (width/2 + frogZone/2) &&
+                randomY > (height/2 - frogZone/2) && randomY < (height/2 + frogZone/2)
+            );
 
-        // Bug reaches bottom (escapes frog)
-        if (bug.y > maxY) {
-          bug.element.remove();
-          bugs.splice(i, 1);
-          lives--;
-          livesEl.innerText = lives;
+            flyEl.style.left = randomX + 'px';
+            flyEl.style.top = randomY + 'px';
 
-          if (lives <= 0) {
-            alert('Game Over! Final Score: ' + score);
-            window.location.reload();
-          }
+            gameArea.appendChild(flyEl);
+
+            // Slight delay for the CSS pop-in animation
+            setTimeout(() => flyEl.classList.add('active'), 50);
+
+            const flyObj = {
+                element: flyEl,
+                char: char,
+                x: randomX + 30, // Center point
+                y: randomY + 30, // Center point
+                // Movement vector
+                velX: (Math.random() - 0.5) * 2, 
+                velY: (Math.random() - 0.5) * 2
+            };
+
+            activeFlies.push(flyObj);
         }
-      }
 
-      // Win Condition Check
-      if (bugs.length === 0 && sequenceIndex >= letterSequence.length && lives > 0) {
-        alert('You Win! You caught all the target bugs!');
-        window.location.reload();
-      }
-    }
+        function updateFlyPositions() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
 
-    // Keypress Handler (Case-sensitive)
-    window.addEventListener('keydown', (e) => {
-      if (e.key.length !== 1) return; // Ignore control keys
+            activeFlies.forEach(fly => {
+                // Update position data
+                fly.x += fly.velX;
+                fly.y += fly.velY;
 
-      const typedChar = e.key;
-      
-      // Find lowest matching bug on screen matching exact case
-      let lowestBugIndex = -1;
-      let maxY = -1;
+                // Wall bouncing
+                if (fly.x < 30 || fly.x > width - 30) fly.velX *= -1;
+                if (fly.y < 80 || fly.y > height - 30) fly.velY *= -1; // Top padding
 
-      bugs.forEach((bug, index) => {
-        if (bug.char === typedChar && bug.y > maxY) {
-          maxY = bug.y;
-          lowestBugIndex = index;
+                // Update DOM element
+                fly.element.style.left = (fly.x - 30) + 'px';
+                fly.element.style.top = (fly.y - 30) + 'px';
+            });
         }
-      });
 
-      if (lowestBugIndex !== -1) {
-        bugs[lowestBugIndex].element.remove();
-        bugs.splice(lowestBugIndex, 1);
-        score += 10;
-        scoreEl.innerText = score;
-      }
-    });
+        function performSlap(targetFly) {
+            if (isTongueSlapping) return; // Prevent overlapping slaps
+            isTongueSlapping = true;
 
-    // Game Loops
-    const spawnInterval = setInterval(createBug, 1200);
-    const gameInterval = setInterval(updateGame, 1000 / 60);
-  </script>
+            // Calculate Angle and Distance from Frog mouth to Fly center
+            // (Frog center is roughly window.innerWidth/2, window.innerHeight/2)
+            const frogMouthX = window.innerWidth / 2;
+            // 'top: 50px' inside 150px container means 25px above center
+            const frogMouthY = (window.innerHeight / 2) - 25; 
+
+            const deltaX = targetFly.x - frogMouthX;
+            const deltaY = targetFly.y - frogMouthY;
+
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            // Math.atan2 gives angle in radians, convert to degrees. 
+            // In CSS, 0deg is straight up, so we add 90.
+            const angleRad = Math.atan2(deltaY, deltaX);
+            const angleDeg = (angleRad * 180 / Math.PI) + 90;
+
+            // Set tongue parameters to "slap" outward
+            tongue.style.transform = `rotate(${angleDeg}deg)`;
+            tongue.style.height = distance + 'px';
+
+            // Phase 1: Slap out (Handled by CSS transition duration)
+
+            // Phase 2: Contact (0.15s later)
+            setTimeout(() => {
+                targetFly.element.classList.remove('active');
+                targetFly.element.classList.add('hit');
+                score++;
+                scoreEl.innerText = score;
+
+                // Clean up data
+                activeFlies = activeFlies.filter(f => f !== targetFly);
+            }, 150);
+
+            // Phase 3: Retract (0.2s later)
+            setTimeout(() => {
+                tongue.style.height = '0px';
+            }, 200);
+
+            // Phase 4: Ready for next slap (0.35s total)
+            setTimeout(() => {
+                // Remove element from DOM after fadeout
+                targetFly.element.remove();
+                isTongueSlapping = false;
+            }, 350);
+        }
+
+        // --- Input Handling ---
+
+        window.addEventListener('keydown', (e) => {
+            if (isTongueSlapping || e.key.length !== 1) return;
+
+            const typedKey = e.key; // Case sensitive
+
+            // Find the active fly matching the key that is closest to the frog
+            let closestFly = null;
+            let minDistance = Infinity;
+            const frogX = window.innerWidth / 2;
+            const frogY = window.innerHeight / 2;
+
+            activeFlies.forEach(fly => {
+                if (fly.char === typedKey) {
+                    // Simple Euclidean distance
+                    const dist = Math.sqrt(Math.pow(fly.x - frogX, 2) + Math.pow(fly.y - frogY, 2));
+                    if (dist < minDistance) {
+                        minDistance = dist;
+                        closestFly = fly;
+                    }
+                }
+            });
+
+            if (closestFly) {
+                performSlap(closestFly);
+            }
+        });
+
+        // --- Game Loops ---
+
+        // Slow spawn rate (every 2.5 seconds) = No pressure
+        setInterval(spawnNextFly, 2500);
+
+        // Smooth movement (60fps)
+        setInterval(updateFlyPositions, 1000 / 60);
+
+        // Resize handler (keeps frog central if window changes)
+        window.addEventListener('resize', () => {
+            // Frog container is CSS centered, no JS update needed for frog itself.
+        });
+
+    </script>
 </body>
 </html>
