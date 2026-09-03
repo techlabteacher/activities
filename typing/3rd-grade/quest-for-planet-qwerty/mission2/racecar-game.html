@@ -3,175 +3,207 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lesson 6: Racecar Speedway</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <title>Speedway Type Racer</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #030712;
-      color: #f8fafc;
-      font-family: 'Share Tech Mono', monospace;
-      height: 100vh;
+      font-family: Arial, sans-serif;
+      background-color: #1e1e2e;
+      color: #ffffff;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      overflow: hidden;
-    }
-    .header-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 30px;
-      background: #0f172a;
-      border-bottom: 2px solid #22c55e;
-    }
-    .btn-back {
-      background: #1e293b;
-      color: #22c55e;
-      border: 1px solid #22c55e;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-family: inherit;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-back:hover { background: #22c55e; color: #020617; }
-    canvas {
-      flex: 1;
-      width: 100%;
-      display: block;
-    }
-    .text-display {
-      height: 120px;
-      background: #090d16;
-      border-top: 2px solid #1e293b;
-      display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      padding: 0 20px;
+      min-height: 100vh;
+      margin: 0;
     }
-    .char-node { display: inline-block; padding: 2px 4px; border-radius: 4px; }
-    .char-done { color: #475569; }
-    .char-current { background: #22c55e; color: #020617; font-weight: bold; }
-    .char-error { background: #ef4444; color: #ffffff; }
+
+    #game-container {
+      width: 80%;
+      max-width: 800px;
+      background: #2b2b3d;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    #track-container {
+      position: relative;
+      width: 100%;
+      height: 80px;
+      background: #44445a;
+      border-bottom: 4px dashed #ffffff;
+      margin-bottom: 20px;
+      overflow: hidden;
+      border-radius: 5px;
+    }
+
+    #car {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      font-size: 40px;
+      transition: left 0.1s ease-out;
+    }
+
+    #target-display {
+      font-size: 24px;
+      font-family: monospace;
+      background: #181825;
+      padding: 15px;
+      border-radius: 5px;
+      letter-spacing: 2px;
+      word-wrap: break-word;
+    }
+
+    .correct {
+      color: #a6e3a1;
+    }
+
+    .incorrect {
+      color: #f38ba8;
+      text-decoration: underline;
+    }
+
+    .current {
+      background-color: #89b4fa;
+      color: #11111b;
+      border-radius: 3px;
+    }
+
+    #stats-display {
+      margin-top: 15px;
+      font-size: 18px;
+      color: #cdd6f4;
+    }
   </style>
 </head>
 <body>
 
-  <div class="header-bar">
-    <button class="btn-back" onclick="returnToConsole()">⬅ Exit to Console</button>
-    <h1 style="font-family: 'Orbitron', sans-serif; color: #22c55e;">LESSON 6: RACECAR SPEEDWAY</h1>
-    <div id="accuracyDisplay" style="font-size: 1.2rem;">Accuracy: 100%</div>
+  <div id="game-container">
+    <h2>Speedway Type Racer</h2>
+    <div id="track-container">
+      <div id="car">🏎️</div>
+    </div>
+    <div id="target-display"></div>
+    <div id="stats-display">Type the text above to start racing!</div>
   </div>
 
-  <canvas id="raceCanvas"></canvas>
-
-  <div class="text-display" id="textContainer"></div>
-
   <script>
-    const targetText = "Dad ads all fall Lass ask; sad jaff kad; jas salad";
-    let currentIndex = 0;
-    let keystrokes = 0;
-    let errors = 0;
-    let errorIndices = [];
+    (function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const studentClass = urlParams.get('class') || '';
+      const studentComp = urlParams.get('comp') || '';
 
-    const canvas = document.getElementById('raceCanvas');
-    const ctx = canvas.getContext('2d');
-    let carPos = 0;
+      const targetText = "fff jjj fjj ffj jfj jjf jff fjfj jfj ff jj";
+      let currentIndex = 0;
+      let totalTyped = 0;
+      let correctTyped = 0;
+      let startTime = null;
+      let idleTimer = null;
+      let isFinished = false;
 
-    function init() {
-      window.addEventListener('keydown', handleInput);
-      renderText();
-      requestAnimationFrame(draw);
-    }
+      const trackContainer = document.getElementById("track-container");
+      const targetDisplay = document.getElementById("target-display");
+      const statsDisplay = document.getElementById("stats-display");
+      const car = document.getElementById("car");
 
-    function returnToConsole() {
-      window.location.href = "mission2.html";
-    }
-
-    function handleInput(e) {
-      if (e.key.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
-      if (currentIndex >= targetText.length) return;
-
-      keystrokes++;
-      if (e.key === targetText[currentIndex]) {
-        currentIndex++;
-      } else {
-        errors++;
-        errorIndices.push(currentIndex);
-        currentIndex++;
-      }
-
-      const acc = Math.round(((keystrokes - errors) / keystrokes) * 100);
-      document.getElementById('accuracyDisplay').innerText = `Accuracy: ${acc}%`;
-      renderText();
-
-      if (currentIndex >= targetText.length) {
-        setTimeout(() => {
-          alert(`Lesson 6 Complete! Final Accuracy: ${acc}%`);
-          returnToConsole();
-        }, 300);
-      }
-    }
-
-    function renderText() {
-      const container = document.getElementById('textContainer');
-      container.innerHTML = '';
-      for (let i = 0; i < targetText.length; i++) {
-        const span = document.createElement('span');
-        span.className = 'char-node';
-        span.innerText = targetText[i] === ' ' ? '\u00A0' : targetText[i];
-
-        if (i < currentIndex) {
-          span.classList.add(errorIndices.includes(i) ? 'char-error' : 'char-done');
-        } else if (i === currentIndex) {
-          span.classList.add('char-current');
+      function renderText() {
+        targetDisplay.innerHTML = "";
+        for (let i = 0; i < targetText.length; i++) {
+          const span = document.createElement("span");
+          span.textContent = targetText[i] === " " ? "\u00A0" : targetText[i];
+          if (i < currentIndex) {
+            span.className = "correct";
+          } else if (i === currentIndex) {
+            span.className = "current";
+          }
+          targetDisplay.appendChild(span);
         }
-        container.appendChild(span);
       }
-    }
 
-    function draw() {
-      canvas.width = window.innerWidth;
-      canvas.height = canvas.clientHeight;
+      function updateCarPosition() {
+        const trackWidth = trackContainer.clientWidth - car.clientWidth - 40;
+        const progress = currentIndex / targetText.length;
+        car.style.left = `${progress * trackWidth}px`;
+      }
 
-      const w = canvas.width;
-      const h = canvas.height;
+      function resetIdleTimer() {
+        clearTimeout(idleTimer);
+        if (!isFinished) {
+          idleTimer = setTimeout(() => {
+            endGame(false, "Time's Up!");
+          }, 10000);
+        }
+      }
 
-      // Background
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(0, 0, w, h);
+      function endGame(completed, message) {
+        isFinished = true;
+        clearTimeout(idleTimer);
 
-      // Track
-      ctx.fillStyle = '#1e293b';
-      ctx.fillRect(0, h * 0.3, w, h * 0.4);
+        const accuracy = totalTyped > 0 ? Math.round((correctTyped / totalTyped) * 100) : 0;
+        
+        let stars = 1;
+        if (accuracy >= 95) stars = 3;
+        else if (accuracy >= 80) stars = 2;
 
-      // Dashed lane lines
-      ctx.strokeStyle = '#f59e0b';
-      ctx.setLineDash([20, 20]);
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(0, h * 0.5);
-      ctx.lineTo(w, h * 0.5);
-      ctx.stroke();
+        statsDisplay.textContent = message || `Finished! Accuracy: ${accuracy}%`;
 
-      // Smooth car position updates
-      const progress = currentIndex / targetText.length;
-      const targetX = 50 + progress * (w - 150);
-      carPos += (targetX - carPos) * 0.1;
+        if (studentClass && studentComp) {
+          const storageKey = `mission2_hub_${studentClass}_${studentComp}`;
+          let data = {};
+          try {
+            data = JSON.parse(localStorage.getItem(storageKey)) || {};
+          } catch(e) {}
+          
+          data.stars = data.stars || {};
+          data.stars[6] = Math.max(data.stars[6] || 0, stars);
+          data.completed = data.completed || {};
+          data.completed[6] = true;
+          
+          localStorage.setItem(storageKey, JSON.stringify(data));
+          
+          sessionStorage.setItem("last_lesson_result", JSON.stringify({
+            lessonId: 6,
+            stars: stars,
+            accuracy: accuracy
+          }));
+        }
 
-      // Draw Car
-      ctx.fillStyle = '#22c55e';
-      ctx.fillRect(carPos, h * 0.42, 80, 32);
-      ctx.fillStyle = '#38bdf8';
-      ctx.fillRect(carPos + 45, h * 0.44, 20, 18);
+        setTimeout(() => {
+          window.location.href = `index.html?class=${encodeURIComponent(studentClass)}&comp=${encodeURIComponent(studentComp)}`;
+        }, 1500);
+      }
 
-      requestAnimationFrame(draw);
-    }
+      window.addEventListener("keydown", (e) => {
+        if (isFinished) return;
 
-    init();
+        if (e.key.length === 1 || e.key === " ") {
+          if (!startTime) startTime = Date.now();
+          resetIdleTimer();
+
+          totalTyped++;
+          const expectedChar = targetText[currentIndex];
+
+          if (e.key === expectedChar) {
+            correctTyped++;
+            currentIndex++;
+            renderText();
+            updateCarPosition();
+
+            if (currentIndex >= targetText.length) {
+              endGame(true, "Race Complete!");
+            }
+          } else {
+            if (targetDisplay.children[currentIndex]) {
+              targetDisplay.children[currentIndex].classList.add("incorrect");
+            }
+          }
+        }
+      });
+
+      renderText();
+    })();
   </script>
 </body>
 </html>
