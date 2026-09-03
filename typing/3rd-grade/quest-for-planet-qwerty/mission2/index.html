@@ -230,7 +230,6 @@
       background: rgba(245, 158, 11, 0.2);
     }
 
-    /* Updated Terminal Display for White Background with Black Letters */
     .terminal-display {
       background: #ffffff;
       color: #000000;
@@ -419,7 +418,6 @@
       const accuracy = typeof data.accuracy === 'number' ? data.accuracy : 0;
       const stars = typeof data.stars === 'number' ? data.stars : 0;
       
-      // Update stars for Lesson 6 (Index 5)
       if (accuracy >= 80) {
         lessonStars[5] = Math.max(lessonStars[5], stars);
         saveProgress();
@@ -551,6 +549,7 @@
   }
 
   function goToHub() {
+    saveProgress();
     window.location.href = "../index.html";
   }
 
@@ -584,7 +583,7 @@
   }
 
   function loadProgress() {
-    const savedLessonStars = localStorage.getItem(getHubKey('lesson_stars'));
+    const savedLessonStars = localStorage.getItem(getHubKey('lesson_stars')) || localStorage.getItem('qwerty_mission2_lesson_stars');
     if (savedLessonStars) {
       try {
         const parsed = JSON.parse(savedLessonStars);
@@ -599,12 +598,25 @@
   }
 
   function saveProgress() {
-    localStorage.setItem(getHubKey('lesson_stars'), JSON.stringify(lessonStars));
-    
     const totalAccumulated = lessonStars.reduce((a, b) => a + b, 0);
-    
+
+    localStorage.setItem(getHubKey('lesson_stars'), JSON.stringify(lessonStars));
     localStorage.setItem(getHubKey('stars'), totalAccumulated);
+
+    localStorage.setItem('qwerty_mission2_stars', totalAccumulated);
+    localStorage.setItem('qwerty_mission2_lesson_stars', JSON.stringify(lessonStars));
+    sessionStorage.setItem('qwerty_mission2_stars', totalAccumulated);
+
     document.getElementById('totalStarsCount').innerText = totalAccumulated;
+
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'UPDATE_MISSION_STARS',
+        missionId: 2,
+        stars: totalAccumulated,
+        lessonStars: lessonStars
+      }, '*');
+    }
   }
 
   function renderLessonButtons() {
@@ -900,7 +912,7 @@
     if (currentLessonIdx < lessons.length - 1) {
       loadLesson(currentLessonIdx + 1);
     } else {
-      loadLesson(0);
+      goToHub();
     }
   }
 </script>
