@@ -3,231 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Typing Mission 2: Home Row Mastery</title>
+  <title>Lesson 6: Racecar Speedway</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #020617;
+      background: #030712;
       color: #f8fafc;
       font-family: 'Share Tech Mono', monospace;
-      min-height: 100vh;
+      height: 100vh;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
     }
     .header-bar {
-      background: #0f172a;
-      border-bottom: 2px solid #38bdf8;
-      padding: 20px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-    .header-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.8rem;
-      color: #38bdf8;
-    }
-    .lesson-nav {
-      display: flex;
-      gap: 10px;
-      background: #090d16;
       padding: 15px 30px;
-      border-bottom: 1px solid #1e293b;
-      overflow-x: auto;
+      background: #0f172a;
+      border-bottom: 2px solid #22c55e;
     }
-    .btn-lesson {
+    .btn-back {
       background: #1e293b;
-      color: #94a3b8;
-      border: 1px solid #334155;
-      padding: 10px 18px;
-      border-radius: 6px;
-      cursor: pointer;
+      color: #22c55e;
+      border: 1px solid #22c55e;
+      padding: 8px 16px;
+      border-radius: 8px;
       font-family: inherit;
       font-weight: bold;
+      cursor: pointer;
       transition: all 0.2s;
-      white-space: nowrap;
     }
-    .btn-lesson:hover { background: #334155; color: #f8fafc; }
-    .btn-lesson.active { background: #38bdf8; color: #020617; border-color: #38bdf8; }
-    .main-workspace {
+    .btn-back:hover { background: #22c55e; color: #020617; }
+    canvas {
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
+      width: 100%;
+      display: block;
     }
     .text-display {
-      background: #0f172a;
-      border: 2px solid #334155;
-      border-radius: 12px;
-      padding: 30px;
-      max-width: 900px;
-      width: 100%;
-      font-size: 2rem;
-      min-height: 120px;
+      height: 120px;
+      background: #090d16;
+      border-top: 2px solid #1e293b;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+      font-size: 2rem;
+      padding: 0 20px;
     }
     .char-node { display: inline-block; padding: 2px 4px; border-radius: 4px; }
     .char-done { color: #475569; }
-    .char-current { background: #38bdf8; color: #020617; font-weight: bold; }
+    .char-current { background: #22c55e; color: #020617; font-weight: bold; }
     .char-error { background: #ef4444; color: #ffffff; }
-    .keyboard {
-      margin-top: 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      background: #0f172a;
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid #1e293b;
-    }
-    .key-row { display: flex; justify-content: center; gap: 6px; }
-    .key {
-      width: 45px;
-      height: 45px;
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: #64748b;
-    }
-    .key.active-target { background: #38bdf8; color: #020617; box-shadow: 0 0 12px #38bdf8; }
-    .key.space { width: 250px; }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(2, 6, 23, 0.85);
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-content {
-      background: #0f172a;
-      border: 2px solid #38bdf8;
-      border-radius: 12px;
-      padding: 40px;
-      text-align: center;
-      max-width: 400px;
-      width: 90%;
-    }
-    .modal-btn {
-      margin-top: 20px;
-      background: #38bdf8;
-      color: #020617;
-      border: none;
-      padding: 10px 20px;
-      font-family: inherit;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
 
   <div class="header-bar">
-    <div class="header-title">TYPING CONSOLE // MISSION 2</div>
-    <div id="statsDisplay" style="font-size: 1.2rem;">Accuracy: 100%</div>
+    <button class="btn-back" onclick="returnToConsole()">⬅ Exit to Console</button>
+    <h1 style="font-family: 'Orbitron', sans-serif; color: #22c55e;">LESSON 6: RACECAR SPEEDWAY</h1>
+    <div id="accuracyDisplay" style="font-size: 1.2rem;">Accuracy: 100%</div>
   </div>
 
-  <div class="lesson-nav" id="lessonNav"></div>
+  <canvas id="raceCanvas"></canvas>
 
-  <div class="main-workspace">
-    <div class="text-display" id="standardTextDisplay"></div>
-
-    <div class="keyboard" id="keyboardDisplay">
-      <div class="key-row">
-        <div class="key" id="key-A">A</div>
-        <div class="key" id="key-S">S</div>
-        <div class="key" id="key-D">D</div>
-        <div class="key" id="key-F">F</div>
-        <div class="key" id="key-G">G</div>
-        <div class="key" id="key-H">H</div>
-        <div class="key" id="key-J">J</div>
-        <div class="key" id="key-K">K</div>
-        <div class="key" id="key-L">L</div>
-        <div class="key" id="key-;">;</div>
-      </div>
-      <div class="key-row">
-        <div class="key space" id="key- ">SPACE</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal" id="completionModal">
-    <div class="modal-content">
-      <h2 style="color: #38bdf8; margin-bottom: 10px;">LESSON COMPLETE</h2>
-      <p id="modalAccuracyText">Accuracy: 100%</p>
-      <button class="modal-btn" onclick="nextLesson()">Continue Mission</button>
-    </div>
-  </div>
+  <div class="text-display" id="textContainer"></div>
 
   <script>
-    const lessons = [
-      { id: 1, title: "Lesson 1: J & F", text: "j f j f ff jj fj jf j f jf fj", type: "standard" },
-      { id: 2, title: "Lesson 2: K & D", text: "k d k d kk dd kd dk k d kd dk", type: "standard" },
-      { id: 3, title: "Lesson 3: L & S", text: "l s l s ll ss ls sl l s ls sl", type: "standard" },
-      { id: 4, title: "Lesson 4: ; & A", text: "; a ; a ;; aa ;a a; ; a ;a a;", type: "standard" },
-      { id: 5, title: "Lesson 5: H & G", text: "h g h g hh gg hg gh h g hg gh", type: "standard" },
-      { id: 6, title: "Lesson 6: Racecar Speedway", text: "Dad ads all fall Lass ask; sad jaff kad; jas salad", type: "game-racecar" }
-    ];
-
-    let currentLessonIdx = 0;
-    let targetText = "";
+    const targetText = "Dad ads all fall Lass ask; sad jaff kad; jas salad";
     let currentIndex = 0;
     let keystrokes = 0;
     let errors = 0;
     let errorIndices = [];
 
+    const canvas = document.getElementById('raceCanvas');
+    const ctx = canvas.getContext('2d');
+    let carPos = 0;
+
     function init() {
-      renderLessonButtons();
-      loadLesson(0);
       window.addEventListener('keydown', handleInput);
-    }
-
-    function renderLessonButtons() {
-      const nav = document.getElementById('lessonNav');
-      nav.innerHTML = '';
-      lessons.forEach((l, idx) => {
-        const btn = document.createElement('button');
-        btn.className = `btn-lesson ${idx === currentLessonIdx ? 'active' : ''}`;
-        btn.innerText = l.title;
-        btn.onclick = () => loadLesson(idx);
-        nav.appendChild(btn);
-      });
-    }
-
-    function loadLesson(idx) {
-      currentLessonIdx = idx;
-      renderLessonButtons();
-      const lesson = lessons[currentLessonIdx];
-
-      // Lesson 6 (Racecar Game) redirects to full-screen page
-      if (lesson.type === "game-racecar") {
-        window.location.href = "racecar-game.html";
-        return;
-      }
-
-      targetText = lesson.text;
-      resetLessonStateOnly();
-    }
-
-    function resetLessonStateOnly() {
-      currentIndex = 0;
-      keystrokes = 0;
-      errors = 0;
-      errorIndices = [];
-      document.getElementById('statsDisplay').innerText = "Accuracy: 100%";
       renderText();
-      highlightKeyboardKey();
+      requestAnimationFrame(draw);
+    }
+
+    function returnToConsole() {
+      window.location.href = "mission2.html";
     }
 
     function handleInput(e) {
@@ -244,17 +105,19 @@
       }
 
       const acc = Math.round(((keystrokes - errors) / keystrokes) * 100);
-      document.getElementById('statsDisplay').innerText = `Accuracy: ${acc}%`;
+      document.getElementById('accuracyDisplay').innerText = `Accuracy: ${acc}%`;
       renderText();
-      highlightKeyboardKey();
 
       if (currentIndex >= targetText.length) {
-        showCompletionModal(acc);
+        setTimeout(() => {
+          alert(`Lesson 6 Complete! Final Accuracy: ${acc}%`);
+          returnToConsole();
+        }, 300);
       }
     }
 
     function renderText() {
-      const container = document.getElementById('standardTextDisplay');
+      const container = document.getElementById('textContainer');
       container.innerHTML = '';
       for (let i = 0; i < targetText.length; i++) {
         const span = document.createElement('span');
@@ -270,28 +133,260 @@
       }
     }
 
-    function highlightKeyboardKey() {
-      document.querySelectorAll('.key').forEach(k => k.classList.remove('active-target'));
-      if (currentIndex < targetText.length) {
-        const char = targetText[currentIndex].toUpperCase();
-        const el = document.getElementById(`key-${char}`);
-        if (el) el.classList.add('active-target');
+    function draw() {
+      canvas.width = window.innerWidth;
+      canvas.height = canvas.clientHeight;
+
+      const w = canvas.width;
+      const h = canvas.height;
+
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mission 2 Console</title>
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-color: #0f172a;
+      --border-color: #e2e8f0;
+      --star-color: #f59e0b;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .profile-bar {
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .lessons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .lesson-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .stars {
+      color: var(--star-color);
+      font-size: 1.25rem;
+      margin: 0.5rem 0;
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Mission 2 Console</h1>
+    <div id="user-info">Student Console</div>
+  </header>
+
+  <div class="container">
+    <div class="profile-bar">
+      <label>Class Profile: 
+        <input type="text" id="class-input" placeholder="e.g. Room101">
+      </label>
+      <label>Comp #: 
+        <input type="text" id="comp-input" placeholder="e.g. 12">
+      </label>
+      <button onclick="saveProfile()">Load Profile</button>
+    </div>
+
+    <div class="lessons-grid" id="lessons-grid"></div>
+  </div>
+
+  <!-- Completion Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h2>Lesson Complete!</h2>
+      <div id="modal-stars" class="stars"></div>
+      <p id="modal-accuracy"></p>
+      <button onclick="closeModal()">Continue</button>
+    </div>
+  </div>
+
+  <script>
+    const lessons = [
+      { id: 1, title: "Lesson 1: Basics", description: "Home row keys warm up.", passcode: "1234" },
+      { id: 2, title: "Lesson 2: Top Row", description: "Reaching up.", passcode: "1234" },
+      { id: 3, title: "Lesson 3: Bottom Row", description: "Reaching down.", passcode: "1234" },
+      { id: 4, title: "Lesson 4: Shift Keys", description: "Capitalization practice.", passcode: "1234" },
+      { id: 5, title: "Lesson 5: Numbers", description: "Top number row practice.", passcode: "1234" },
+      {
+        id: 6,
+        title: "Lesson 6: Speedway Type Racer",
+        description: "Race to the finish line by typing accurately!",
+        passcode: "1234",
+        type: "external_link",
+        url: "speedway-racer.html"
+      }
+    ];
+
+    function getHubKey() {
+      const cls = document.getElementById('class-input').value || 'default';
+      const comp = document.getElementById('comp-input').value || '0';
+      return `mission2_hub_${cls}_${comp}`;
+    }
+
+    function loadData() {
+      const key = getHubKey();
+      try {
+        return JSON.parse(localStorage.getItem(key)) || { stars: {}, completed: {} };
+      } catch(e) {
+        return { stars: {}, completed: {} };
       }
     }
 
-    function showCompletionModal(acc) {
-      document.getElementById('modalAccuracyText').innerText = `Final Accuracy: ${acc}%`;
-      document.getElementById('completionModal').style.display = 'flex';
+    function renderLessons() {
+      const grid = document.getElementById('lessons-grid');
+      grid.innerHTML = '';
+      const data = loadData();
+
+      lessons.forEach(lesson => {
+        const starsEarned = data.stars[lesson.id] || 0;
+        const starStr = '★'.repeat(starsEarned) + '☆'.repeat(3 - starsEarned);
+        
+        const card = document.createElement('div');
+        card.className = 'lesson-card';
+        card.innerHTML = `
+          <div>
+            <h3>${lesson.title}</h3>
+            <p>${lesson.description}</p>
+            <div class="stars">${starStr}</div>
+          </div>
+          <button onclick="startLesson(${lesson.id})">Start Mission</button>
+        `;
+        grid.appendChild(card);
+      });
     }
 
-    function nextLesson() {
-      document.getElementById('completionModal').style.display = 'none';
-      if (currentLessonIdx + 1 < lessons.length) {
-        loadLesson(currentLessonIdx + 1);
+    function startLesson(id) {
+      const lesson = lessons.find(l => l.id === id);
+      if (!lesson) return;
+
+      const cls = document.getElementById('class-input').value;
+      const comp = document.getElementById('comp-input').value;
+
+      if (lesson.type === "external_link") {
+        window.location.href = `${lesson.url}?class=${encodeURIComponent(cls)}&comp=${encodeURIComponent(comp)}`;
+      } else {
+        alert(`Starting ${lesson.title}`);
       }
     }
 
-    init();
+    function saveProfile() {
+      const cls = document.getElementById('class-input').value;
+      const comp = document.getElementById('comp-input').value;
+      sessionStorage.setItem('current_class', cls);
+      sessionStorage.setItem('current_comp', comp);
+      renderLessons();
+    }
+
+    function showCompletionModal(lessonId, stars, accuracy) {
+      document.getElementById('modal-stars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+      document.getElementById('modal-accuracy').textContent = `Accuracy: ${accuracy}%`;
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+      renderLessons();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Sync parameters from query string or session
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('class')) document.getElementById('class-input').value = urlParams.get('class');
+      else if (sessionStorage.getItem('current_class')) document.getElementById('class-input').value = sessionStorage.getItem('current_class');
+
+      if (urlParams.has('comp')) document.getElementById('comp-input').value = urlParams.get('comp');
+      else if (sessionStorage.getItem('current_comp')) document.getElementById('comp-input').value = sessionStorage.getItem('current_comp');
+
+      renderLessons();
+
+      // Check if arriving back from external race car game
+      const lastResult = sessionStorage.getItem("last_lesson_result");
+      if (lastResult) {
+        const result = JSON.parse(lastResult);
+        sessionStorage.removeItem("last_lesson_result");
+        showCompletionModal(result.lessonId, result.stars, result.accuracy);
+      }
+    });
   </script>
 </body>
 </html>
