@@ -289,11 +289,11 @@
       { id: 5, title: "Lesson 5: Numbers", description: "Top number row practice.", passcode: "1234" },
       {
         id: 6,
-        title: "Lesson 6: Speedway Type Racer",
+        title: "Lesson 6: Racecar Game",
         description: "Race to the finish line by typing accurately!",
         passcode: "1234",
         type: "external_link",
-        url: "speedway-racer.html"
+        url: "racecar-game.html"
       }
     ];
 
@@ -379,7 +379,7 @@
 
       renderLessons();
 
-      // Check if arriving back from external race car game
+      // Check if returning from the racecar game
       const lastResult = sessionStorage.getItem("last_lesson_result");
       if (lastResult) {
         const result = JSON.parse(lastResult);
