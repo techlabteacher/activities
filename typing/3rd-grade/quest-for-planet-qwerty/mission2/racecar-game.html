@@ -121,9 +121,19 @@
     }
 
     #racecar-game .btn-exit {
-      background: linear-gradient(135deg, #475569, #334155);
-      box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
-      border: 1px solid #64748b;
+      background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
+      color: #ffffff !important;
+      border: 2px solid #f87171 !important;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.5) !important;
+      font-weight: 900 !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    #racecar-game .btn-exit:hover {
+      background: linear-gradient(135deg, #dc2626, #991b1b) !important;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 18px rgba(239, 68, 68, 0.7) !important;
     }
 
     #racecar-game .track-wrapper {
@@ -463,7 +473,7 @@
       <div class="control-group">
         <button class="btn-action btn-restart" id="restartBtn">Restart Race</button>
         <button class="btn-action" id="openGarageBtn">Change Car</button>
-        <button class="btn-action btn-exit" id="returnConsoleBtn">⬅ Return to mission lessons</button>
+        <button class="btn-action btn-exit return-btn-trigger">⬅ Return to mission lessons</button>
       </div>
     </div>
 
@@ -659,7 +669,7 @@
             <button class="btn-level btn-medium finish-level-btn" data-difficulty="medium">Medium</button>
             <button class="btn-level btn-hard finish-level-btn" data-difficulty="hard">Hard</button>
           </div>
-          <button class="btn-action btn-exit modal-exit-btn" style="width:100%; margin-top:12px; padding:10px;">Return to mission lessons</button>
+          <button class="btn-action btn-exit return-btn-trigger" style="width:100%; margin-top:16px; padding:14px; font-size:1.05rem;">⬅ Return to mission lessons</button>
         </div>
       </div>
     </div>
@@ -733,9 +743,9 @@
         }
       }
 
-      container.querySelector('#returnConsoleBtn').addEventListener('click', sendReturnSignal);
-      const modalExit = container.querySelector('.modal-exit-btn');
-      if (modalExit) modalExit.addEventListener('click', sendReturnSignal);
+      container.querySelectorAll('.return-btn-trigger').forEach(btn => {
+        btn.addEventListener('click', sendReturnSignal);
+      });
 
       function sendDataToMission2(accValue, wpmValue, rankValue) {
         const payload = {
