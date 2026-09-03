@@ -402,6 +402,14 @@
   let fireworksActive = false;
   let particles = [];
 
+  window.addEventListener('message', (event) => {
+    const data = event.data;
+    if (data && data.type === 'RACE_GAME_COMPLETE') {
+      const accuracy = typeof data.accuracy === 'number' ? data.accuracy : 0;
+      showCompletionModal(accuracy);
+    }
+  });
+
   function launchFireworks() {
     const canvas = document.getElementById('fireworksCanvas');
     const ctx = canvas.getContext('2d');
@@ -503,7 +511,6 @@
       if (e.key === 'Enter') submitPasscodeAction();
     });
 
-    // Check if returning from the external racecar-game.html
     const lastResult = sessionStorage.getItem("last_lesson_result");
     if (lastResult) {
       const result = JSON.parse(lastResult);
