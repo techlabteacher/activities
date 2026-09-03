@@ -400,10 +400,6 @@
     updateCarPositions();
     updateRankDisplay();
 
-    if (bot1Progress >= 100 && bot2Progress >= 100 && playerProgress < 100) {
-      // Bots completed, race continues for player
-    }
-
     animFrame = requestAnimationFrame(gameLoop);
   }
 
@@ -434,32 +430,13 @@
     rankVal.textContent = `${rank}${suffix}`;
   }
 
-  function showCompletionModal(accuracy) {
-    let starsEarned = 0;
-    if (accuracy >= 80 && accuracy <= 82) starsEarned = 1;
-    else if (accuracy >= 83 && accuracy <= 85) starsEarned = 2;
-    else if (accuracy >= 86 && accuracy <= 89) starsEarned = 3;
-    else if (accuracy >= 90 && accuracy <= 94) starsEarned = 4;
-    else if (accuracy >= 95) starsEarned = 5;
-
-    return starsEarned;
-  }
-
-  function sendDataToMission2(accValue, wpmValue, rankValue) {
-    const stars = showCompletionModal(accValue);
-    
-    const payload = {
-      type: 'RACE_GAME_COMPLETE',
-      accuracy: accValue,
-      wpm: wpmValue,
-      rank: rankValue,
-      stars: stars
-    };
-    
-    window.postMessage(payload, '*');
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage(payload, '*');
-    }
+  function calculateStars(accuracy) {
+    if (accuracy >= 95) return 5;
+    if (accuracy >= 90) return 4;
+    if (accuracy >= 86) return 3;
+    if (accuracy >= 83) return 2;
+    if (accuracy >= 80) return 1;
+    return 0;
   }
 
   function stopGameDueToInactivity() {
@@ -484,13 +461,8 @@
       if (modalCarLabel) modalCarLabel.remove();
     }
 
-    const finalAccNum = keystrokes > 0 ? Math.max(0, Math.round(((keystrokes - errors) / keystrokes) * 100)) : 100;
-    const finalWpmNum = parseInt(wpmVal.textContent, 10) || 0;
-
     container.querySelector('#finalAcc').textContent = accuracyVal.textContent;
     container.querySelector('#finalWpm').textContent = wpmVal.textContent;
-
-    sendDataToMission2(finalAccNum, finalWpmNum, 'DNF');
 
     victoryModal.style.display = 'flex';
   }
@@ -501,30 +473,21 @@
     if (idleTimer) clearTimeout(idleTimer);
 
     const finalAccNum = keystrokes > 0 ? Math.max(0, Math.round(((keystrokes - errors) / keystrokes) * 100)) : 100;
-    const elapsedMinutes = (Date.now() - startTime) / 60000;
-    const finalWpmNum = elapsedMinutes > 0 ? Math.round((currentIndex / 5) / elapsedMinutes) : 0;
-    
-    const stars = showCompletionModal(finalAccNum);
+    const stars = calculateStars(finalAccNum);
+
     const winnerTitle = container.querySelector('#winnerTitle');
     const winnerSubtitle = container.querySelector('#winnerSubtitle');
 
-    let rankString = '1ST';
     if (finalPlacement === 1) {
-      rankString = '1ST';
-      rankVal.textContent = '1ST';
       winnerTitle.textContent = '1st Place!';
       winnerTitle.style.color = '#facc15';
       winnerSubtitle.textContent = `Earned ${stars} ⭐ Star${stars === 1 ? '' : 's'} with ${finalAccNum}% accuracy!`;
       launchConfetti();
     } else if (finalPlacement === 2) {
-      rankString = '2ND';
-      rankVal.textContent = '2ND';
       winnerTitle.textContent = '2nd Place!';
       winnerTitle.style.color = '#e2e8f0';
       winnerSubtitle.textContent = `Earned ${stars} ⭐ Star${stars === 1 ? '' : 's'}. Reach higher accuracy for 1st Place!`;
     } else {
-      rankString = '3RD';
-      rankVal.textContent = '3RD';
       winnerTitle.textContent = '3rd Place!';
       winnerTitle.style.color = '#f97316';
       winnerSubtitle.textContent = `Earned ${stars} ⭐ Star${stars === 1 ? '' : 's'}. Keep your speed up!`;
@@ -542,8 +505,6 @@
     container.querySelector('#finalAcc').textContent = accuracyVal.textContent;
     container.querySelector('#finalWpm').textContent = wpmVal.textContent;
 
-    sendDataToMission2(finalAccNum, finalWpmNum, rankString);
-
     setTimeout(() => {
       victoryModal.style.display = 'flex';
     }, 300);
@@ -556,8 +517,12 @@
   }
 
   function returnToMission() {
-    const accNum = keystrokes > 0 ? Math.max(0, Math.round(((keystrokes - errors) / keystrokes) * 100)) : 100;
-    sessionStorage.setItem("last_lesson_result", JSON.stringify({ lessonId: 6, accuracy: accNum }));
+    const finalAccNum = keystrokes > 0 ? Math.max(0, Math.round(((keystrokes - errors) / keystrokes) * 100)) : 100;
+    
+    // Save completion data so index (32).html picks it up upon returning
+    sessionStorage.setItem("last_lesson_result", JSON.stringify({ lessonId: 6, accuracy: finalAccNum }));
+    
+    // Target destination file
     window.location.href = "index (32).html";
   }
 
