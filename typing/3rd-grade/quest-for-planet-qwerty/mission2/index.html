@@ -336,7 +336,7 @@
 
   <div class="console-header">
     <div class="title-group">
-      <span class="header-rocket-icon">🎯</span>
+      <span class="header-rocket-icon">🌙</span>
       <span class="app-title">Mission 2: S L A ; Keys</span>
     </div>
     <div class="star-badge">⭐ STARS: <span id="totalStarsCount">0</span></div>
@@ -618,6 +618,13 @@
     });
   }
 
+  function launchRaceCarGame(text) {
+    document.getElementById('raceCarGameDisplay').style.display = 'block';
+    if (window.RaceCarGame && window.RaceCarGame.init) {
+      RaceCarGame.init(text, (acc) => showCompletionModal(acc));
+    }
+  }
+
   function loadLesson(idx) {
     currentLessonIdx = idx;
     renderLessonButtons();
@@ -630,13 +637,10 @@
     updateKeyboardDisplayState();
 
     if (lesson.type === "game-racecar") {
-      document.getElementById('raceCarGameDisplay').style.display = 'block';
-      if (window.RaceCarGame) {
-        RaceCarGame.init(lesson.text, (acc) => showCompletionModal(acc));
-      }
+      launchRaceCarGame(lesson.text);
     } else if (lesson.type === "game-mystery") {
       document.getElementById('mysteryPictureGameDisplay').style.display = 'block';
-      if (window.MysteryPictureGame) {
+      if (window.MysteryPictureGame && window.MysteryPictureGame.init) {
         MysteryPictureGame.init(lesson.text, (acc) => showCompletionModal(acc));
       }
     } else {
@@ -655,9 +659,11 @@
     document.getElementById('completionModal').classList.remove('active');
     
     if (lessons[currentLessonIdx].type === 'game-racecar') {
-      if (window.RaceCarGame) RaceCarGame.init(lessons[currentLessonIdx].text, (acc) => showCompletionModal(acc));
+      launchRaceCarGame(lessons[currentLessonIdx].text);
     } else if (lessons[currentLessonIdx].type === 'game-mystery') {
-      if (window.MysteryPictureGame) MysteryPictureGame.init(lessons[currentLessonIdx].text, (acc) => showCompletionModal(acc));
+      if (window.MysteryPictureGame && window.MysteryPictureGame.init) {
+        MysteryPictureGame.init(lessons[currentLessonIdx].text, (acc) => showCompletionModal(acc));
+      }
     } else {
       updateTargetAndKeyboard();
     }
