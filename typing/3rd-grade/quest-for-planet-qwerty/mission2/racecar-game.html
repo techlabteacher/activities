@@ -120,6 +120,12 @@
       box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
     }
 
+    #racecar-game .btn-exit {
+      background: linear-gradient(135deg, #475569, #334155);
+      box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
+      border: 1px solid #64748b;
+    }
+
     #racecar-game .track-wrapper {
       position: relative;
       height: 340px;
@@ -457,6 +463,7 @@
       <div class="control-group">
         <button class="btn-action btn-restart" id="restartBtn">Restart Race</button>
         <button class="btn-action" id="openGarageBtn">Change Car</button>
+        <button class="btn-action btn-exit" id="returnConsoleBtn">⬅ Return to mission lessons</button>
       </div>
     </div>
 
@@ -652,6 +659,7 @@
             <button class="btn-level btn-medium finish-level-btn" data-difficulty="medium">Medium</button>
             <button class="btn-level btn-hard finish-level-btn" data-difficulty="hard">Hard</button>
           </div>
+          <button class="btn-action btn-exit modal-exit-btn" style="width:100%; margin-top:12px; padding:10px;">Return to mission lessons</button>
         </div>
       </div>
     </div>
@@ -713,6 +721,21 @@
       const confettiCanvas = document.getElementById('confettiCanvas');
       const ctx = confettiCanvas.getContext('2d');
       let confettiParticles = [];
+
+      function sendReturnSignal() {
+        const payload = { type: 'RETURN_TO_CONSOLE' };
+        window.postMessage(payload, '*');
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(payload, '*');
+        }
+        if (window.history.length > 1) {
+          window.history.back();
+        }
+      }
+
+      container.querySelector('#returnConsoleBtn').addEventListener('click', sendReturnSignal);
+      const modalExit = container.querySelector('.modal-exit-btn');
+      if (modalExit) modalExit.addEventListener('click', sendReturnSignal);
 
       function sendDataToMission2(accValue, wpmValue, rankValue) {
         const payload = {
