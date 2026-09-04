@@ -574,6 +574,7 @@
           </div>
         </div>
         <button class="btn-action" id="startRaceBtn" style="width:100%; font-size:1.1rem; padding:12px;">Start Race</button>
+        <button class="btn-action btn-exit" id="resetLessonBtnStart" style="width:100%; margin-top:8px; font-size:0.95rem;">🔒 Reset Lesson 6</button>
       </div>
     </div>
 
@@ -691,8 +692,20 @@
           window.parent.postMessage(payload, '*');
         }
 
-        // Mission 2 reads last_lesson_result when index.html loads.
-        // Go directly there instead of relying on browser history.
+        // Mission 2 receives the most recent result in the URL. This works even
+        // when Racecar is opened as a separate page rather than an iframe.
+        const result = sessionStorage.getItem('last_lesson_result');
+        if (result) {
+          try {
+            const data = JSON.parse(result);
+            const params = new URLSearchParams();
+            params.set('lessonId', '6');
+            params.set('accuracy', String(data.accuracy));
+            params.set('stars', String(data.stars));
+            window.location.href = 'index.html?' + params.toString();
+            return;
+          } catch (e) {}
+        }
         window.location.href = 'index.html';
       }
 
@@ -841,12 +854,15 @@
       container.querySelector('#restartBtn').addEventListener('click', () => startCountdown());
       container.querySelector('#modalPlayAgainBtn').addEventListener('click', () => startCountdown());
 
-      container.querySelector('#resetLessonBtn').addEventListener('click', () => {
+      function openResetLessonModal() {
         container.querySelector('#resetLessonModal').style.display = 'flex';
         container.querySelector('#resetPasscodeInput').value = '';
         container.querySelector('#resetPasscodeError').textContent = '';
         container.querySelector('#resetPasscodeInput').focus();
-      });
+      }
+
+      container.querySelector('#resetLessonBtn').addEventListener('click', openResetLessonModal);
+      container.querySelector('#resetLessonBtnStart').addEventListener('click', openResetLessonModal);
 
       container.querySelector('#cancelResetLessonBtn').addEventListener('click', () => {
         container.querySelector('#resetLessonModal').style.display = 'none';

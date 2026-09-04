@@ -539,7 +539,21 @@
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    const lastResult = sessionStorage.getItem("last_lesson_result");
+    // Racecar can return its result through the URL. This is more reliable than
+    // postMessage/sessionStorage when the game is opened as a separate page.
+    const params = new URLSearchParams(window.location.search);
+    const urlLessonId = Number(params.get('lessonId'));
+    const urlAccuracy = Number(params.get('accuracy'));
+    const urlStars = Number(params.get('stars'));
+    let lastResult = null;
+
+    if (urlLessonId === 6 && Number.isFinite(urlAccuracy) && Number.isFinite(urlStars)) {
+      lastResult = JSON.stringify({ lessonId: 6, accuracy: urlAccuracy, stars: urlStars });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+      lastResult = sessionStorage.getItem("last_lesson_result");
+    }
+
     if (lastResult) {
       const result = JSON.parse(lastResult);
       sessionStorage.removeItem("last_lesson_result");
