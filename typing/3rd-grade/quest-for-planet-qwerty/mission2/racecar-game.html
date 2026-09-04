@@ -696,6 +696,15 @@
           rank: rankValue,
           stars: starsValue
         };
+
+        // Save the result so Mission 2 can restore it after navigation.
+        sessionStorage.setItem('last_lesson_result', JSON.stringify({
+          lessonId: 6,
+          accuracy: accValue,
+          wpm: wpmValue,
+          rank: rankValue,
+          stars: starsValue
+        }));
         
         window.postMessage(payload, '*');
         if (window.parent && window.parent !== window) {
