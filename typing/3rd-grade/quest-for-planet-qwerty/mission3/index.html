@@ -746,6 +746,7 @@
   let totalTyped = 0, correctTyped = 0;
   let errorIndices = [];
   let lessonStars = new Array(lessons.length).fill(0);
+  let lessonAccuracy = new Array(lessons.length).fill(0);
   let showKeyboard = false;
   let teacherUnlocked = false;
   let currentPasscodeMode = 'keyboard';
@@ -893,6 +894,7 @@
       const src = iframe.src;
       iframe.src = src;
     }
+    handleLevelUpClick();
   }
 
   function getHubKey(missionNum, field) {
@@ -939,12 +941,23 @@
       document.getElementById('btnVideo').classList.add('watched');
     }
 
+    const savedLessonAccuracy = localStorage.getItem(getHubKey(3, 'lesson_accuracy'));
+    if (savedLessonAccuracy) {
+      try {
+        const parsedAcc = JSON.parse(savedLessonAccuracy);
+        if (Array.isArray(parsedAcc)) {
+          lessonAccuracy = parsedAcc;
+        }
+      } catch (e) {}
+    }
+
     const totalStars = lessonStars.reduce((a, b) => a + b, 0);
     document.getElementById('totalStarsCount').innerText = totalStars;
   }
 
   function saveProgress() {
     localStorage.setItem(getHubKey(3, 'lesson_stars'), JSON.stringify(lessonStars));
+    localStorage.setItem(getHubKey(3, 'lesson_accuracy'), JSON.stringify(lessonAccuracy));
     
     const totalAccumulated = lessonStars.reduce((a, b) => a + b, 0);
     
@@ -1327,6 +1340,7 @@
         updateKeyboardDisplayState();
       } else if (currentPasscodeMode === 'reset') {
         lessonStars[currentLessonIdx] = 0;
+        lessonAccuracy[currentLessonIdx] = 0;
         saveProgress();
         renderLessonButtons();
         resetLessonStateOnly();
@@ -1345,6 +1359,16 @@
     document.getElementById('keyboardWrapper').style.display = shouldDisplay ? 'block' : 'none';
   }
 
+  function estimateAccuracyFromStars(stars) {
+    // Fallback for any lesson stars saved before per-lesson accuracy was tracked.
+    if (stars >= 5) return 97;
+    if (stars === 4) return 92;
+    if (stars === 3) return 87;
+    if (stars === 2) return 84;
+    if (stars === 1) return 81;
+    return 0;
+  }
+
   function showCompletionModal(accuracy) {
     let starsEarned = 0;
     if (accuracy >= 80 && accuracy <= 82) starsEarned = 1;
@@ -1356,6 +1380,9 @@
     lastAttemptPassed = (accuracy >= 80);
 
     if (lastAttemptPassed) {
+      if (starsEarned >= lessonStars[currentLessonIdx]) {
+        lessonAccuracy[currentLessonIdx] = accuracy;
+      }
       lessonStars[currentLessonIdx] = Math.max(lessonStars[currentLessonIdx], starsEarned);
       saveProgress();
       renderLessonButtons();
@@ -1369,6 +1396,16 @@
     videoLinkContainer.innerHTML = '';
     
     const isLastLesson = (currentLessonIdx === lessons.length - 1);
+    const totalAccumulatedStars = lessonStars.reduce((a, b) => a + b, 0);
+    let accuracySum = 0;
+    let completedLessonCount = 0;
+    for (let i = 0; i < lessons.length; i++) {
+      if (lessonStars[i] > 0) {
+        completedLessonCount++;
+        accuracySum += (lessonAccuracy[i] > 0) ? lessonAccuracy[i] : estimateAccuracyFromStars(lessonStars[i]);
+      }
+    }
+    const overallAccuracy = completedLessonCount > 0 ? Math.round(accuracySum / completedLessonCount) : 0;
 
     if (!lastAttemptPassed) {
       starsContainer.style.display = 'none';
@@ -1376,6 +1413,14 @@
       titleEl.style.color = "var(--neon-red)";
       bodyTextEl.innerHTML = `Accuracy: <strong style="color: var(--neon-red);">${accuracy}%</strong><br><br>You need at least <strong>80%</strong> accuracy to earn stars and pass this lesson. Give it another try!`;
       nextBtn.innerText = "Try Lesson Again 🔄";
+    } else if (isLastLesson) {
+      // Mission-complete popup: no star rating here, just the overall mission summary.
+      starsContainer.style.display = 'none';
+      titleEl.style.color = "var(--class-theme-color)";
+      titleEl.innerText = "🎉 MISSION 3 COMPLETE! 🎉";
+      bodyTextEl.innerHTML = `You've finished the lessons for Sector: Home Row! You're ready to level up to the Bronze level and become a Cadet.<br><br>Total Mission Accuracy: <strong>${overallAccuracy}%</strong><br>Total Mission Stars Earned: <strong style="color:var(--neon-amber);">${totalAccumulatedStars} / 30</strong>`;
+      nextBtn.innerText = "📹 Watch Final Mission Video";
+      launchFireworks();
     } else {
       starsContainer.style.display = 'flex';
       titleEl.style.color = "var(--class-theme-color)";
@@ -1387,20 +1432,9 @@
         }
       }
 
-      if (isLastLesson) {
-        titleEl.innerText = "🎉 CONGRATULATIONS! 🎉";
-        bodyTextEl.innerHTML = `Congratulations! You've finished the lessons for Sector: Home Row! You're ready to level up to the Bronze level and become a Cadet. Watch the final video first and then head to the Level-up Zone.`;
-        
-        const isWatched = localStorage.getItem(getHubKey(3, 'video_watched')) === 'true';
-        videoLinkContainer.innerHTML = `<button id="modalVideoBtn" class="modal-video-btn ${isWatched ? 'watched' : ''}" onclick="openVideoModal()">📹 FINAL VIDEO</button>`;
-        
-        nextBtn.innerText = "Head to Level-Up Zone 🎖️";
-        launchFireworks();
-      } else {
-        titleEl.innerText = "LESSON ACCOMPLISHED";
-        bodyTextEl.innerHTML = `Accuracy: <strong>${accuracy}%</strong>`;
-        nextBtn.innerText = "Next Lesson ➔";
-      }
+      titleEl.innerText = "LESSON ACCOMPLISHED";
+      bodyTextEl.innerHTML = `Accuracy: <strong>${accuracy}%</strong>`;
+      nextBtn.innerText = "Next Lesson ➔";
     }
 
     document.getElementById('completionModal').classList.add('active');
@@ -1417,7 +1451,7 @@
     if (currentLessonIdx < lessons.length - 1) {
       loadLesson(currentLessonIdx + 1);
     } else {
-      handleLevelUpClick();
+      openVideoModal();
     }
   }
 </script>
