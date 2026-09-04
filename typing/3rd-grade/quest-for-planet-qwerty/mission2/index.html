@@ -970,11 +970,10 @@
       starsContainer.style.display = 'flex';
       titleEl.style.color = "var(--class-theme-color)";
       
-      const currentStarsEarned = lessonStars[currentLessonIdx] || starsEarned;
       for (let i = 1; i <= 5; i++) {
         const starEl = document.getElementById(`star${i}`);
         if (starEl) {
-          starEl.className = `star ${currentStarsEarned >= i ? 'filled' : ''}`;
+          starEl.className = `star ${starsEarned >= i ? 'filled' : ''}`;
         }
       }
 
