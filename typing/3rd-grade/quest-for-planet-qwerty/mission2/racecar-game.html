@@ -678,9 +678,9 @@
         if (window.parent && window.parent !== window) {
           window.parent.postMessage(payload, '*');
         }
-        if (window.history.length > 1) {
-          window.history.back();
-        }
+        // Return directly to Mission 2. The result was saved in sessionStorage
+        // by sendDataToMission2(), so Mission 2 can award the Lesson 6 stars.
+        window.location.href = 'index.html?raceComplete=1';
       }
 
       container.querySelector('#returnConsoleBtn').addEventListener('click', sendReturnSignal);

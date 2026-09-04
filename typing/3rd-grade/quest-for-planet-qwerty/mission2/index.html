@@ -520,31 +520,67 @@
   function init() {
     loadClassProfile();
     loadProgress();
-    
-    renderLessonButtons();
+
     window.addEventListener('keydown', handleKeyPress);
     window.addEventListener('keyup', handleKeyUp);
-    
+
     document.getElementById('passcodeInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') submitPasscodeAction();
     });
 
+    // Process a Racecar Game result before loading the normal lesson.
+    processReturnedLessonResult();
+
+    // If there was no Racecar result, start Mission 2 normally.
+    if (!sessionStorage.getItem("racecar_result_processed")) {
+      currentLessonIdx = 0;
+      renderLessonButtons();
+      loadLesson(0);
+    } else {
+      sessionStorage.removeItem("racecar_result_processed");
+    }
+  }
+
+  function processReturnedLessonResult() {
     const lastResult = sessionStorage.getItem("last_lesson_result");
-    if (lastResult) {
+    if (!lastResult) {
+      renderLessonButtons();
+      return false;
+    }
+
+    try {
       const result = JSON.parse(lastResult);
-      sessionStorage.removeItem("last_lesson_result");
-      currentLessonIdx = result.lessonId - 1;
-      
-      const starsEarned = typeof result.stars === 'number' ? result.stars : 0;
-      if (result.accuracy >= 80) {
-        lessonStars[currentLessonIdx] = Math.max(lessonStars[currentLessonIdx], starsEarned);
+      const lessonId = Number(result.lessonId);
+      const accuracy = Number(result.accuracy);
+      const starsEarned = Number(result.stars) || 0;
+
+      if (lessonId !== 6 || !Number.isFinite(accuracy)) {
+        sessionStorage.removeItem("last_lesson_result");
+        renderLessonButtons();
+        return false;
+      }
+
+      currentLessonIdx = 5;
+
+      if (accuracy >= 80 && starsEarned > 0) {
+        lessonStars[5] = Math.max(
+          Number(lessonStars[5]) || 0,
+          Math.min(5, starsEarned)
+        );
         saveProgress();
       }
-      
+
+      sessionStorage.removeItem("last_lesson_result");
+      sessionStorage.setItem("racecar_result_processed", "1");
+
       renderLessonButtons();
-      showCompletionModal(result.accuracy);
-    } else {
-      loadLesson(0);
+      showCompletionModal(accuracy);
+      return true;
+    } catch (error) {
+      console.error("Could not process Racecar result:", error);
+      sessionStorage.removeItem("last_lesson_result");
+      renderLessonButtons();
+      return false;
     }
   }
 
