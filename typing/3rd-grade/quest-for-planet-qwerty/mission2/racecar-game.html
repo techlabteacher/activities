@@ -888,7 +888,7 @@
         window.location.href = 'index.html?resetLesson=6';
       });
 
-      marker2
+      container.querySelector('#startRaceBtn').addEventListener('click', () => {
         carModal.style.display = 'none';
         playerCarLabel.textContent = selectedRaceName;
         container.querySelector('#playerBodyMain').setAttribute('fill', selectedMain);
