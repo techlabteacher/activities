@@ -112,6 +112,19 @@
     .header-rocket-icon { font-size: 2.2rem; filter: drop-shadow(0 0 8px var(--class-theme-color)); }
     .app-title { font-family: var(--font-header); color: var(--class-theme-color); font-size: 1.4rem; font-weight: 800; }
 
+    /* Moon icon - matches the Mission 2 node icon on the Mission Hub */
+    .header-moon-icon {
+      width: 44px; height: 44px;
+      flex-shrink: 0;
+      background: #e2e8f0;
+      border-radius: 50%;
+      box-shadow: inset -8px -5px 0 0 #94a3b8, 0 0 10px rgba(226, 232, 240, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    .header-moon-icon .moon-crater-1 { position: absolute; top: 7px; left: 8px; width: 8px; height: 8px; background: #cbd5e1; border-radius: 50%; }
+    .header-moon-icon .moon-crater-2 { position: absolute; top: 22px; left: 20px; width: 12px; height: 12px; background: #cbd5e1; border-radius: 50%; }
+
     .star-badge {
       background: rgba(245, 158, 11, 0.15);
       border: 1.5px solid var(--neon-amber);
@@ -314,7 +327,10 @@
 
   <div class="console-header">
     <div class="title-group">
-      <span class="header-rocket-icon">🎯</span>
+      <div class="header-moon-icon">
+        <div class="moon-crater-1"></div>
+        <div class="moon-crater-2"></div>
+      </div>
       <span class="app-title">Mission 2: S L A ; Keys</span>
     </div>
     <div class="star-badge">⭐ STARS: <span id="totalStarsCount">0</span></div>
@@ -401,6 +417,7 @@
   let totalTyped = 0, correctTyped = 0;
   let errorIndices = [];
   let lessonStars = new Array(lessons.length).fill(0);
+  let lessonAccuracy = new Array(lessons.length).fill(0);
   let showKeyboard = false;
   let teacherUnlocked = false;
   let currentPasscodeMode = 'keyboard';
@@ -420,6 +437,7 @@
       
       // Always replace Lesson 6 with the most recent Racecar result.
       lessonStars[5] = stars;
+      lessonAccuracy[5] = accuracy;
       saveProgress();
       renderLessonButtons();
 
@@ -532,6 +550,7 @@
     if (resetLesson === '6') {
       currentLessonIdx = 5;
       lessonStars[5] = 0;
+      lessonAccuracy[5] = 0;
       sessionStorage.removeItem('last_lesson_result');
       saveProgress();
       renderLessonButtons();
@@ -560,9 +579,11 @@
       currentLessonIdx = result.lessonId - 1;
       
       const starsEarned = typeof result.stars === 'number' ? result.stars : 0;
+      const accuracyEarned = typeof result.accuracy === 'number' ? result.accuracy : 0;
       if (currentLessonIdx >= 0 && currentLessonIdx < lessonStars.length) {
         // Racecar Lesson 6 uses the MOST RECENT score, not the previous best.
         lessonStars[currentLessonIdx] = starsEarned;
+        lessonAccuracy[currentLessonIdx] = accuracyEarned;
         saveProgress();
       }
       
@@ -618,6 +639,16 @@
       } catch (e) {}
     }
 
+    const savedLessonAccuracy = localStorage.getItem(getHubKey('lesson_accuracy'));
+    if (savedLessonAccuracy) {
+      try {
+        const parsedAcc = JSON.parse(savedLessonAccuracy);
+        if (Array.isArray(parsedAcc)) {
+          lessonAccuracy = parsedAcc;
+        }
+      } catch (e) {}
+    }
+
     const totalStars = lessonStars.reduce((a, b) => a + b, 0);
     document.getElementById('totalStarsCount').innerText = totalStars;
   }
@@ -626,6 +657,7 @@
     const totalAccumulated = lessonStars.reduce((a, b) => a + b, 0);
 
     localStorage.setItem(getHubKey('lesson_stars'), JSON.stringify(lessonStars));
+    localStorage.setItem(getHubKey('lesson_accuracy'), JSON.stringify(lessonAccuracy));
     localStorage.setItem(getHubKey('stars'), totalAccumulated);
 
     localStorage.setItem('qwerty_mission2_stars', totalAccumulated);
@@ -848,6 +880,7 @@
         updateKeyboardDisplayState();
       } else if (currentPasscodeMode === 'reset') {
         lessonStars[currentLessonIdx] = 0;
+        lessonAccuracy[currentLessonIdx] = 0;
         saveProgress();
         renderLessonButtons();
         resetLessonStateOnly();
@@ -876,6 +909,9 @@
     lastAttemptPassed = (accuracy >= 80);
 
     if (lastAttemptPassed && lessons[currentLessonIdx].type !== "external_link") {
+      if (starsEarned >= lessonStars[currentLessonIdx]) {
+        lessonAccuracy[currentLessonIdx] = accuracy;
+      }
       lessonStars[currentLessonIdx] = Math.max(lessonStars[currentLessonIdx], starsEarned);
       saveProgress();
       renderLessonButtons();
@@ -888,6 +924,7 @@
     
     const isLastLesson = (currentLessonIdx === lessons.length - 1);
     const totalAccumulatedStars = lessonStars.reduce((a, b) => a + b, 0);
+    const overallAccuracy = Math.round(lessonAccuracy.reduce((a, b) => a + b, 0) / lessons.length);
 
     const starGuideHtml = `
       <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
@@ -902,6 +939,14 @@
       titleEl.style.color = "var(--neon-red)";
       bodyTextEl.innerHTML = `Accuracy: <strong style="color: var(--neon-red);">${accuracy}%</strong><br><br>You need at least <strong>80%</strong> accuracy to earn stars and pass this lesson. Give it another try!${starGuideHtml}`;
       nextBtn.innerText = "Try Lesson Again 🔄";
+    } else if (isLastLesson) {
+      // Mission-complete popup: no star rating here, just the overall mission summary.
+      starsContainer.style.display = 'none';
+      titleEl.style.color = "var(--class-theme-color)";
+      titleEl.innerText = "🎉 MISSION 2 COMPLETE! 🎉";
+      bodyTextEl.innerHTML = `Total Mission Accuracy: <strong>${overallAccuracy}%</strong><br>Total Mission Stars Earned: <strong style="color:var(--neon-amber);">${totalAccumulatedStars} / 30</strong>`;
+      nextBtn.innerText = "Return to mission hub";
+      launchFireworks();
     } else {
       starsContainer.style.display = 'flex';
       titleEl.style.color = "var(--class-theme-color)";
@@ -914,16 +959,9 @@
         }
       }
 
-      if (isLastLesson) {
-        titleEl.innerText = "🎉 MISSION 2 COMPLETE! 🎉";
-        bodyTextEl.innerHTML = `Lesson Accuracy: <strong>${accuracy}%</strong><br>Total Mission Stars Earned: <strong style="color:var(--neon-amber);">${totalAccumulatedStars} / 30</strong>${starGuideHtml}`;
-        nextBtn.innerText = "Check your mission score 🚀";
-        launchFireworks();
-      } else {
-        titleEl.innerText = "LESSON ACCOMPLISHED";
-        bodyTextEl.innerHTML = `Accuracy: <strong>${accuracy}%</strong>${starGuideHtml}`;
-        nextBtn.innerText = "Next Lesson ➔";
-      }
+      titleEl.innerText = "LESSON ACCOMPLISHED";
+      bodyTextEl.innerHTML = `Accuracy: <strong>${accuracy}%</strong>${starGuideHtml}`;
+      nextBtn.innerText = "Next Lesson ➔";
     }
 
     document.getElementById('completionModal').classList.add('active');
