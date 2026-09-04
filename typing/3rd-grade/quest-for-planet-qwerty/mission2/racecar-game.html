@@ -408,6 +408,7 @@
 
       <div class="control-group">
         <button class="btn-action btn-exit" id="returnConsoleBtn">⬅ Return to mission lessons</button>
+        <button class="btn-action" id="resetLessonBtn" style="margin-top:8px; background:linear-gradient(135deg,#b45309,#92400e);">🔒 Reset Lesson</button>
       </div>
     </div>
 
@@ -576,6 +577,17 @@
       </div>
     </div>
 
+    <div class="modal-overlay" id="resetLessonModal" style="display:none;">
+      <div class="modal">
+        <h2 style="color:#fff; font-size:1.5rem; margin-bottom:5px;">Teacher Reset</h2>
+        <p style="color:#94a3b8; font-size:0.85rem;">Enter the 4-digit teacher passcode to clear the Lesson 6 score.</p>
+        <input id="resetPasscodeInput" type="password" inputmode="numeric" maxlength="4" autocomplete="off" style="width:160px;padding:10px;margin:15px auto;border-radius:8px;text-align:center;font-size:1.4rem;display:block;">
+        <div id="resetPasscodeError" style="color:#f87171;height:20px;"></div>
+        <button class="btn-action btn-restart" id="confirmResetLessonBtn" style="width:100%;">Reset Lesson 6</button>
+        <button class="btn-action btn-exit" id="cancelResetLessonBtn" style="width:100%;margin-top:8px;">Cancel</button>
+      </div>
+    </div>
+
     <div class="modal-overlay" id="victoryModal" style="display: none;">
       <div class="modal">
         <div id="modalIconContainer">
@@ -678,9 +690,10 @@
         if (window.parent && window.parent !== window) {
           window.parent.postMessage(payload, '*');
         }
-        // Return directly to Mission 2. The result was saved in sessionStorage
-        // by sendDataToMission2(), so Mission 2 can award the Lesson 6 stars.
-        window.location.href = 'index.html?raceComplete=1';
+
+        // Mission 2 reads last_lesson_result when index.html loads.
+        // Go directly there instead of relying on browser history.
+        window.location.href = 'index.html';
       }
 
       container.querySelector('#returnConsoleBtn').addEventListener('click', sendReturnSignal);
@@ -697,7 +710,9 @@
           stars: starsValue
         };
 
-        // Save the result so Mission 2 can restore it after navigation.
+        // Save the MOST RECENT Racecar result for Mission 2.
+        // Do not use Math.max here: a student can intentionally redo the lesson
+        // and the Lesson 6 button should show that latest score.
         sessionStorage.setItem('last_lesson_result', JSON.stringify({
           lessonId: 6,
           accuracy: accValue,
@@ -705,7 +720,8 @@
           rank: rankValue,
           stars: starsValue
         }));
-        
+
+        // Keep postMessage support for embedded use.
         window.postMessage(payload, '*');
         if (window.parent && window.parent !== window) {
           window.parent.postMessage(payload, '*');
@@ -825,7 +841,38 @@
       container.querySelector('#restartBtn').addEventListener('click', () => startCountdown());
       container.querySelector('#modalPlayAgainBtn').addEventListener('click', () => startCountdown());
 
-      container.querySelector('#startRaceBtn').addEventListener('click', () => {
+      container.querySelector('#resetLessonBtn').addEventListener('click', () => {
+        container.querySelector('#resetLessonModal').style.display = 'flex';
+        container.querySelector('#resetPasscodeInput').value = '';
+        container.querySelector('#resetPasscodeError').textContent = '';
+        container.querySelector('#resetPasscodeInput').focus();
+      });
+
+      container.querySelector('#cancelResetLessonBtn').addEventListener('click', () => {
+        container.querySelector('#resetLessonModal').style.display = 'none';
+      });
+
+      container.querySelector('#confirmResetLessonBtn').addEventListener('click', () => {
+        const passcode = container.querySelector('#resetPasscodeInput').value;
+        if (passcode !== '8760') {
+          container.querySelector('#resetPasscodeError').textContent = 'Incorrect Passcode';
+          return;
+        }
+
+        // Clear any pending result so Mission 2 cannot re-apply an old score.
+        sessionStorage.removeItem('last_lesson_result');
+        container.querySelector('#resetLessonModal').style.display = 'none';
+        victoryModal.style.display = 'none';
+        isRacing = false;
+        cancelAnimationFrame(animFrame);
+        if (countdownTimer) clearInterval(countdownTimer);
+        if (idleTimer) clearTimeout(idleTimer);
+        resetPositions();
+        // Return to Mission 2 where the teacher reset can clear the saved stars.
+        window.location.href = 'index.html?resetLesson=6';
+      });
+
+      marker2
         carModal.style.display = 'none';
         playerCarLabel.textContent = selectedRaceName;
         container.querySelector('#playerBodyMain').setAttribute('fill', selectedMain);

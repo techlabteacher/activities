@@ -418,11 +418,10 @@
       const accuracy = typeof data.accuracy === 'number' ? data.accuracy : 0;
       const stars = typeof data.stars === 'number' ? data.stars : 0;
       
-      if (accuracy >= 80) {
-        lessonStars[5] = Math.max(lessonStars[5], stars);
-        saveProgress();
-        renderLessonButtons();
-      }
+      // Always replace Lesson 6 with the most recent Racecar result.
+      lessonStars[5] = stars;
+      saveProgress();
+      renderLessonButtons();
 
       showCompletionModal(accuracy);
     }
@@ -520,67 +519,43 @@
   function init() {
     loadClassProfile();
     loadProgress();
-
+    
+    renderLessonButtons();
     window.addEventListener('keydown', handleKeyPress);
     window.addEventListener('keyup', handleKeyUp);
-
+    
     document.getElementById('passcodeInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') submitPasscodeAction();
     });
 
-    // Process a Racecar Game result before loading the normal lesson.
-    processReturnedLessonResult();
-
-    // If there was no Racecar result, start Mission 2 normally.
-    if (!sessionStorage.getItem("racecar_result_processed")) {
-      currentLessonIdx = 0;
-      renderLessonButtons();
-      loadLesson(0);
-    } else {
-      sessionStorage.removeItem("racecar_result_processed");
-    }
-  }
-
-  function processReturnedLessonResult() {
-    const lastResult = sessionStorage.getItem("last_lesson_result");
-    if (!lastResult) {
-      renderLessonButtons();
-      return false;
-    }
-
-    try {
-      const result = JSON.parse(lastResult);
-      const lessonId = Number(result.lessonId);
-      const accuracy = Number(result.accuracy);
-      const starsEarned = Number(result.stars) || 0;
-
-      if (lessonId !== 6 || !Number.isFinite(accuracy)) {
-        sessionStorage.removeItem("last_lesson_result");
-        renderLessonButtons();
-        return false;
-      }
-
+    const resetLesson = new URLSearchParams(window.location.search).get('resetLesson');
+    if (resetLesson === '6') {
       currentLessonIdx = 5;
+      lessonStars[5] = 0;
+      sessionStorage.removeItem('last_lesson_result');
+      saveProgress();
+      renderLessonButtons();
+      // Clean the URL after processing the reset.
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
 
-      if (accuracy >= 80 && starsEarned > 0) {
-        lessonStars[5] = Math.max(
-          Number(lessonStars[5]) || 0,
-          Math.min(5, starsEarned)
-        );
+    const lastResult = sessionStorage.getItem("last_lesson_result");
+    if (lastResult) {
+      const result = JSON.parse(lastResult);
+      sessionStorage.removeItem("last_lesson_result");
+      currentLessonIdx = result.lessonId - 1;
+      
+      const starsEarned = typeof result.stars === 'number' ? result.stars : 0;
+      if (currentLessonIdx >= 0 && currentLessonIdx < lessonStars.length) {
+        // Racecar Lesson 6 uses the MOST RECENT score, not the previous best.
+        lessonStars[currentLessonIdx] = starsEarned;
         saveProgress();
       }
-
-      sessionStorage.removeItem("last_lesson_result");
-      sessionStorage.setItem("racecar_result_processed", "1");
-
+      
       renderLessonButtons();
-      showCompletionModal(accuracy);
-      return true;
-    } catch (error) {
-      console.error("Could not process Racecar result:", error);
-      sessionStorage.removeItem("last_lesson_result");
-      renderLessonButtons();
-      return false;
+      showCompletionModal(result.accuracy);
+    } else if (resetLesson !== '6') {
+      loadLesson(0);
     }
   }
 
@@ -697,7 +672,10 @@
     currentIndex = 0; totalTyped = 0; correctTyped = 0; errorIndices = [];
     updateAccuracyMeter(100);
     document.getElementById('completionModal').classList.remove('active');
-    updateTargetAndKeyboard();
+    // Lesson 6 is an external game, so there is no typing display to reset here.
+    if (lessons[currentLessonIdx].type !== 'external_link') {
+      updateTargetAndKeyboard();
+    }
   }
 
   function updateAccuracyMeter(acc) {
