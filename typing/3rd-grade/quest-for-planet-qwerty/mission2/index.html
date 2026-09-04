@@ -405,7 +405,7 @@
   const lessons = [
     { title: "1: S & L Keys", text: "sss lll ss ll ssl lls lsl sll lss sls Ss Sl Ll Ls", type: "typing" },
     { title: "2: S & L Practice", text: "ssj ssf sks sds ssl lls llf ljl ldl kll lkj sdf Lfd Skjl", type: "typing" },
-    { title: "3: S & L Review", text: "slsslddkdkjfjjfsdfsdjklkjdjlkfslJdslkF", type: "typing" },
+    { title: "3: Basketball Shootout", url: "basketball-game.html", type: "external_link" },
     { title: "4: A and ; Keys", text: ";;; aaa ;; aa aa; a;a ;;a a;; ;a; ;aa Aa A; ;a;aA;", type: "typing" },
     { title: "5: A and ; Practice", text: "a;a add all ka fa ja sad aa; ;;k ;;f j;; d;; l;l s;s ad; A; Ak Af", type: "typing" },
     { title: "6: Racecar Game", url: "racecar-game.html", type: "external_link" }
@@ -438,6 +438,18 @@
       // Always replace Lesson 6 with the most recent Racecar result.
       lessonStars[5] = stars;
       lessonAccuracy[5] = accuracy;
+      saveProgress();
+      renderLessonButtons();
+
+      showCompletionModal(accuracy);
+    }
+    if (data && data.type === 'BASKETBALL_GAME_COMPLETE') {
+      const accuracy = typeof data.accuracy === 'number' ? data.accuracy : 0;
+      const stars = typeof data.stars === 'number' ? data.stars : 0;
+
+      // Always replace Lesson 3 with the most recent Basketball result.
+      lessonStars[2] = stars;
+      lessonAccuracy[2] = accuracy;
       saveProgress();
       renderLessonButtons();
 
@@ -547,10 +559,13 @@
     });
 
     const resetLesson = new URLSearchParams(window.location.search).get('resetLesson');
-    if (resetLesson === '6') {
-      currentLessonIdx = 5;
-      lessonStars[5] = 0;
-      lessonAccuracy[5] = 0;
+    const resetLessonNum = parseInt(resetLesson, 10);
+    const resetLessonHandled = Number.isInteger(resetLessonNum) && resetLessonNum >= 1 && resetLessonNum <= lessons.length;
+    if (resetLessonHandled) {
+      const resetIdx = resetLessonNum - 1;
+      currentLessonIdx = resetIdx;
+      lessonStars[resetIdx] = 0;
+      lessonAccuracy[resetIdx] = 0;
       sessionStorage.removeItem('last_lesson_result');
       saveProgress();
       renderLessonButtons();
@@ -558,16 +573,17 @@
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    // Racecar can return its result through the URL. This is more reliable than
-    // postMessage/sessionStorage when the game is opened as a separate page.
+    // External games (Lesson 3 Basketball, Lesson 6 Racecar) can return their result
+    // through the URL. This is more reliable than postMessage/sessionStorage when the
+    // game is opened as a separate page.
     const params = new URLSearchParams(window.location.search);
     const urlLessonId = Number(params.get('lessonId'));
     const urlAccuracy = Number(params.get('accuracy'));
     const urlStars = Number(params.get('stars'));
     let lastResult = null;
 
-    if (urlLessonId === 6 && Number.isFinite(urlAccuracy) && Number.isFinite(urlStars)) {
-      lastResult = JSON.stringify({ lessonId: 6, accuracy: urlAccuracy, stars: urlStars });
+    if (Number.isInteger(urlLessonId) && urlLessonId >= 1 && urlLessonId <= lessons.length && Number.isFinite(urlAccuracy) && Number.isFinite(urlStars)) {
+      lastResult = JSON.stringify({ lessonId: urlLessonId, accuracy: urlAccuracy, stars: urlStars });
       window.history.replaceState({}, document.title, window.location.pathname);
     } else {
       lastResult = sessionStorage.getItem("last_lesson_result");
@@ -581,7 +597,7 @@
       const starsEarned = typeof result.stars === 'number' ? result.stars : 0;
       const accuracyEarned = typeof result.accuracy === 'number' ? result.accuracy : 0;
       if (currentLessonIdx >= 0 && currentLessonIdx < lessonStars.length) {
-        // Racecar Lesson 6 uses the MOST RECENT score, not the previous best.
+        // External game lessons use the MOST RECENT score, not the previous best.
         lessonStars[currentLessonIdx] = starsEarned;
         lessonAccuracy[currentLessonIdx] = accuracyEarned;
         saveProgress();
@@ -589,7 +605,7 @@
       
       renderLessonButtons();
       showCompletionModal(result.accuracy);
-    } else if (resetLesson !== '6') {
+    } else if (!resetLessonHandled) {
       loadLesson(0);
     }
   }

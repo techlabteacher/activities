@@ -1,0 +1,581 @@
+<div id="basketball-game" style="width:100%; max-width:940px; margin:0 auto; box-sizing:border-box;">
+  <style>
+    #basketball-game * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+    #basketball-game .game-card {
+      background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+      color: #f8fafc;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid #334155;
+      position: relative;
+      box-shadow: 0 25px 40px rgba(0,0,0,0.8);
+      outline: none;
+    }
+
+    #basketball-game .game-header {
+      background: #090d16;
+      padding: 12px 22px;
+      text-align: center;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    #basketball-game .game-title {
+      color: #f97316;
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0;
+      text-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+    }
+
+    #basketball-game .control-panel {
+      padding: 14px 22px;
+      background: #1e293b;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #334155;
+    }
+
+    #basketball-game .control-group { display: flex; align-items: center; gap: 8px; }
+
+    #basketball-game .btn-action {
+      background: linear-gradient(135deg, #ea580c, #c2410c);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    #basketball-game .btn-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(234, 88, 12, 0.5);
+    }
+
+    #basketball-game .btn-exit {
+      background: linear-gradient(135deg, #475569, #334155);
+      box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
+      border: 1px solid #64748b;
+    }
+
+    #basketball-game .court-wrapper {
+      position: relative;
+      height: 340px;
+      background: radial-gradient(circle at 50% 100%, #1e293b 0%, #030712 100%);
+      overflow: hidden;
+    }
+
+    #basketball-game .backboard {
+      position: absolute;
+      top: 30px; left: 50%;
+      transform: translateX(-50%);
+      width: 140px; height: 85px;
+      background: #f8fafc;
+      border: 4px solid #cbd5e1;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    #basketball-game .backboard-inner {
+      position: absolute;
+      top: 18px; left: 50%;
+      transform: translateX(-50%);
+      width: 50px; height: 40px;
+      border: 3px solid #ef4444;
+      border-radius: 2px;
+    }
+
+    #basketball-game .rim {
+      position: absolute;
+      top: 112px; left: 50%;
+      transform: translateX(-50%);
+      width: 90px; height: 18px;
+      border: 5px solid #f97316;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(249, 115, 22, 0.6);
+    }
+
+    #basketball-game .net {
+      position: absolute;
+      top: 122px; left: 50%;
+      transform: translateX(-50%);
+      width: 70px; height: 46px;
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.5) 0 2px, transparent 2px 10px),
+                  repeating-linear-gradient(0deg, rgba(255,255,255,0.35) 0 2px, transparent 2px 12px);
+      clip-path: polygon(8% 0%, 92% 0%, 78% 100%, 22% 100%);
+      opacity: 0.85;
+    }
+
+    #basketball-game .court-floor {
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 70px;
+      background: linear-gradient(180deg, transparent 0%, #7c2d12 100%);
+      opacity: 0.35;
+    }
+
+    #basketball-game .ball-zone {
+      position: absolute;
+      bottom: 30px; left: 50%;
+      width: 0; height: 0;
+    }
+
+    #basketball-game .ball {
+      position: absolute;
+      left: 0; top: 0;
+      transform: translate(-50%, 0);
+      font-size: 3.2rem;
+      line-height: 1;
+      user-select: none;
+      filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5));
+    }
+
+    #basketball-game .ball-letter {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -58%);
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #1c1917;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+      pointer-events: none;
+    }
+
+    #basketball-game .ball.making { animation: shootMake 0.65s ease-out forwards; }
+    #basketball-game .ball.missing { animation: shootMiss 0.65s ease-out forwards; }
+
+    @keyframes shootMake {
+      0%   { transform: translate(-50%, 0) scale(1) rotate(0deg); opacity: 1; }
+      55%  { transform: translate(-50%, -195px) scale(0.55) rotate(180deg); opacity: 1; }
+      100% { transform: translate(-50%, -225px) scale(0.3) rotate(260deg); opacity: 0; }
+    }
+
+    @keyframes shootMiss {
+      0%   { transform: translate(-50%, 0) scale(1) rotate(0deg); opacity: 1; }
+      50%  { transform: translate(-15%, -170px) scale(0.55) rotate(160deg); opacity: 1; }
+      100% { transform: translate(55%, -10px) scale(0.4) rotate(320deg); opacity: 0; }
+    }
+
+    #basketball-game .shot-feedback {
+      position: absolute;
+      top: 90px; left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Consolas', monospace;
+      font-weight: 900;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+      opacity: 0;
+      pointer-events: none;
+      text-shadow: 0 0 10px rgba(0,0,0,0.9);
+    }
+
+    #basketball-game .shot-feedback.show-make {
+      color: #4ade80;
+      animation: feedbackPop 0.8s ease-out forwards;
+    }
+
+    #basketball-game .shot-feedback.show-miss {
+      color: #f87171;
+      animation: feedbackPop 0.8s ease-out forwards;
+    }
+
+    @keyframes feedbackPop {
+      0% { opacity: 0; transform: translate(-50%, 10px) scale(0.8); }
+      20% { opacity: 1; transform: translate(-50%, -5px) scale(1.1); }
+      70% { opacity: 1; transform: translate(-50%, -5px) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -20px) scale(1); }
+    }
+
+    #basketball-game .typing-display {
+      background: #030712;
+      padding: 18px 20px;
+      text-align: center;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 1.6rem;
+      font-weight: 800;
+      white-space: normal;
+      word-break: break-word;
+      user-select: none;
+      min-height: 70px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      border-top: 3px solid #1e293b;
+      border-bottom: 3px solid #1e293b;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+      line-height: 1.4;
+      gap: 2px;
+    }
+
+    #basketball-game .char { color: #475569; padding: 1px 3px; border-radius: 3px; transition: all 0.15s ease; display: inline-block; }
+    #basketball-game .char.done { color: #4ade80; }
+    #basketball-game .char.error { color: #ffffff; background: #dc2626; border-radius: 3px; }
+    #basketball-game .char.active {
+      color: #facc15;
+      background: rgba(250, 204, 21, 0.2);
+      border-bottom: 2px solid #facc15;
+      transform: scale(1.08);
+    }
+
+    #basketball-game .stats-bar {
+      background: linear-gradient(180deg, #090d16 0%, #020617 100%);
+      padding: 16px 20px;
+      border-top: 2px solid #334155;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    #basketball-game .stat-box { text-align: center; min-width: 90px; }
+    #basketball-game .stat-value { font-size: 1.6rem; font-weight: 900; font-family: 'Consolas', monospace; }
+    #basketball-game .stat-label { font-size: 0.7rem; color: #64748b; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+
+    #basketball-game .modal-overlay {
+      position: absolute; inset: 0;
+      background: rgba(2, 6, 23, 0.92);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 50;
+    }
+
+    #basketball-game .modal {
+      background: #1e293b; padding: 30px; border-radius: 20px;
+      width: 90%; max-width: 480px; text-align: center;
+      border: 1px solid #475569; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+      position: relative;
+    }
+
+    #basketball-game .star-rating-display {
+      font-size: 2.2rem;
+      margin: 8px 0;
+      color: #334155;
+      letter-spacing: 4px;
+    }
+    #basketball-game .star-rating-display .star-filled {
+      color: #facc15;
+      text-shadow: 0 0 12px rgba(250, 204, 21, 0.8);
+    }
+
+    #basketball-game .passcode-input {
+      font-family: 'Consolas', monospace; font-size: 1.8rem; letter-spacing: 12px; text-align: center;
+      width: 180px; padding: 8px; margin: 15px auto; border-radius: 8px; border: 2px solid #f97316;
+      background: #030712; color: #ffffff; outline: none; display: block;
+    }
+  </style>
+
+  <div class="game-card" id="gameArea" tabindex="0">
+    <div class="game-header">
+      <h1 class="game-title">🏀 SLAM DUNK TYPING 🏀</h1>
+    </div>
+
+    <div class="control-panel">
+      <div class="control-group">
+        <button class="btn-action" id="restartBtn">Restart</button>
+      </div>
+      <div class="control-group">
+        <button class="btn-action btn-exit" id="returnConsoleBtn">⬅ Return to Mission 2</button>
+        <button class="btn-action" id="resetLessonBtn" style="margin-top:8px; background:linear-gradient(135deg,#b45309,#92400e);">🔒 Reset Lesson</button>
+      </div>
+    </div>
+
+    <div class="court-wrapper" id="courtWrapper">
+      <div class="backboard"><div class="backboard-inner"></div></div>
+      <div class="rim"></div>
+      <div class="net"></div>
+      <div class="shot-feedback" id="shotFeedback"></div>
+      <div class="court-floor"></div>
+      <div class="ball-zone">
+        <div class="ball" id="ball">🏀<span class="ball-letter" id="ballLetter">s</span></div>
+      </div>
+    </div>
+
+    <div class="typing-display" id="typingDisplay"></div>
+
+    <div class="stats-bar">
+      <div class="stat-box">
+        <div class="stat-value" id="madeVal" style="color:#4ade80;">0</div>
+        <div class="stat-label">Made</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="missedVal" style="color:#f87171;">0</div>
+        <div class="stat-label">Missed</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="accuracyVal" style="color:#4ade80;">100%</div>
+        <div class="stat-label">Accuracy</div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="resetLessonModal" style="display:none;">
+      <div class="modal">
+        <h2 style="color:#fff; font-size:1.5rem; margin-bottom:5px;">Teacher Reset</h2>
+        <p style="color:#94a3b8; font-size:0.85rem;">Enter the 4-digit teacher passcode to clear the Lesson 3 score.</p>
+        <input id="resetPasscodeInput" type="password" inputmode="numeric" maxlength="4" autocomplete="off" class="passcode-input">
+        <div id="resetPasscodeError" style="color:#f87171;height:20px;"></div>
+        <button class="btn-action" id="confirmResetLessonBtn" style="width:100%;">Reset Lesson 3</button>
+        <button class="btn-action btn-exit" id="cancelResetLessonBtn" style="width:100%;margin-top:8px;">Cancel</button>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="victoryModal" style="display:none;">
+      <div class="modal">
+        <h1 id="winnerTitle" style="color:#4ade80; font-size:2rem; margin-bottom: 5px;">Game Over!</h1>
+        <div class="star-rating-display" id="starContainer"></div>
+        <p id="winnerSubtitle" style="color:#f8fafc; font-size:1rem; margin-bottom: 10px;">Nice shooting!</p>
+
+        <div style="background:#0f172a; padding:15px; border-radius:12px; display:flex; justify-content:space-around; margin:15px 0; border:1px solid #334155;">
+          <div><div id="finalMade" style="font-size:1.5rem; font-weight:bold; color:#4ade80;">0</div><div style="font-size:0.75rem; color:#94a3b8;">MADE</div></div>
+          <div><div id="finalAcc" style="font-size:1.5rem; font-weight:bold; color:#38bdf8;">100%</div><div style="font-size:0.75rem; color:#94a3b8;">ACCURACY</div></div>
+          <div><div id="finalStars" style="font-size:1.5rem; font-weight:bold; color:#facc15;">5/5</div><div style="font-size:0.75rem; color:#94a3b8;">STARS</div></div>
+        </div>
+
+        <div style="margin-top: 15px;">
+          <button class="btn-action" id="modalPlayAgainBtn" style="width:100%; padding:12px; font-size:1rem;">Play Again</button>
+          <button class="btn-action btn-exit modal-exit-btn" style="width:100%; margin-top:8px; padding:10px;">Return to Mission 2</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const targetText = "slsdljflsklsjdlsjflsJdslkF";
+
+      let currentIndex = 0;
+      let keystrokes = 0;
+      let errors = 0;
+      let made = 0;
+      let missed = 0;
+
+      const container = document.getElementById('basketball-game');
+      const gameArea = container.querySelector('#gameArea');
+      const typingDisplay = container.querySelector('#typingDisplay');
+      const ball = container.querySelector('#ball');
+      const ballLetter = container.querySelector('#ballLetter');
+      const shotFeedback = container.querySelector('#shotFeedback');
+      const victoryModal = container.querySelector('#victoryModal');
+      const madeVal = container.querySelector('#madeVal');
+      const missedVal = container.querySelector('#missedVal');
+      const accuracyVal = container.querySelector('#accuracyVal');
+      const starContainer = container.querySelector('#starContainer');
+
+      function calculateStars(acc) {
+        if (acc >= 95) return 5;
+        if (acc >= 90) return 4;
+        if (acc >= 86) return 3;
+        if (acc >= 83) return 2;
+        if (acc >= 80) return 1;
+        return 0;
+      }
+
+      function renderStarsUI(starCount) {
+        let html = '';
+        for (let i = 1; i <= 5; i++) {
+          html += (i <= starCount) ? '<span class="star-filled">★</span>' : '<span>☆</span>';
+        }
+        starContainer.innerHTML = html;
+        container.querySelector('#finalStars').textContent = `${starCount}/5`;
+      }
+
+      function renderText() {
+        typingDisplay.innerHTML = '';
+        for (let i = 0; i < targetText.length; i++) {
+          const span = document.createElement('span');
+          span.className = 'char';
+          span.textContent = targetText[i];
+          if (i === currentIndex) span.classList.add('active');
+          typingDisplay.appendChild(span);
+        }
+        ballLetter.textContent = currentIndex < targetText.length ? targetText[currentIndex] : '';
+      }
+
+      function updateAccuracyDisplay() {
+        const acc = keystrokes > 0 ? Math.max(0, Math.round(((keystrokes - errors) / keystrokes) * 100)) : 100;
+        accuracyVal.textContent = `${acc}%`;
+        accuracyVal.style.color = acc < 80 ? '#f87171' : acc < 90 ? '#facc15' : '#4ade80';
+        return acc;
+      }
+
+      function showFeedback(text, cls) {
+        shotFeedback.textContent = text;
+        shotFeedback.className = 'shot-feedback ' + cls;
+        // Restart the animation even if it's already showing.
+        void shotFeedback.offsetWidth;
+        shotFeedback.classList.add(cls);
+      }
+
+      function sendReturnSignal() {
+        const payload = { type: 'RETURN_TO_CONSOLE' };
+        window.postMessage(payload, '*');
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(payload, '*');
+        }
+
+        const result = sessionStorage.getItem('last_lesson_result');
+        if (result) {
+          try {
+            const data = JSON.parse(result);
+            const params = new URLSearchParams();
+            params.set('lessonId', '3');
+            params.set('accuracy', String(data.accuracy));
+            params.set('stars', String(data.stars));
+            window.location.href = 'index.html?' + params.toString();
+            return;
+          } catch (e) {}
+        }
+        window.location.href = 'index.html';
+      }
+
+      container.querySelector('#returnConsoleBtn').addEventListener('click', sendReturnSignal);
+      const modalExit = container.querySelector('.modal-exit-btn');
+      if (modalExit) modalExit.addEventListener('click', sendReturnSignal);
+
+      function sendDataToMission2(accValue, starsValue) {
+        const payload = {
+          type: 'BASKETBALL_GAME_COMPLETE',
+          accuracy: accValue,
+          stars: starsValue
+        };
+
+        // Save the MOST RECENT Basketball result for Mission 2.
+        sessionStorage.setItem('last_lesson_result', JSON.stringify({
+          lessonId: 3,
+          accuracy: accValue,
+          stars: starsValue
+        }));
+
+        window.postMessage(payload, '*');
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(payload, '*');
+        }
+      }
+
+      function finishGame() {
+        const finalAccNum = keystrokes > 0 ? Math.max(0, Math.round(((keystrokes - errors) / keystrokes) * 100)) : 100;
+        const stars = calculateStars(finalAccNum);
+
+        const winnerTitle = container.querySelector('#winnerTitle');
+        const winnerSubtitle = container.querySelector('#winnerSubtitle');
+
+        if (finalAccNum >= 95) {
+          winnerTitle.textContent = 'Nothing But Net!';
+          winnerTitle.style.color = '#facc15';
+        } else if (finalAccNum >= 80) {
+          winnerTitle.textContent = 'Nice Shooting!';
+          winnerTitle.style.color = '#4ade80';
+        } else {
+          winnerTitle.textContent = 'Keep Practicing!';
+          winnerTitle.style.color = '#f87171';
+        }
+        winnerSubtitle.textContent = `You made ${made} of ${made + missed} shots.`;
+
+        renderStarsUI(stars);
+        container.querySelector('#finalMade').textContent = made;
+        container.querySelector('#finalAcc').textContent = `${finalAccNum}%`;
+
+        sendDataToMission2(finalAccNum, stars);
+
+        victoryModal.style.display = 'flex';
+      }
+
+      function handleThrow(isHit) {
+        ball.classList.remove('making', 'missing');
+        void ball.offsetWidth;
+        ball.classList.add(isHit ? 'making' : 'missing');
+
+        if (isHit) {
+          made++;
+          madeVal.textContent = made;
+          showFeedback('SWISH! +1', 'show-make');
+        } else {
+          missed++;
+          missedVal.textContent = missed;
+          showFeedback('MISS!', 'show-miss');
+        }
+
+        ball.addEventListener('animationend', function onEnd() {
+          ball.removeEventListener('animationend', onEnd);
+          ball.classList.remove('making', 'missing');
+        });
+      }
+
+      function resetGameState() {
+        currentIndex = 0; keystrokes = 0; errors = 0; made = 0; missed = 0;
+        madeVal.textContent = '0';
+        missedVal.textContent = '0';
+        updateAccuracyDisplay();
+        renderText();
+        victoryModal.style.display = 'none';
+        ball.classList.remove('making', 'missing');
+      }
+
+      window.addEventListener('keydown', (e) => {
+        if (victoryModal.style.display === 'flex') return;
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+        if (e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt') return;
+        if (e.key.length !== 1) return;
+
+        keystrokes++;
+        const expected = targetText[currentIndex];
+        const isHit = (e.key === expected);
+        if (!isHit) errors++;
+
+        handleThrow(isHit);
+
+        currentIndex++;
+        updateAccuracyDisplay();
+        renderText();
+
+        if (currentIndex >= targetText.length) {
+          setTimeout(finishGame, 500);
+        }
+      });
+
+      container.querySelector('#restartBtn').addEventListener('click', resetGameState);
+      container.querySelector('#modalPlayAgainBtn').addEventListener('click', resetGameState);
+
+      function openResetLessonModal() {
+        container.querySelector('#resetLessonModal').style.display = 'flex';
+        container.querySelector('#resetPasscodeInput').value = '';
+        container.querySelector('#resetPasscodeError').textContent = '';
+        container.querySelector('#resetPasscodeInput').focus();
+      }
+
+      container.querySelector('#resetLessonBtn').addEventListener('click', openResetLessonModal);
+
+      container.querySelector('#cancelResetLessonBtn').addEventListener('click', () => {
+        container.querySelector('#resetLessonModal').style.display = 'none';
+      });
+
+      container.querySelector('#confirmResetLessonBtn').addEventListener('click', () => {
+        const passcode = container.querySelector('#resetPasscodeInput').value;
+        if (passcode !== '8760') {
+          container.querySelector('#resetPasscodeError').textContent = 'Incorrect Passcode';
+          return;
+        }
+
+        // Clear any pending result so Mission 2 cannot re-apply an old score.
+        sessionStorage.removeItem('last_lesson_result');
+        container.querySelector('#resetLessonModal').style.display = 'none';
+        resetGameState();
+        // Return to Mission 2 where the teacher reset can clear the saved stars.
+        window.location.href = 'index.html?resetLesson=3';
+      });
+
+      renderText();
+      updateAccuracyDisplay();
+      gameArea.focus();
+    })();
+  </script>
+</div>
